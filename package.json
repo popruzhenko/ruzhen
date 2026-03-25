@@ -1,0 +1,25 @@
+{
+    "name": "ruzhen",
+    "ptivate": true,
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "dev": "concurrently \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+        "build": "npm run build -w apps/api && npm run build -w apps/web",
+        "format": "prettier --write ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "devDependencies": {
+        "concurrently": "^9.2.1",
+        "eslint": "^10.0.3",
+        "prettier": "^3.8.1"
+    }
+}

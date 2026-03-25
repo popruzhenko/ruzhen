@@ -1,0 +1,249 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum SourceType {
+  RSS
+  API
+  SCRAPE
+}
+
+enum ArticleStatus {
+  NEW
+  EMBEDDED
+  CLUSTERED
+  REJECTED
+}
+
+enum ClusterStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CandidateStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum ClusterArticleMethod {
+  AUTO
+  MANUAL
+}
+
+enum BlockType {
+  FACT
+  CONTEXT
+  OPINION
+}
+
+enum OpinionStance {
+  PRO
+  CONTRA
+  NEUTRAL
+}
+
+model User {
+  id                String             @id @default(uuid())
+  email             String             @unique
+  passwordHash      String
+  role              UserRole           @default(USER)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  createdClusters   Cluster[]          @relation("ClusterCreatedBy")
+  addedClusterLinks ClusterArticle[]   @relation("ClusterArticleAddedBy")
+  reviewedCandidates ClusterCandidate[] @relation("ClusterCandidateReviewedBy")
+  createdBlocks     ClusterBlock[]     @relation("ClusterBlockCreatedBy")
+  sessions          Session[]
+  bookmarks         Bookmark[]
+}
+
+model Session {
+  id               String   @id @default(uuid())
+  userId           String
+  refreshTokenHash String
+  createdAt        DateTime @default(now())
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  userAgent        String?
+  ip               String?
+
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Source {
+  id            String    @id @default(uuid())
+  name          String
+  type          SourceType
+  baseUrl       String
+  language      String?
+  country       String?
+  isActive      Boolean   @default(true)
+  lastFetchedAt DateTime?
+
+  articles      Article[]
+
+  @@unique([name, baseUrl])
+}
+
+model Article {
+  id                String             @id @default(uuid())
+  sourceId          String
+  url               String             @unique
+  title             String
+  summary           String?
+  content           String?
+  publishedAt       DateTime?
+  language          String?
+  country           String?
+  status            ArticleStatus      @default(NEW)
+  embedding         Json?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  source            Source             @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  raw               ArticleRaw?
+  clusterLinks      ClusterArticle[]
+  clusterCandidates ClusterCandidate[]
+
+  @@index([sourceId])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model ArticleRaw {
+  id            String   @id @default(uuid())
+  articleId     String   @unique
+  rawContent    String
+  fetchedAt     DateTime @default(now())
+  parserVersion String?
+
+  article       Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model Cluster {
+  id                String             @id @default(uuid())
+  humanId           String             @unique
+  title             String
+  summary           String?
+  mainCountry       String?
+  startDate         DateTime?
+  status            ClusterStatus      @default(DRAFT)
+  createdByUserId   String
+  publishedAt       DateTime?
+  embedding         Json?
+  updatedAt         DateTime           @updatedAt
+  createdAt         DateTime           @default(now())
+  createdBy         User               @relation("ClusterCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  articleLinks      ClusterArticle[]
+  candidates        ClusterCandidate[]
+  blocks            ClusterBlock[]
+  bookmarks         Bookmark[]
+  clusterTags       ClusterTag[]
+
+  @@index([status])
+  @@index([createdByUserId])
+  @@index([publishedAt])
+}
+
+model ClusterArticle {
+  clusterId      String
+  articleId      String
+  addedByUserId  String
+  addedAt        DateTime             @default(now())
+  isPrimary      Boolean              @default(false)
+  confidence     Float?
+  method         ClusterArticleMethod
+
+  cluster        Cluster              @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  article        Article              @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  addedBy        User                 @relation("ClusterArticleAddedBy", fields: [addedByUserId], references: [id], onDelete: Restrict)
+
+  @@id([clusterId, articleId])
+  @@index([articleId])
+  @@index([addedByUserId])
+}
+
+model ClusterCandidate {
+  id               String            @id @default(uuid())
+  articleId        String
+  clusterId        String
+  score            Float
+  status           CandidateStatus   @default(PENDING)
+  createdAt        DateTime          @default(now())
+  reviewedByUserId String?
+  reviewedAt       DateTime?
+
+  article          Article           @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  cluster          Cluster           @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  reviewedBy       User?             @relation("ClusterCandidateReviewedBy", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([articleId])
+  @@index([clusterId])
+  @@index([status])
+  @@unique([articleId, clusterId])
+}
+
+model ClusterBlock {
+  id              String         @id @default(uuid())
+  clusterId       String
+  type            BlockType
+  title           String?
+  content         String
+  position        Int
+  sourceName      String?
+  authorName      String?
+  stance          OpinionStance?
+  createdByUserId String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  cluster         Cluster        @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  createdBy       User           @relation("ClusterBlockCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([clusterId])
+  @@unique([clusterId, position])
+}
+
+model Bookmark {
+  userId      String
+  clusterId   String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cluster     Cluster  @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+
+  @@id([userId, clusterId])
+  @@index([clusterId])
+}
+
+model Tag {
+  id          String      @id @default(uuid())
+  name        String      @unique
+
+  clusterTags ClusterTag[]
+}
+
+model ClusterTag {
+  clusterId    String
+  tagId        String
+
+  cluster      Cluster     @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  tag          Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([clusterId, tagId])
+  @@index([tagId])
+}

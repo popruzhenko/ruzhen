@@ -1,0 +1,15 @@
+info:
+    name: update-cluster
+    type: http
+    seq: 9
+
+http:
+    method: PATCH
+    url: http://localhost:4000/clusters/
+    auth: inherit
+
+settings:
+    encodeUrl: true
+    timeout: 0
+    followRedirects: true
+    maxRedirects: 5
