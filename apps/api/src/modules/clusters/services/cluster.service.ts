@@ -81,6 +81,7 @@ export async function getClusterById(id: string) {
             startDate: true,
             status: true,
             publishedAt: true,
+            createdAt: true,
             createdByUserId: true,
             updatedAt: true,
             createdBy: {
@@ -149,7 +150,19 @@ export async function getClusterById(id: string) {
     }
 
     return {
-        ...cluster,
+        id: cluster.id,
+        humanId: cluster.humanId,
+        title: cluster.title,
+        summary: cluster.summary,
+        mainCountry: cluster.mainCountry,
+        startDate: cluster.startDate,
+        status: cluster.status,
+        publishedAt: cluster.publishedAt,
+        createdAt: cluster.createdAt,
+        createdByUserId: cluster.createdByUserId,
+        updatedAt: cluster.updatedAt,
+        createdBy: cluster.createdBy,
+        blocks: cluster.blocks,
         tags: cluster.clusterTags.map((item) => item.tag),
         articles: cluster.articleLinks.map((item) => ({
             ...item.article,
@@ -182,6 +195,23 @@ export async function listClusters(input: ListClustersInput) {
                 status: true,
                 createdAt: true,
                 updatedAt: true,
+                publishedAt: true,
+                clusterTags: {
+                    select: {
+                        tag: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                    },
+                },
+                _count: {
+                    select: {
+                        blocks: true,
+                        articleLinks: true,
+                    },
+                },
             },
         }),
 
@@ -199,8 +229,7 @@ export async function listClusters(input: ListClustersInput) {
     };
 }
 
-export async function updateCluster(
-    id: string,
+export async function updateCluster(id: string,
     data: {
         title?: string;
         summary?: string;
