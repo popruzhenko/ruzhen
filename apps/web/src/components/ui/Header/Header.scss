@@ -1,0 +1,198 @@
+@use '../_mixin.scss' as *;
+
+.ui-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+
+    &__inner {
+        min-height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: min(1180px, 100% - 40px);
+        margin: 0 auto;
+    }
+
+    &__left {
+        display: flex;
+        align-items: center;
+        min-width: 170px;
+    }
+
+    &__brand {
+        display: inline-flex;
+        align-items: center;
+        color: #07111f;
+        text-decoration: none;
+    }
+
+    &__brand-text {
+        color: #07111f;
+        font-size: 22px;
+        font-weight: 950;
+        line-height: 1;
+        letter-spacing: -0.06em;
+    }
+
+    &__empty-block {
+        display: flex;
+        width: 175px;
+        height: stretch;
+    }
+
+    &__nav {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    &__nav-item {
+        min-height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 13px;
+        border: none;
+        border-radius: 999px;
+        background-color: transparent;
+        color: #475569;
+        font-size: 14px;
+        font-weight: 750;
+        line-height: 1;
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+            background-color 0.16s ease,
+            color 0.16s ease;
+
+        &:hover {
+            background-color: #f1f5f9;
+            color: #174ea6;
+        }
+
+        &--active {
+            background-color: #e8f1ff;
+            color: #174ea6;
+        }
+    }
+
+    &__right {
+        min-width: 170px;
+        height: stretch;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    &__login-button {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 16px;
+        border: 1px solid #d8e3f2;
+        border-radius: 999px;
+        background-color: #ffffff;
+        color: #174ea6;
+        font-size: 14px;
+        font-weight: 850;
+        line-height: 1;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+        transition:
+            background-color 0.16s ease,
+            border-color 0.16s ease,
+            color 0.16s ease,
+            transform 0.16s ease,
+            box-shadow 0.16s ease;
+
+        &:hover {
+            transform: translateY(-1px);
+            border-color: #174ea6;
+            background-color: #174ea6;
+            color: #ffffff;
+            box-shadow: 0 12px 26px rgba(23, 78, 166, 0.18);
+        }
+    }
+
+    &--user,
+    &--public {
+        border-bottom: 1px solid rgba(216, 227, 242, 0.78);
+        background-color: rgba(255, 255, 255, 0.84);
+        backdrop-filter: blur(14px);
+    }
+
+    &--admin {
+        background-color: #1e5bb6;
+        display: grid;
+        grid-template-columns: 175px 1fr;
+
+        .ui-header__inner {
+            margin: 0;
+            padding: 0 24px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .ui-header__brand,
+        .ui-header__brand-text {
+            color: #ffffff;
+        }
+
+        .ui-header__nav-item {
+            color: rgba(255, 255, 255, 0.82);
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.08);
+                color: #ffffff;
+            }
+
+            &--active {
+                background-color: rgba(255, 255, 255, 0.13);
+                color: #ffffff;
+            }
+        }
+    }
+    &--public,
+    &--user { 
+        display: flex;
+
+        .ui-header__container { 
+            max-width: 1180px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0;
+        }
+    }
+}
+
+@media (max-width: 720px) {
+    .ui-header {
+        &__container {
+            width: min(100% - 28px, 1180px);
+        }
+
+        &__inner {
+            min-height: 62px;
+        }
+
+        &__left,
+        &__right {
+            min-width: auto;
+        }
+
+        &__nav {
+            display: none;
+        }
+
+        &__brand-text {
+            font-size: 15px;
+        }
+    }
+}

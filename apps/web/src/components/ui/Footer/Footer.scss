@@ -1,0 +1,96 @@
+.ui-footer {
+    border-top: 1px solid rgba(216, 227, 242, 0.9);
+    background-color: rgba(255, 255, 255, 0.74);
+    backdrop-filter: blur(14px);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    margin-top: auto;
+
+    &__inner {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 34px 0 28px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 28px;
+        align-items: start;
+    }
+
+    &__brand {
+        max-width: 430px;
+
+        p {
+            margin: 10px 0 0;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.55;
+        }
+    }
+
+    &__logo {
+        color: #07111f;
+        font-size: 22px;
+        font-weight: 950;
+        line-height: 1;
+        letter-spacing: -0.055em;
+        text-decoration: none;
+        text-transform: uppercase;
+
+        &:hover {
+            color: #174ea6;
+        }
+    }
+
+    &__nav {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 16px 22px;
+
+        a {
+            color: #475569;
+            font-size: 14px;
+            font-weight: 750;
+            line-height: 1;
+            text-decoration: none;
+
+            &:hover {
+                color: #174ea6;
+            }
+        }
+    }
+
+    &__bottom {
+        grid-column: 1 / -1;
+        padding-top: 22px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1.4;
+    }
+}
+
+@media (max-width: 760px) {
+    .ui-footer {
+        &__inner {
+            width: min(100% - 28px, 1180px);
+            grid-template-columns: 1fr;
+        }
+
+        &__nav {
+            justify-content: flex-start;
+        }
+
+        &__bottom {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+}

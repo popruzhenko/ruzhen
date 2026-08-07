@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import {
-    getClusterByIdHandler,
-    listClustersHandler,
+    getPublishedClusterByHumanIdHandler,
+    listPublishedClustersHandler
 } from '../controllers/cluster.controller';
 
 const publicClusterRouter = Router();
 
-publicClusterRouter.get('/', listClustersHandler);
-publicClusterRouter.get('/:id', getClusterByIdHandler);
+publicClusterRouter.get('/', listPublishedClustersHandler);
+publicClusterRouter.get('/:humanId', getPublishedClusterByHumanIdHandler);
 
 export default publicClusterRouter;

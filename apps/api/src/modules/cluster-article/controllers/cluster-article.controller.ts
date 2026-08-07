@@ -1,5 +1,5 @@
 import { Response } from "express";
-import {  addArticleToCluster, removeArticleFromCluster, listClusterArticles } from '../services/cluster-article.service';
+import { addArticleToCluster, removeArticleFromCluster, listClusterArticles } from '../services/cluster-article.service';
 import { AuthenticatedRequest } from "../../../shared/middleware/require-auth";
 
 export async function addArticleToClusterHandler(req: AuthenticatedRequest, res: Response) {

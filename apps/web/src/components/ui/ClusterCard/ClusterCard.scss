@@ -1,0 +1,107 @@
+@use '../_mixin.scss' as *;
+
+$cardBorderColor: #e5e7eb;
+$cardBorderHoverColor: #d1d5db;
+$cardBg: #fefefe;
+$cardImageBg: #f3f4f6;
+$cardMetaColor: #747b8a;
+$cardTitleColor: #132740;
+$cardSummaryColor: #374151;
+
+$cardDefaultSet: (
+    display: flex,
+    flex-direction: row,
+    width: 100%,
+    border: 1px solid $cardBorderColor,
+    border-radius: 8px,
+    background-color: $cardBg,
+);
+
+$cardInteractiveSet: (
+    cursor: pointer,
+    transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+    padding: 0,
+);
+
+$cardInteractiveHoverSet: (
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08),
+    border-color: $cardBorderHoverColor,
+);
+
+.ui-cluster-card {
+    @include apply-set($cardDefaultSet);
+    font-family: 'Inter', sans-serif;
+
+    &--interactive {
+        @include apply-set($cardInteractiveSet);
+
+        &:hover {
+            @include apply-set($cardInteractiveHoverSet);
+        }
+    }
+
+    &__image-wrapper {
+        width: 35%;
+        aspect-ratio: 2 / 1;
+        overflow: hidden;
+        background-color: $cardImageBg;
+        border-radius: 8px 0 0 8px;
+    }
+
+    &__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 12px 16px;
+    }
+
+    &__meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        color: $cardMetaColor;
+    }
+
+    &__title {
+        display: flex;
+        margin: 10px 0 0;
+        color: $cardTitleColor;
+        font-size: 22px;
+        font-weight: 600;
+        text-align: left;
+        line-height: normal;
+    }
+
+    &__summary {
+        display: flex;
+        margin: 8px 0;
+        color: $cardSummaryColor;
+        font-size: 14px;
+        line-height: 1.5;
+        text-align: left;
+    }
+
+    &__tags {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    &__badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    &__opinion-bar {
+        margin-top: 4px;
+    }
+}

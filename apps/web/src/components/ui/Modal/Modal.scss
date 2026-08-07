@@ -1,0 +1,110 @@
+.ui-modal__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px);
+}
+
+.ui-modal__content {
+    width: min(720px, 100%);
+    max-height: calc(100vh - 48px);
+
+    display: flex;
+    flex-direction: column;
+
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 16px 50px 0px rgba(0, 0, 0, 0.24);
+
+    padding: 16px;
+    overflow: hidden;
+    position: relative;
+}
+
+.ui-modal__header {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(222, 223, 229, 1);
+}
+
+.ui-modal__body {
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: rgba(50, 55, 73, 1);
+    letter-spacing: -0.3px;
+    font-weight: 400;
+
+    padding-top: 16px;
+}
+
+.ui-modal__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: rgba(50, 55, 73, 1);
+    margin: 0;
+}
+
+.ui-modal__close-button {
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    place-items: center;
+    font-size: 22px;
+    line-height: 1;
+    color: rgba(50, 55, 73, 1);
+    padding: 0;
+    margin: 0;
+}
+
+.ui-modal__body {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+    color: rgba(50, 55, 73, 1);
+    letter-spacing: -0.3px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.5;
+    padding-top: 16px;
+    height: auto;
+    
+    overflow-y: auto;
+}
+
+.ui-modal__footer {
+    flex-shrink: 0;
+    padding-top: 16px;
+    margin-top: 16px;
+    border-top: 1px solid rgba(222, 223, 229, 1);
+}
+.ui-modal__content {
+    border-radius: 12px;
+}
+
+.review_modal__meta {
+    display: grid; 
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}

@@ -1,0 +1,125 @@
+.ui-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    font-size: 12px;
+    height: fit-content;
+    padding: 4px 8px;
+    border-radius: 3px;
+
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.5px;
+
+    border: 1px solid transparent;
+    &.ui-badge--fact {
+        background-color: #e8f1ff;
+        color: #4177CC;
+    }
+    &.ui-badge--context {
+        background-color: #fef3c7;
+        color: #7c4a03;
+    }
+    &.ui-badge--opinion {
+        background-color: #ede9fe;
+        color: #6d28d9;
+    }
+    &.ui-badge--pro {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+    &.ui-badge--contra {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+    &.ui-badge--neutral {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
+    &.ui-badge--other {
+        background-color: #d8c623;
+        color: #23407e;
+    }
+    &.ui-badge--new {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+&.ui-badge--raw {
+    background-color: #e9eef5;
+    color: #334155;
+}
+
+&.ui-badge--needs-review {
+    background-color: #fff3c4;
+    color: #8a5a00;
+}
+
+&.ui-badge--reviewed {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+&.ui-badge--approved {
+    background-color: #d8f5df;
+    color: #166534;
+}
+
+&.ui-badge--rejected {
+    background-color: #ffdada;
+    color: #9f1239;
+}
+
+&.ui-badge--embedded {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+&.ui-badge--clustered {
+    background-color: #eadcff;
+    color: #6d28d9;
+}
+
+&.ui-badge--processing {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+&.ui-badge--error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+&.ui-badge--done {
+    background-color: #ecfdf5;
+    color: #047857;
+}
+
+&.ui-badge--pending {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+&.ui-badge--primary {
+    background-color: cornflowerblue;
+    color: white;
+}
+&.ui-badge--draft {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+&.ui-badge--published {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+&.ui-badge--archived {
+    background-color: #ede9fe;
+    color: #5b21b6;
+}
+
+}

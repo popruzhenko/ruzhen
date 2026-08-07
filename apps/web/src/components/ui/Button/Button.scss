@@ -1,0 +1,163 @@
+@use '../_mixin.scss' as *;
+
+$primary: #1f5fbf;
+
+$primarySetDefault: (
+    background-color: $primary,
+    border: 1px solid $primary,
+    color: white,
+);
+
+$primarySetDisabled: (
+    background-color: #11366d,
+    border: 1px solid #11366d,
+    color: rgba(185, 185, 185, 1),
+    transform: none,
+);
+
+$primarySetHover: (
+    background-color: #1e5bb6,
+    border: 1px solid #1e5bb6,
+    color: white,
+);
+
+$primarySetPressed: (
+    background-color: #1e57ad,
+    color: white,
+    border-color: #1e57ad,
+    transform: translateY(1.5px),
+);
+
+$secondary: rgba(255, 255, 255, 1);
+
+$secondarySetDefault: (
+    background-color: white,
+    border: 1px solid rgba(222, 223, 229, 1),
+    color: rgba(50, 55, 73, 1),
+);
+
+$secondarySetDisabled: (
+    background-color: rgba(200, 200, 200, 1),
+    border: 1px solid rgba(115, 115, 115, 1),
+    color: rgba(115, 115, 115, 1),
+    transform: none,
+);
+
+$secondarySetHover: (
+    background-color: rgba(239, 239, 239, 1),
+    border: 1px solid rgba(222, 223, 229, 1),
+    color: rgba(50, 55, 73, 1),
+);
+
+$secondarySetPressed: (
+    background-color: rgba(224, 224, 224, 1),
+    border: 1px solid rgba(222, 223, 229, 1),
+    color: rgba(50, 55, 73, 1),
+    transform: translateY(1.5px),
+);
+
+$ghostSetDefault: (
+    background-color: transparent,
+    border: 1px solid transparent,
+    color: rgba(50, 55, 73, 1),
+);
+
+.ui-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 8px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.05s ease-in-out;
+
+    &--primary {
+        @include apply-set($primarySetDefault);
+
+        &:hover {
+            @include apply-set($primarySetHover);
+        }
+
+        &:active {
+            @include apply-set($primarySetPressed);
+        }
+
+        &:disabled {
+            @include apply-set($primarySetDisabled);
+        }
+    }
+
+    &--secondary {
+        box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+
+        @include apply-set($secondarySetDefault);
+
+        &:hover {
+            @include apply-set($secondarySetHover);
+        }
+
+        &:active {
+            @include apply-set($secondarySetPressed);
+        }
+
+        &:disabled {
+            @include apply-set($secondarySetDisabled);
+        }
+    }
+
+    &--ghost {
+        @include apply-set($ghostSetDefault);
+
+        &:hover {
+            background-color: rgba(50, 55, 73, 0.05);
+        }
+
+        &:active {
+            background-color: rgba(50, 55, 73, 0.1);
+            transform: translateY(1.5px);
+        }
+
+        &:disabled {
+            color: rgba(115, 115, 115, 1);
+            cursor: not-allowed;
+            background-color: transparent;
+        }
+    }
+
+    &--disabled {
+        cursor: not-allowed;
+        transform: none;
+        transition: all 0.2s ease-in-out;
+
+        .ui-button__icon {
+            opacity: 0.7;
+        }
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 5px;
+        margin-right: 5px;
+        span svg {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            path {
+                display: flex;
+                margin-top: 5px;
+                position: relative;
+            }
+        }
+    }
+    
+
+    &__label {
+        display: inline-block;
+    }
+}

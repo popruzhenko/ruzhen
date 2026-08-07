@@ -1,0 +1,135 @@
+.ui-page-state {
+    width: 100%;
+    min-height: 320px;
+    border: 1px solid #d8e3f2;
+    border-radius: 24px;
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(23, 78, 166, 0.08),
+            transparent 34%
+        ),
+        #ffffff;
+    box-shadow: 0 16px 44px rgba(15, 23, 42, 0.055);
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+
+    &__icon {
+        min-width: 46px;
+        height: 46px;
+        padding: 0 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background-color: #e8f1ff;
+        color: #174ea6;
+        font-size: 14px;
+        font-weight: 950;
+        line-height: 1;
+        letter-spacing: -0.02em;
+    }
+
+    &__eyebrow {
+        color: #174ea6;
+        font-size: 12px;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+    }
+
+    &__title {
+        max-width: 620px;
+        margin: 0;
+        color: #07111f;
+        font-size: 32px;
+        font-weight: 900;
+        line-height: 1.08;
+        letter-spacing: -0.055em;
+    }
+
+    &__description {
+        max-width: 560px;
+        margin: 0;
+        color: #64748b;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1.58;
+    }
+
+    &__action-link {
+        margin-top: 8px;
+        text-decoration: none;
+    }
+
+    &--loading {
+        .ui-page-state__icon {
+            animation: ui-page-state-pulse 1.1s ease-in-out infinite;
+        }
+    }
+
+    &--error,
+    &--not-found,
+    &--unauthorized,
+    &--forbidden {
+        .ui-page-state__icon {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+    }
+
+    &--forbidden {
+        .ui-page-state__icon {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+    }
+
+    &--empty {
+        .ui-page-state__icon {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+    }
+}
+
+@keyframes ui-page-state-pulse {
+    0% {
+        opacity: 0.45;
+        transform: scale(0.96);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0.45;
+        transform: scale(0.96);
+    }
+}
+
+@media (max-width: 640px) {
+    .ui-page-state {
+        min-height: 260px;
+        padding: 34px 22px;
+        border-radius: 20px;
+
+        &__title {
+            font-size: 26px;
+        }
+
+        &__description {
+            font-size: 15px;
+        }
+    }
+}
