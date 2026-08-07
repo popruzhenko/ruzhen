@@ -1,4 +1,4 @@
-import { type SyntheticEvent, useState } from 'react';
+import { type SyntheticEvent, useCallback, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { Input } from '../../ui/Input/Input';
@@ -6,10 +6,13 @@ import { Button } from '../../ui/Button/Button';
 import { Link } from '../../ui/Link/Link';
 
 import { saveAuthData } from '../../../features/auth/lib/authStorage';
-import { loginRequest } from '../../../features/auth/api/authApi';
+import {
+    loginRequest,
+    loginWithGoogleRequest,
+} from '../../../features/auth/api/authApi';
+import { GoogleAuthButton } from '../../ui/GoogleAuthButton/GoogleAuthButton';
 
 import './SignIn.scss';
-import { Icon } from '../../ui/Icon/Icon';
 
 interface SignInErrors {
     email?: string;
@@ -38,6 +41,27 @@ export const SignIn = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState<SignInErrors>({});
+
+    const navigateAfterAuth = useCallback(
+        (role: 'USER' | 'ADMIN') => {
+            const redirectTo = getSafeRedirectPath(
+                searchParams.get('redirectTo'),
+            );
+
+            if (redirectTo) {
+                navigate(redirectTo, { replace: true });
+                return;
+            }
+
+            if (role === 'ADMIN') {
+                navigate('/admin', { replace: true });
+                return;
+            }
+
+            navigate('/user', { replace: true });
+        },
+        [navigate, searchParams],
+    );
 
     const validateForm = () => {
         const nextErrors: SignInErrors = {};
@@ -102,21 +126,7 @@ export const SignIn = () => {
                 user: data.user,
             });
 
-            const redirectTo = getSafeRedirectPath(
-                searchParams.get('redirectTo'),
-            );
-
-            if (redirectTo) {
-                navigate(redirectTo, { replace: true });
-                return;
-            }
-
-            if (data.user.role === 'ADMIN') {
-                navigate('/admin', { replace: true });
-                return;
-            }
-
-            navigate('/user', { replace: true });
+            navigateAfterAuth(data.user.role);
         } catch {
             setErrors({
                 form: 'Invalid email or password.',
@@ -125,6 +135,37 @@ export const SignIn = () => {
             setIsLoading(false);
         }
     }
+
+    const handleGoogleCredential = useCallback(
+        async (credential: string) => {
+            setErrors({});
+            setIsLoading(true);
+
+            try {
+                const data = await loginWithGoogleRequest({
+                    credential,
+                });
+
+                saveAuthData({
+                    accessToken: data.accessToken,
+                    sessionToken: data.sessionToken,
+                    user: data.user,
+                });
+
+                navigateAfterAuth(data.user.role);
+            } catch (error) {
+                setErrors({
+                    form:
+                        error instanceof Error
+                            ? error.message
+                            : 'Google login failed.',
+                });
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        [navigateAfterAuth],
+    );
 
     return (
         <div className="auth">
@@ -169,24 +210,27 @@ export const SignIn = () => {
                     />
 
                     {errors.form && (
-                        <div className="auth__error">
-                            {errors.form}
-                        </div>
+                        <div className="auth__error">{errors.form}</div>
                     )}
 
-                    <Button
-                        variants="primary"
-                        disabled={isLoading}
-                    >
+                    <Button variants="primary" disabled={isLoading}>
                         {isLoading ? 'Logging in...' : 'Log in'}
                     </Button>
-                    <Button
-                        variants="secondary"
-                        leftIcon={<Icon name='google'></Icon>}
-                    >
-                        Continue with Google
-                    </Button>
                 </form>
+
+                <div className="auth__divider">
+                    <span>or</span>
+                </div>
+
+                <GoogleAuthButton
+                    disabled={isLoading}
+                    onCredential={handleGoogleCredential}
+                    onError={(message) => {
+                        setErrors({
+                            form: message,
+                        });
+                    }}
+                />
 
                 <div className="auth__footer">
                     <span>Don’t have an account?</span>

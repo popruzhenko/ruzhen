@@ -100,7 +100,7 @@ export const ClusteringPage = () => {
 
     const { showToast } = useToast();
 
-    const clustersQuery = useClustersQuery();
+    const clustersQuery = useClustersQuery({page: 1, limit: 500,});
     const selectedClusterQuery = useClusterByIdQuery(selectedClusterId);
     const articlesQuery = useArticlesQuery();
 

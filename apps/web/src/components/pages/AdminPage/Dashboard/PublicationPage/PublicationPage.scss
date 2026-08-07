@@ -235,6 +235,10 @@
     min-height: 320px;
     height: 100%;
     padding: 44px 32px;
+    border: none;
+    border-radius: none;
+    background: none;
+    box-shadow: none;
 }
 .publication {
     &__side-state {

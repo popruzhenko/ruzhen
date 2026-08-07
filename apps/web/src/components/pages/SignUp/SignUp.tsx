@@ -1,11 +1,16 @@
-import { type SyntheticEvent, useState } from 'react';
+import { type SyntheticEvent, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Input } from '../../ui/Input/Input';
 import { Button } from '../../ui/Button/Button';
 import { Link } from '../../ui/Link/Link';
 
-import { registerRequest } from '../../../features/auth/api/authApi';
+import {
+    loginWithGoogleRequest,
+    registerRequest,
+} from '../../../features/auth/api/authApi';
+import { saveAuthData } from '../../../features/auth/lib/authStorage';
+import { GoogleAuthButton } from '../../ui/GoogleAuthButton/GoogleAuthButton';
 
 import '../SignIn/SignIn.scss';
 
@@ -112,6 +117,37 @@ export const SignUp = () => {
         }
     }
 
+    const handleGoogleCredential = useCallback(
+        async (credential: string) => {
+            setErrors({});
+            setIsLoading(true);
+
+            try {
+                const data = await loginWithGoogleRequest({
+                    credential,
+                });
+
+                saveAuthData({
+                    accessToken: data.accessToken,
+                    sessionToken: data.sessionToken,
+                    user: data.user,
+                });
+
+                navigate('/user', { replace: true });
+            } catch (error) {
+                setErrors({
+                    form:
+                        error instanceof Error
+                            ? error.message
+                            : 'Google registration failed.',
+                });
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        [navigate],
+    );
+
     return (
         <div className="auth">
             <div className="auth__logo">Ruzhen</div>
@@ -187,18 +223,27 @@ export const SignUp = () => {
                     />
 
                     {errors.form && (
-                        <div className="auth__error">
-                            {errors.form}
-                        </div>
+                        <div className="auth__error">{errors.form}</div>
                     )}
 
-                    <Button
-                        variants="primary"
-                        disabled={isLoading}
-                    >
+                    <Button variants="primary" disabled={isLoading}>
                         {isLoading ? 'Creating account...' : 'Create account'}
                     </Button>
                 </form>
+
+                <div className="auth__divider">
+                    <span>or</span>
+                </div>
+
+                <GoogleAuthButton
+                    disabled={isLoading}
+                    onCredential={handleGoogleCredential}
+                    onError={(message) => {
+                        setErrors({
+                            form: message,
+                        });
+                    }}
+                />
 
                 <div className="auth__footer">
                     <span>Already have an account?</span>

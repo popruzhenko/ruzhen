@@ -161,7 +161,7 @@ export const UserPage = () => {
                                         <PublicArticleCard
                                             key={article.id}
                                             article={article}
-                                            detailsBasePath="/articles"
+                                            detailsBasePath="/user/articles"
                                         />
                                     ))}
                                 </div>

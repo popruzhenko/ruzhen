@@ -5,30 +5,36 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 export type UserRole = 'USER' | 'ADMIN';
 
 export interface AuthUser {
-  id: string;
-  email: string;
-  role: UserRole;
-  createdAt: string;
+    id: string;
+    email: string;
+    role: UserRole;
+    createdAt: string;
 }
 
 export interface LoginResponse {
-  message: string;
-  accessToken: string;
-  sessionToken: string;
-  user: AuthUser;
+    message: string;
+    accessToken: string;
+    sessionToken: string;
+    user: AuthUser;
 }
 
 export interface RegisterResponse {
-  message: string;
-  user: AuthUser;
+    message: string;
+    user: AuthUser;
 }
 
 interface AuthCredentials {
-  email: string;
-  password: string;
+    email: string;
+    password: string;
 }
 
-export async function registerRequest(credentials: AuthCredentials): Promise<RegisterResponse> {
+export interface GoogleLoginPayload {
+    credential: string;
+}
+
+export async function registerRequest(
+    credentials: AuthCredentials,
+): Promise<RegisterResponse> {
     const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
@@ -46,19 +52,41 @@ export async function registerRequest(credentials: AuthCredentials): Promise<Reg
     return data;
 }
 
-export async function loginRequest(credentials: AuthCredentials): Promise<LoginResponse> {
+export async function loginRequest(
+    credentials: AuthCredentials,
+): Promise<LoginResponse> {
     const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(credentials),
-    }); 
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
         throw new Error(data.message || 'Login failed');
+    }
+
+    return data;
+}
+
+export async function loginWithGoogleRequest(
+    payload: GoogleLoginPayload,
+): Promise<LoginResponse> {
+    const response = await fetch(`${API_URL}/auth/google`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Google login failed');
     }
 
     return data;
@@ -96,12 +124,14 @@ export async function logoutRequest(): Promise<void> {
     }
 }
 
-export async function meRequest(accessToken: string): Promise<{user: AuthUser}> {
+export async function meRequest(
+    accessToken: string,
+): Promise<{ user: AuthUser }> {
     const response = await fetch(`${API_URL}/auth/me`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
         },
     });
 
@@ -113,5 +143,3 @@ export async function meRequest(accessToken: string): Promise<{user: AuthUser}> 
 
     return data;
 }
-
-

@@ -38,6 +38,7 @@
         "dotenv": "^17.3.1",
         "express": "^5.2.1",
         "fast-xml-parser": "^5.7.0",
+        "google-auth-library": "^11.0.0",
         "jsdom": "^29.0.2",
         "jsonwebtoken": "^9.0.3",
         "openai": "^6.34.0",
