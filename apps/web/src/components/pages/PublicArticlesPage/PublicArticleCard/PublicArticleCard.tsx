@@ -38,7 +38,7 @@ const formatBlockCount = (count: number, label: string) => {
     if (count === 0) {
         return null;
     }
-    if(label === 'Context') {
+    if (label === 'Context') {
         return `${label}: ${count}`;
     }
 

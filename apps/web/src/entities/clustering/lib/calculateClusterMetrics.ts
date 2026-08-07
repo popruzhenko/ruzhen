@@ -6,9 +6,7 @@ import type {
 import { calculateCentroid } from './calculateCentroid';
 import { cosineSimilarity } from './cosineSimilarity';
 
-export function recalculateClusterArticles(
-    articles: ClusterArticleItem[],
-): {
+export function recalculateClusterArticles(articles: ClusterArticleItem[]): {
     centroid: number[] | null;
     articles: ClusterArticleItem[];
     averageSimilarity: number;

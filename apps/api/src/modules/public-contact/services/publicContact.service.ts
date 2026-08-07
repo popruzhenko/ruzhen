@@ -27,9 +27,7 @@ const isValidEmail = (email: string) => {
 
 const contactTopics = Object.values(ContactTopic);
 
-export function validateContactMessageInput(
-    input: CreateContactMessageInput,
-) {
+export function validateContactMessageInput(input: CreateContactMessageInput) {
     const errors: string[] = [];
 
     const trimmedEmail = input.email?.trim();
@@ -61,9 +59,7 @@ export function validateContactMessageInput(
     return errors;
 }
 
-export async function createContactMessage(
-    input: CreateContactMessageInput,
-) {
+export async function createContactMessage(input: CreateContactMessageInput) {
     const errors = validateContactMessageInput(input);
 
     if (errors.length > 0) {

@@ -1,35 +1,35 @@
 export interface ClusteringArticle {
-  id: string;
-  publishedAt: Date | null;
-  embedding: number[];
+    id: string;
+    publishedAt: Date | null;
+    embedding: number[];
 }
 
 export interface SimilarityEdge {
-  to: string;
-  score: number;
+    to: string;
+    score: number;
 }
 
 export interface SimilarityGraph {
-  [articleId: string]: SimilarityEdge[];
+    [articleId: string]: SimilarityEdge[];
 }
 
 export interface ClusterGroup {
-  articleIds: string[];
+    articleIds: string[];
 }
 
 export interface ClusterDraft {
-  articleIds: string[];
-  startDate: Date | null;
-  endDate: Date | null;
+    articleIds: string[];
+    startDate: Date | null;
+    endDate: Date | null;
 }
 
 export interface ClusterRelationDraft {
-  fromClusterIndex: number;
-  toClusterIndex: number;
-  type: 'CONTINUES';
+    fromClusterIndex: number;
+    toClusterIndex: number;
+    type: 'CONTINUES';
 }
 
 export interface BuildClustersResult {
-  clusters: ClusterDraft[];
-  relations: ClusterRelationDraft[];
+    clusters: ClusterDraft[];
+    relations: ClusterRelationDraft[];
 }

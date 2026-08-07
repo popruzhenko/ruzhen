@@ -1,4 +1,5 @@
-export type BadgeVariants = 'fact'
+export type BadgeVariants =
+    | 'fact'
     | 'context'
     | 'opinion'
     | 'pro'
@@ -49,5 +50,5 @@ export const LabelMap: Record<BadgeVariants, string> = {
     primary: 'Primary',
     draft: 'Draft',
     published: 'Published',
-    archived: 'Archived'
-}
+    archived: 'Archived',
+};

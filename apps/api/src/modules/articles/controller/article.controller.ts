@@ -1,7 +1,12 @@
 import { Response } from 'express';
 import { ArticleStatus } from '@prisma/client';
 import { AuthenticatedRequest } from '../../../shared/middleware/require-auth';
-import { deleteAllArticles, getArticleById, listArticles, updateArticle } from '../services/atricle.service';
+import {
+    deleteAllArticles,
+    getArticleById,
+    listArticles,
+    updateArticle,
+} from '../services/atricle.service';
 import { reviewArticleContentById } from '../../../core/ingestionNews/review/reviewArticleContent.service';
 import { prisma } from '../../../shared/lib/prismaClient';
 import { OpenAiEmbeddingProvider } from '../../../core/embedding/openAiEmbeddingProvider';
@@ -13,7 +18,7 @@ const openAiApiKey = requireEnv('OPENAI_API_KEY');
 
 export async function listArticlesHandler(
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
 ) {
     try {
         const page = Number(req.query.page) || 1;
@@ -21,12 +26,16 @@ export async function listArticlesHandler(
 
         const status =
             typeof req.query.status === 'string' &&
-            Object.values(ArticleStatus).includes(req.query.status as ArticleStatus)
+            Object.values(ArticleStatus).includes(
+                req.query.status as ArticleStatus,
+            )
                 ? (req.query.status as ArticleStatus)
                 : undefined;
 
         const sourceId =
-            typeof req.query.sourceId === 'string' ? req.query.sourceId : undefined;
+            typeof req.query.sourceId === 'string'
+                ? req.query.sourceId
+                : undefined;
 
         const result = await listArticles({
             page,
@@ -47,7 +56,7 @@ export async function listArticlesHandler(
 
 export async function getArticleByIdHandler(
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
 ) {
     try {
         const id = req.params.id;
@@ -64,14 +73,17 @@ export async function getArticleByIdHandler(
 
         res.status(404).json({
             message:
-                error instanceof Error ? error.message : 'Failed to fetch article',
+                error instanceof Error
+                    ? error.message
+                    : 'Failed to fetch article',
         });
     }
 }
 
 export async function deleteAllArticlesHandler(
     req: AuthenticatedRequest,
-    res: Response) {
+    res: Response,
+) {
     try {
         res.status(200).json(await deleteAllArticles());
     } catch (error) {
@@ -85,7 +97,7 @@ export async function deleteAllArticlesHandler(
 
 export async function updateArticleHandler(
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
 ) {
     try {
         const { id } = req.params;
@@ -98,7 +110,7 @@ export async function updateArticleHandler(
 
         const articleData = req.body;
 
-        const article = await updateArticle(id , articleData);
+        const article = await updateArticle(id, articleData);
 
         res.status(200).json(article);
     } catch (error) {

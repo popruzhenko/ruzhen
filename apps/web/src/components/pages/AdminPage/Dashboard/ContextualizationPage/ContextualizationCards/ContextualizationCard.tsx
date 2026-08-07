@@ -104,16 +104,11 @@ export const ContextualizationCard = ({
                 <input
                     value={block.sourceUrl ?? ''}
                     onChange={(event) =>
-                        onUpdateBlock(
-                            block.id,
-                            'sourceUrl',
-                            event.target.value,
-                        )
+                        onUpdateBlock(block.id, 'sourceUrl', event.target.value)
                     }
                     placeholder="https://..."
                 />
             </label>
-
         </article>
     );
 };

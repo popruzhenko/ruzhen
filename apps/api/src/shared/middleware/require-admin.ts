@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from './require-auth';
 export function requireAdmin(
     req: AuthenticatedRequest,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
 ) {
     if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });

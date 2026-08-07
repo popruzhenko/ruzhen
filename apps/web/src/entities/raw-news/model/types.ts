@@ -9,10 +9,7 @@ export type ArticleStatus =
     | string;
 
 export type ContentAvailability =
-    | 'FULL'
-    | 'SUMMARY_ONLY'
-    | 'NO_CONTENT'
-    | string;
+    'FULL' | 'SUMMARY_ONLY' | 'NO_CONTENT' | string;
 
 export interface ArticleSourceApiItem {
     id: string;

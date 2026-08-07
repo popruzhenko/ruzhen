@@ -1,4 +1,4 @@
-import { type ContextualizationFiltersState } from '../ContextualizationPage/ContextualizationFilters/TypesContextualizationFilters'
+import { type ContextualizationFiltersState } from '../ContextualizationPage/ContextualizationFilters/TypesContextualizationFilters';
 
 export const getSourceCountThreshold = (
     value: ContextualizationFiltersState['sourceCount'],

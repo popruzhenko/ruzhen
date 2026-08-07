@@ -1,10 +1,5 @@
 export type ClusterBlockType =
-    | 'FACT'
-    | 'CONTEXT'
-    | 'OPINION'
-    | 'fact'
-    | 'context'
-    | 'opinion';
+    'FACT' | 'CONTEXT' | 'OPINION' | 'fact' | 'context' | 'opinion';
 
 export type ClusterBlockStance = 'PRO' | 'CONTRA' | 'NEUTRAL' | null;
 

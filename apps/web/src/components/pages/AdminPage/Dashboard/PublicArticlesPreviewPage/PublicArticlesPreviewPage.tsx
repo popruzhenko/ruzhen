@@ -156,9 +156,7 @@ export const PublicArticlesPreviewPage = () => {
                                     page={pagination.page}
                                     totalPages={pagination.totalPages}
                                     hasNextPage={pagination.hasNextPage}
-                                    hasPreviousPage={
-                                        pagination.hasPreviousPage
-                                    }
+                                    hasPreviousPage={pagination.hasPreviousPage}
                                     onPageChange={handlePageChange}
                                 />
                             )}

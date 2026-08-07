@@ -42,7 +42,8 @@ export function mapArticleToRawNewsItem(
         pipeline: {
             fetched: Boolean(article.raw?.fetchedAt),
             cleaned: Boolean(article.cleanedAccessibleText),
-            embedded: article.status === 'EMBEDDED' || article.status === 'CLUSTERED',
+            embedded:
+                article.status === 'EMBEDDED' || article.status === 'CLUSTERED',
             clustered:
                 article.status === 'CLUSTERED' ||
                 article._count.clusterLinks > 0,

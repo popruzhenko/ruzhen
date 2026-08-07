@@ -24,10 +24,7 @@ export const Toast = ({ toast, onClose }: ToastProps) => {
         };
     }, [autoCloseMs, onClose, toast.id]);
 
-    const toastClasses = classesJoined([
-        'ui-toast',
-        `ui-toast--${toast.type}`,
-    ]);
+    const toastClasses = classesJoined(['ui-toast', `ui-toast--${toast.type}`]);
 
     return (
         <div className={toastClasses} role="status" aria-live="polite">
@@ -35,9 +32,7 @@ export const Toast = ({ toast, onClose }: ToastProps) => {
 
             <div className="ui-toast__content">
                 {toast.title && (
-                    <strong className="ui-toast__title">
-                        {toast.title}
-                    </strong>
+                    <strong className="ui-toast__title">{toast.title}</strong>
                 )}
 
                 <div className="ui-toast__text">{toast.message}</div>

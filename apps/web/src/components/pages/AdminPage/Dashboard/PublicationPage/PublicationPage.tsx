@@ -122,9 +122,7 @@ const getPublicationValidationErrors = (
     const facts = blocks.filter((block) => block.type === 'FACT');
     const context = blocks.filter((block) => block.type === 'CONTEXT');
 
-    const hasEmptyBlockContent = blocks.some(
-        (block) => !block.content?.trim(),
-    );
+    const hasEmptyBlockContent = blocks.some((block) => !block.content?.trim());
 
     if (!cluster.title?.trim()) {
         errors.push('Title is required.');
@@ -175,7 +173,7 @@ export const PublicationPage = () => {
 
     const { showToast } = useToast();
 
-    const clustersQuery = useClustersQuery({page: 1, limit: 500,});
+    const clustersQuery = useClustersQuery({ page: 1, limit: 500 });
     const selectedClusterQuery = useClusterByIdQuery(selectedClusterId);
     const updateStatusMutation = useUpdateClusterStatusMutation();
 
@@ -277,7 +275,8 @@ export const PublicationPage = () => {
             showToast({
                 type: 'warning',
                 title: 'No article selected',
-                message: 'Select an article before changing publication status.',
+                message:
+                    'Select an article before changing publication status.',
             });
 
             return;

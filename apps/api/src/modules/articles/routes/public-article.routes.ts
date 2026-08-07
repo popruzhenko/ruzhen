@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { deleteAllArticlesHandler, reviewArticleContentHandler, getArticleByIdHandler, listArticlesHandler, updateArticleHandler, } from '../controller/article.controller';
+import {
+    deleteAllArticlesHandler,
+    reviewArticleContentHandler,
+    getArticleByIdHandler,
+    listArticlesHandler,
+    updateArticleHandler,
+} from '../controller/article.controller';
 
 const publicArticleRouter = Router();
 

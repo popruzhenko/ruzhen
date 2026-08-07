@@ -17,11 +17,7 @@ export type RawNewsContentFilter =
     | 'PREVIEW_ONLY';
 
 export type RawNewsDateFilter =
-    | 'ALL'
-    | 'TODAY'
-    | 'YESTERDAY'
-    | 'LAST_7_DAYS'
-    | 'LAST_30_DAYS';
+    'ALL' | 'TODAY' | 'YESTERDAY' | 'LAST_7_DAYS' | 'LAST_30_DAYS';
 
 export interface RawNewsSourceOption {
     label: string;

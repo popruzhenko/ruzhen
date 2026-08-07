@@ -104,8 +104,7 @@ export const filterPublicArticles = (
 
         if (filters.sort === 'MOST_SOURCES') {
             return (
-                (b._count?.articleLinks ?? 0) -
-                (a._count?.articleLinks ?? 0)
+                (b._count?.articleLinks ?? 0) - (a._count?.articleLinks ?? 0)
             );
         }
 

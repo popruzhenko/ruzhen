@@ -17,16 +17,25 @@ if (!connectionString) {
 }
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 if (!googleClientId) {
     throw new Error('GOOGLE_CLIENT_ID is not defined');
+}
+
+if (!googleClientSecret) {
+    throw new Error('GOOGLE_CLIENT_SECRET is not defined');
 }
 
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-const googleClient = new OAuth2Client(googleClientId);
+const googleClient = new OAuth2Client({
+    clientId: googleClientId,
+    clientSecret: googleClientSecret,
+    redirectUri: 'postmessage',
+});
 
 type AuthSessionUser = Pick<User, 'id' | 'email' | 'role' | 'createdAt'>;
 
@@ -130,20 +139,26 @@ export async function loginUser(email: string, password: string) {
     });
 }
 
-export async function loginWithGoogle(credential: string) {
-    if (!credential) {
-        throw new Error('Google credential is required');
+export async function loginWithGoogle(code: string) {
+    if (!code) {
+        throw new Error('Google authorization code is required');
+    }
+
+    const { tokens } = await googleClient.getToken(code);
+
+    if (!tokens.id_token) {
+        throw new Error('Google id token was not returned');
     }
 
     const ticket = await googleClient.verifyIdToken({
-        idToken: credential,
+        idToken: tokens.id_token,
         audience: googleClientId,
     });
 
     const payload = ticket.getPayload();
 
     if (!payload) {
-        throw new Error('Invalid Google credential');
+        throw new Error('Invalid Google id token');
     }
 
     const googleId = payload.sub;

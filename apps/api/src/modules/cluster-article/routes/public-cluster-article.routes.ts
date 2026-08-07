@@ -3,6 +3,9 @@ import { listClusterArticlesHandler } from '../controllers/cluster-article.contr
 
 const publicClusterArticleRouter = Router();
 
-publicClusterArticleRouter.get('/:clusterId/articles', listClusterArticlesHandler);
+publicClusterArticleRouter.get(
+    '/:clusterId/articles',
+    listClusterArticlesHandler,
+);
 
 export default publicClusterArticleRouter;

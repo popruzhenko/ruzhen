@@ -10,12 +10,7 @@ export const ProtectedRoute = () => {
             location.pathname + location.search,
         );
 
-        return (
-            <Navigate
-                to={`/login?redirectTo=${redirectTo}`}
-                replace
-            />
-        );
+        return <Navigate to={`/login?redirectTo=${redirectTo}`} replace />;
     }
 
     return <Outlet />;

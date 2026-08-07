@@ -5,12 +5,16 @@ import { Input } from '../../ui/Input/Input';
 import { Button } from '../../ui/Button/Button';
 import { Link } from '../../ui/Link/Link';
 
-import { saveAuthData } from '../../../features/auth/lib/authStorage';
 import {
     loginRequest,
     loginWithGoogleRequest,
+    type LoginResponse,
 } from '../../../features/auth/api/authApi';
-import { GoogleAuthButton } from '../../ui/GoogleAuthButton/GoogleAuthButton';
+
+import { saveAuthData } from '../../../features/auth/lib/authStorage';
+import { getAuthRedirectPath } from '../../../features/auth/lib/authRedirect';
+import { isValidEmail } from '../../../features/auth/lib/authValidation';
+import { GoogleAuthButton } from '../../../components/ui/GoogleAuthButton/GoogleAuthButton';
 
 import './SignIn.scss';
 
@@ -19,18 +23,6 @@ interface SignInErrors {
     password?: string;
     form?: string;
 }
-
-const getSafeRedirectPath = (redirectTo: string | null) => {
-    if (!redirectTo) return null;
-    if (!redirectTo.startsWith('/')) return null;
-    if (redirectTo.startsWith('//')) return null;
-
-    return redirectTo;
-};
-
-const isValidEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
 
 export const SignIn = () => {
     const navigate = useNavigate();
@@ -42,30 +34,26 @@ export const SignIn = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState<SignInErrors>({});
 
-    const navigateAfterAuth = useCallback(
-        (role: 'USER' | 'ADMIN') => {
-            const redirectTo = getSafeRedirectPath(
-                searchParams.get('redirectTo'),
-            );
+    const handleAuthSuccess = useCallback(
+        (data: LoginResponse) => {
+            saveAuthData({
+                accessToken: data.accessToken,
+                sessionToken: data.sessionToken,
+                user: data.user,
+            });
 
-            if (redirectTo) {
-                navigate(redirectTo, { replace: true });
-                return;
-            }
+            const redirectPath = getAuthRedirectPath({
+                role: data.user.role,
+                redirectTo: searchParams.get('redirectTo'),
+            });
 
-            if (role === 'ADMIN') {
-                navigate('/admin', { replace: true });
-                return;
-            }
-
-            navigate('/user', { replace: true });
+            navigate(redirectPath, { replace: true });
         },
         [navigate, searchParams],
     );
 
     const validateForm = () => {
         const nextErrors: SignInErrors = {};
-
         const trimmedEmail = email.trim();
 
         if (!trimmedEmail) {
@@ -81,22 +69,10 @@ export const SignIn = () => {
         return nextErrors;
     };
 
-    const handleEmailChange = (value: string) => {
-        setEmail(value);
-
+    const clearFieldError = (field: keyof SignInErrors) => {
         setErrors((currentErrors) => ({
             ...currentErrors,
-            email: undefined,
-            form: undefined,
-        }));
-    };
-
-    const handlePasswordChange = (value: string) => {
-        setPassword(value);
-
-        setErrors((currentErrors) => ({
-            ...currentErrors,
-            password: undefined,
+            [field]: undefined,
             form: undefined,
         }));
     };
@@ -120,13 +96,7 @@ export const SignIn = () => {
                 password,
             });
 
-            saveAuthData({
-                accessToken: data.accessToken,
-                sessionToken: data.sessionToken,
-                user: data.user,
-            });
-
-            navigateAfterAuth(data.user.role);
+            handleAuthSuccess(data);
         } catch {
             setErrors({
                 form: 'Invalid email or password.',
@@ -136,23 +106,17 @@ export const SignIn = () => {
         }
     }
 
-    const handleGoogleCredential = useCallback(
-        async (credential: string) => {
+    const handleGoogleCode = useCallback(
+        async (code: string) => {
             setErrors({});
             setIsLoading(true);
 
             try {
                 const data = await loginWithGoogleRequest({
-                    credential,
+                    code,
                 });
 
-                saveAuthData({
-                    accessToken: data.accessToken,
-                    sessionToken: data.sessionToken,
-                    user: data.user,
-                });
-
-                navigateAfterAuth(data.user.role);
+                handleAuthSuccess(data);
             } catch (error) {
                 setErrors({
                     form:
@@ -164,8 +128,14 @@ export const SignIn = () => {
                 setIsLoading(false);
             }
         },
-        [navigateAfterAuth],
+        [handleAuthSuccess],
     );
+
+    const handleGoogleError = useCallback((message: string) => {
+        setErrors({
+            form: message,
+        });
+    }, []);
 
     return (
         <div className="auth">
@@ -190,9 +160,10 @@ export const SignIn = () => {
                         error={errors.email}
                         autoComplete="email"
                         disabled={isLoading}
-                        onChange={(event) =>
-                            handleEmailChange(event.target.value)
-                        }
+                        onChange={(event) => {
+                            setEmail(event.target.value);
+                            clearFieldError('email');
+                        }}
                     />
 
                     <Input
@@ -204,9 +175,10 @@ export const SignIn = () => {
                         error={errors.password}
                         autoComplete="current-password"
                         disabled={isLoading}
-                        onChange={(event) =>
-                            handlePasswordChange(event.target.value)
-                        }
+                        onChange={(event) => {
+                            setPassword(event.target.value);
+                            clearFieldError('password');
+                        }}
                     />
 
                     {errors.form && (
@@ -224,14 +196,10 @@ export const SignIn = () => {
 
                 <GoogleAuthButton
                     disabled={isLoading}
-                    onCredential={handleGoogleCredential}
-                    onError={(message) => {
-                        setErrors({
-                            form: message,
-                        });
-                    }}
+                    onCode={handleGoogleCode}
+                    onError={handleGoogleError}
                 />
-
+                
                 <div className="auth__footer">
                     <span>Don’t have an account?</span>
 

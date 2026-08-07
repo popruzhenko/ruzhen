@@ -1,4 +1,4 @@
-import type { TagProps } from "../Tag/TypesTag";
+import type { TagProps } from '../Tag/TypesTag';
 
 export interface ClusterCardProps {
     title: string;
@@ -16,6 +16,5 @@ export interface ClusterCardProps {
     onClick?: () => void;
     className?: string;
 }
-
 
 export type BadgeType = 'fact' | 'context' | 'opinion';

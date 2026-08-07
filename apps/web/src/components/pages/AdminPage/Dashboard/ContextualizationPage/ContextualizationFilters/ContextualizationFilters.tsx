@@ -58,7 +58,7 @@ export const ContextualizationFilters = ({
                     variants="secondary"
                     onClick={onClear}
                     disabled={!hasActiveFilters}
-                    leftIcon={<Icon name='trash'></Icon>}
+                    leftIcon={<Icon name="trash"></Icon>}
                 >
                     Clear
                 </Button>
@@ -84,10 +84,7 @@ export const ContextualizationFilters = ({
                         options={statusOptions}
                         value={filters.status}
                         onChange={(value) =>
-                            onChange(
-                                'status',
-                                value as typeof filters.status,
-                            )
+                            onChange('status', value as typeof filters.status)
                         }
                     />
                 </div>

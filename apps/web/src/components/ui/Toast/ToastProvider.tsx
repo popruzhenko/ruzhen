@@ -55,15 +55,9 @@ export const ToastProvider = ({
     );
 
     const viewport = (
-        <div
-            className={`ui-toast__viewport ui-toast__viewport--${position}`}
-        >
+        <div className={`ui-toast__viewport ui-toast__viewport--${position}`}>
             {toasts.map((toast) => (
-                <Toast
-                    key={toast.id}
-                    toast={toast}
-                    onClose={closeToast}
-                />
+                <Toast key={toast.id} toast={toast} onClose={closeToast} />
             ))}
         </div>
     );

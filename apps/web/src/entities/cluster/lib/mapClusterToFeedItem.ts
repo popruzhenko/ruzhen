@@ -12,7 +12,9 @@ export function mapClusterToFeedItem(cluster: ClusterApiItem): ClusterFeedItem {
         title: cluster.title,
         summary: cluster.summary ?? 'No summary available yet.',
         country: cluster.mainCountry ?? 'Unknown',
-        publishedAt: formatClusterDate(cluster.publishedAt ?? cluster.createdAt),
+        publishedAt: formatClusterDate(
+            cluster.publishedAt ?? cluster.createdAt,
+        ),
         tags: cluster.clusterTags?.map((tag) => tag.name) ?? [],
         badges,
         imageUrl: undefined,

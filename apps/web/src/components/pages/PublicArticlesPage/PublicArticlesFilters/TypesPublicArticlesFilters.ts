@@ -1,28 +1,14 @@
 export type PublicArticlesPublishedDateFilter =
-    | 'ALL'
-    | 'TODAY'
-    | 'YESTERDAY'
-    | 'LAST_7_DAYS'
-    | 'LAST_30_DAYS';
+    'ALL' | 'TODAY' | 'YESTERDAY' | 'LAST_7_DAYS' | 'LAST_30_DAYS';
 
 export type PublicArticlesSourceCountFilter =
-    | 'ALL'
-    | 'GTE_2'
-    | 'GTE_3'
-    | 'GTE_5'
-    | 'GTE_10';
+    'ALL' | 'GTE_2' | 'GTE_3' | 'GTE_5' | 'GTE_10';
 
 export type PublicArticlesBlockTypeFilter =
-    | 'ALL'
-    | 'WITH_FACTS'
-    | 'WITH_CONTEXT'
-    | 'WITH_OPINIONS';
+    'ALL' | 'WITH_FACTS' | 'WITH_CONTEXT' | 'WITH_OPINIONS';
 
 export type PublicArticlesSortFilter =
-    | 'NEWEST'
-    | 'OLDEST'
-    | 'MOST_SOURCES'
-    | 'TITLE_ASC';
+    'NEWEST' | 'OLDEST' | 'MOST_SOURCES' | 'TITLE_ASC';
 
 export interface PublicArticlesFiltersState {
     search: string;

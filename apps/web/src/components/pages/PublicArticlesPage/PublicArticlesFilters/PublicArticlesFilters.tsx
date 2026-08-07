@@ -77,7 +77,7 @@ export const PublicArticlesFilters = ({
                     variants="secondary"
                     onClick={onClear}
                     disabled={!hasActiveFilters}
-                    leftIcon={<Icon name='trash'></Icon>}
+                    leftIcon={<Icon name="trash"></Icon>}
                 >
                     Clear
                 </Button>
@@ -100,7 +100,7 @@ export const PublicArticlesFilters = ({
                     <span>Published</span>
 
                     <DropDown
-                        label='Published date'
+                        label="Published date"
                         value={filters.publishedDate}
                         options={publishedDateOptions}
                         onChange={(value) =>
@@ -116,7 +116,7 @@ export const PublicArticlesFilters = ({
                     <span>Sources</span>
 
                     <DropDown
-                        label='Source count'
+                        label="Source count"
                         value={filters.sourceCount}
                         options={sourceCountOptions}
                         onChange={(value) =>
@@ -132,7 +132,7 @@ export const PublicArticlesFilters = ({
                     <span>Blocks</span>
 
                     <DropDown
-                        label='Block type'
+                        label="Block type"
                         value={filters.blockType}
                         options={blockTypeOptions}
                         onChange={(value) =>
@@ -148,7 +148,7 @@ export const PublicArticlesFilters = ({
                     <span>Sort</span>
 
                     <DropDown
-                        label='Sort'
+                        label="Sort"
                         value={filters.sort}
                         options={sortOptions}
                         onChange={(value) =>

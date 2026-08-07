@@ -22,7 +22,13 @@ type AddArticleToClusterInput = {
 };
 
 export async function addArticleToCluster(input: AddArticleToClusterInput) {
-    const { clusterId, articleId, addedByUserId, isPrimary = false, confidence } = input;
+    const {
+        clusterId,
+        articleId,
+        addedByUserId,
+        isPrimary = false,
+        confidence,
+    } = input;
 
     const cluster = await prisma.cluster.findUnique({
         where: { id: clusterId },
@@ -82,7 +88,10 @@ export async function addArticleToCluster(input: AddArticleToClusterInput) {
     return link;
 }
 
-export async function removeArticleFromCluster(clusterId: string, articleId: string) {
+export async function removeArticleFromCluster(
+    clusterId: string,
+    articleId: string,
+) {
     const existingLink = await prisma.clusterArticle.findUnique({
         where: {
             clusterId_articleId: {
@@ -122,10 +131,7 @@ export async function listClusterArticles(clusterId: string) {
 
     const links = await prisma.clusterArticle.findMany({
         where: { clusterId },
-        orderBy: [
-            { isPrimary: 'desc' },
-            { addedAt: 'asc' },
-        ],
+        orderBy: [{ isPrimary: 'desc' }, { addedAt: 'asc' }],
         select: {
             clusterId: true,
             articleId: true,

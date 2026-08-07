@@ -1,9 +1,9 @@
 export function requireEnv(name: string): string {
-  const value = process.env[name];
+    const value = process.env[name];
 
-  if (!value) {
-    throw new Error(`${name} is not defined`);
-  }
+    if (!value) {
+        throw new Error(`${name} is not defined`);
+    }
 
-  return value;
+    return value;
 }

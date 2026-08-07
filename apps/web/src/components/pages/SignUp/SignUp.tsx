@@ -9,7 +9,12 @@ import {
     loginWithGoogleRequest,
     registerRequest,
 } from '../../../features/auth/api/authApi';
+
 import { saveAuthData } from '../../../features/auth/lib/authStorage';
+import {
+    isStrongEnoughPassword,
+    isValidEmail,
+} from '../../../features/auth/lib/authValidation';
 import { GoogleAuthButton } from '../../ui/GoogleAuthButton/GoogleAuthButton';
 
 import '../SignIn/SignIn.scss';
@@ -21,14 +26,6 @@ interface SignUpErrors {
     confirmPassword?: string;
     form?: string;
 }
-
-const isValidEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
-
-const isStrongEnoughPassword = (password: string) => {
-    return /[A-Za-z]/.test(password) && /\d/.test(password);
-};
 
 export const SignUp = () => {
     const navigate = useNavigate();
@@ -117,14 +114,14 @@ export const SignUp = () => {
         }
     }
 
-    const handleGoogleCredential = useCallback(
-        async (credential: string) => {
+    const handleGoogleCode = useCallback(
+        async (code: string) => {
             setErrors({});
             setIsLoading(true);
 
             try {
                 const data = await loginWithGoogleRequest({
-                    credential,
+                    code,
                 });
 
                 saveAuthData({
@@ -147,6 +144,12 @@ export const SignUp = () => {
         },
         [navigate],
     );
+
+    const handleGoogleError = useCallback((message: string) => {
+        setErrors({
+            form: message,
+        });
+    }, []);
 
     return (
         <div className="auth">
@@ -237,12 +240,8 @@ export const SignUp = () => {
 
                 <GoogleAuthButton
                     disabled={isLoading}
-                    onCredential={handleGoogleCredential}
-                    onError={(message) => {
-                        setErrors({
-                            form: message,
-                        });
-                    }}
+                    onCode={handleGoogleCode}
+                    onError={handleGoogleError}
                 />
 
                 <div className="auth__footer">

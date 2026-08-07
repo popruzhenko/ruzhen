@@ -1,9 +1,6 @@
 import { apiClient } from '../../../shared/api/client';
 
-import type {
-    GetClustersApiResponse,
-    GetClustersParams,
-} from '../model/types';
+import type { GetClustersApiResponse, GetClustersParams } from '../model/types';
 
 export async function getClusters(
     params: GetClustersParams = {},

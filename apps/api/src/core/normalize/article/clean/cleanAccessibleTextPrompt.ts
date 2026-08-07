@@ -1,9 +1,9 @@
 export interface AccessibleTextCleanerInput {
-  title?: string | null;
-  summary?: string | null;
-  rawAccessibleText?: string | null;
-  sourceName?: string | null;
-  url?: string | null;
+    title?: string | null;
+    summary?: string | null;
+    rawAccessibleText?: string | null;
+    sourceName?: string | null;
+    url?: string | null;
 }
 
 export const CLEAN_ACCESSIBLE_TEXT_SYSTEM_PROMPT = `
@@ -22,27 +22,27 @@ Rules:
 `.trim();
 
 function normalizeBlock(value?: string | null): string {
-  return value?.trim() ?? '';
+    return value?.trim() ?? '';
 }
 
 export function buildCleanAccessibleTextUserPrompt(
-  input: AccessibleTextCleanerInput,
+    input: AccessibleTextCleanerInput,
 ): string {
-  const title = normalizeBlock(input.title);
-  const summary = normalizeBlock(input.summary);
-  const rawAccessibleText = normalizeBlock(input.rawAccessibleText);
-  const sourceName = normalizeBlock(input.sourceName);
-  const url = normalizeBlock(input.url);
+    const title = normalizeBlock(input.title);
+    const summary = normalizeBlock(input.summary);
+    const rawAccessibleText = normalizeBlock(input.rawAccessibleText);
+    const sourceName = normalizeBlock(input.sourceName);
+    const url = normalizeBlock(input.url);
 
-  return [
-    sourceName ? `SOURCE_NAME:\n${sourceName}` : '',
-    url ? `URL:\n${url}` : '',
-    title ? `TITLE:\n${title}` : '',
-    summary ? `SUMMARY:\n${summary}` : '',
-    rawAccessibleText ? `ACCESSIBLE_FRAGMENT:\n${rawAccessibleText}` : '',
-    'Extract the full text of an article from a new site based on the following metadata:'
-  ]
-    .filter(Boolean)
-    .join('\n\n')
-    .trim();
+    return [
+        sourceName ? `SOURCE_NAME:\n${sourceName}` : '',
+        url ? `URL:\n${url}` : '',
+        title ? `TITLE:\n${title}` : '',
+        summary ? `SUMMARY:\n${summary}` : '',
+        rawAccessibleText ? `ACCESSIBLE_FRAGMENT:\n${rawAccessibleText}` : '',
+        'Extract the full text of an article from a new site based on the following metadata:',
+    ]
+        .filter(Boolean)
+        .join('\n\n')
+        .trim();
 }

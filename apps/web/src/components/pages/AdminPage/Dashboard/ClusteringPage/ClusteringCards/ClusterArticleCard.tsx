@@ -7,7 +7,6 @@ export const ClusterArticleCard = ({
     isSelected,
     onToggle,
 }: ClusterArticleCardProps) => {
-
     const similarityToCentroid = article.similarityToCentroid as number;
 
     return (
@@ -25,9 +24,7 @@ export const ClusterArticleCard = ({
                         {article.title}
                     </strong>
 
-                    {article.isPrimary && (
-                        <Badge type='primary' />
-                    )}
+                    {article.isPrimary && <Badge type="primary" />}
                 </div>
 
                 <span className="cluster_article_card__id">
@@ -39,7 +36,13 @@ export const ClusterArticleCard = ({
                 </span>
             </div>
 
-            <b className={similarityToCentroid >= 0.75 ? "article_candidate_card__similarity_green" : "article_candidate_card__similarity_red"}>
+            <b
+                className={
+                    similarityToCentroid >= 0.75
+                        ? 'article_candidate_card__similarity_green'
+                        : 'article_candidate_card__similarity_red'
+                }
+            >
                 {similarityToCentroid !== null
                     ? similarityToCentroid.toFixed(3)
                     : '—'}

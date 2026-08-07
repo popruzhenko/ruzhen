@@ -102,87 +102,81 @@ export const Header = ({
                 className,
             ])}
         >
-            {variant === 'admin' && (
-                <div className="ui-header__empty-block" />
-            )}
-                <div className="ui-header__inner">
-                    <div className="ui-header__left">
-                        <RouterLink to={brandTo} className="ui-header__brand">
-                            <span className="ui-header__brand-text">
-                                RUZHEN
-                            </span>
-                        </RouterLink>
-                    </div>
+            {variant === 'admin' && <div className="ui-header__empty-block" />}
+            <div className="ui-header__inner">
+                <div className="ui-header__left">
+                    <RouterLink to={brandTo} className="ui-header__brand">
+                        <span className="ui-header__brand-text">RUZHEN</span>
+                    </RouterLink>
+                </div>
 
-                    <nav
-                        className="ui-header__nav"
-                        aria-label="Main navigation"
-                    >
-                        {navItems.map((item) => {
-                            const navClassName = classesJoined([
-                                'ui-header__nav-item',
-                                item.isActive &&
-                                    'ui-header__nav-item--active',
-                            ]);
+                <nav className="ui-header__nav" aria-label="Main navigation">
+                    {navItems.map((item) => {
+                        const navClassName = classesJoined([
+                            'ui-header__nav-item',
+                            item.isActive && 'ui-header__nav-item--active',
+                        ]);
 
-                            if (item.to) {
-                                return (
-                                    <RouterLink
-                                        key={item.label}
-                                        to={item.to}
-                                        className={navClassName}
-                                    >
-                                        {item.label}
-                                    </RouterLink>
-                                );
-                            }
-
-                            if (item.href) {
-                                return (
-                                    <a
-                                        key={item.label}
-                                        href={item.href}
-                                        className={navClassName}
-                                    >
-                                        {item.label}
-                                    </a>
-                                );
-                            }
-
+                        if (item.to) {
                             return (
-                                <Button
+                                <RouterLink
                                     key={item.label}
-                                    type="button"
+                                    to={item.to}
                                     className={navClassName}
-                                    onClick={item.onClick}
                                 >
                                     {item.label}
-                                </Button>
+                                </RouterLink>
                             );
-                        })}
-                    </nav>
+                        }
 
-                    <div className="ui-header__right">
-                        {variant === 'public' && (
+                        if (item.href) {
+                            return (
+                                <a
+                                    key={item.label}
+                                    href={item.href}
+                                    className={navClassName}
+                                >
+                                    {item.label}
+                                </a>
+                            );
+                        }
+
+                        return (
                             <Button
+                                key={item.label}
                                 type="button"
-                                className="ui-header__login-button"
-                                onClick={handleLoginClick}
+                                className={navClassName}
+                                onClick={item.onClick}
                             >
-                                Log in
+                                {item.label}
                             </Button>
-                        )}
+                        );
+                    })}
+                </nav>
 
-                        {(variant === 'user' || variant === 'admin') && (
-                            <DropDown
-                                type="account_menu"
-                                accountVariant={variant === 'admin' ? 'admin' : 'user'}
-                                label={userName}
-                                options={accountOptions}
-                            />
-                        )}
-                    </div>
+                <div className="ui-header__right">
+                    {variant === 'public' && (
+                        <Button
+                            type="button"
+                            className="ui-header__login-button"
+                            onClick={handleLoginClick}
+                        >
+                            Log in
+                        </Button>
+                    )}
+
+                    {(variant === 'user' || variant === 'admin') && (
+                        <DropDown
+                            type="account_menu"
+                            accountVariant={
+                                variant === 'admin' ? 'admin' : 'user'
+                            }
+                            label={userName}
+                            options={accountOptions}
+                        />
+                    )}
                 </div>
+            </div>
         </header>
     );
 };

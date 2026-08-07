@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
     getPublishedClusterByHumanIdHandler,
-    listPublishedClustersHandler
+    listPublishedClustersHandler,
 } from '../controllers/cluster.controller';
 
 const publicClusterRouter = Router();

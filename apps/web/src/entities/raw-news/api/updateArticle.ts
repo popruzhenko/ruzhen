@@ -8,7 +8,14 @@ export interface UpdateArticlePayload {
     content?: string;
     preview?: string;
     cleanedAccessibleText?: string;
-    status?: 'NEW' | 'NEEDS_REVIEW' | 'REVIEWED' | 'EMBEDDED' | 'CLUSTERED' | 'APPROVED' | 'REJECTED';
+    status?:
+        | 'NEW'
+        | 'NEEDS_REVIEW'
+        | 'REVIEWED'
+        | 'EMBEDDED'
+        | 'CLUSTERED'
+        | 'APPROVED'
+        | 'REJECTED';
 }
 
 export async function updateArticle(

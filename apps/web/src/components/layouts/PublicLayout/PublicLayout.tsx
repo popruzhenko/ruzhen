@@ -24,23 +24,18 @@ const publicNavItems = [
     },
     {
         label: 'Privacy Policy',
-        to: '/privacy'
-    }
+        to: '/privacy',
+    },
 ];
 
 export const PublicLayout = ({ children }: PublicLayoutProps) => {
     return (
         <main className="public-layout">
-            <Header
-                variant="public"
-                navItems={publicNavItems}
-            />
+            <Header variant="public" navItems={publicNavItems} />
 
-            <div className="public-layout__content">
-                {children}
-            </div>
+            <div className="public-layout__content">{children}</div>
 
-            <Footer  basePath="" />
+            <Footer basePath="" />
         </main>
     );
 };

@@ -37,7 +37,7 @@ export const Neutral: Story = {
 export const Other: Story = {
     args: { type: 'other', children: 'Custom Label' },
 };
-    
+
 export const New: Story = {
     args: { type: 'new' },
 };
@@ -83,7 +83,14 @@ export const Primary: Story = {
 };
 
 export const All = () => (
-    <div style={{ display: 'flex', gap: 8 , flexDirection: 'column', width: 'max-content'}}>
+    <div
+        style={{
+            display: 'flex',
+            gap: 8,
+            flexDirection: 'column',
+            width: 'max-content',
+        }}
+    >
         <Badge type="fact" />
         <Badge type="context" />
         <Badge type="opinion" />
@@ -105,7 +112,7 @@ export const All = () => (
         <Badge type="pending" />
         <Badge type="primary" />
         <Badge type="published" />
-        <Badge type="draft"/>
-        <Badge type="archived"/>
+        <Badge type="draft" />
+        <Badge type="archived" />
     </div>
 );

@@ -14,9 +14,7 @@ import { requireEnv } from '../../../shared/lib/requireEnv';
 import { OpenAiAnalyzedNewsProvider } from '../../../core/contextualization/openAiAnalyzedNewsProvider';
 import { generateAnalyzedNewsForCluster } from '../../../core/contextualization/generateAnalyzedNewsForCluster';
 
-import {
-    BlockType,
-    OpinionStance } from '@prisma/client';
+import { BlockType, OpinionStance } from '@prisma/client';
 
 import { saveContextDraft } from '../services/cluster-block.service';
 
@@ -149,7 +147,7 @@ export async function generateAnalyzedNewsHandler(
 
 export async function createClusterBlockHandler(
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
 ) {
     try {
         if (!req.user) {
@@ -210,7 +208,7 @@ export async function createClusterBlockHandler(
 
 export async function updateClusterBlockHandler(
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
 ) {
     try {
         const blockId = req.params.id as string;
@@ -234,7 +232,7 @@ export async function updateClusterBlockHandler(
 
 export async function deleteClusterBlockHandler(
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
 ) {
     try {
         const blockId = req.params.id as string;
@@ -256,7 +254,7 @@ export async function deleteClusterBlockHandler(
 
 export async function getClusterBlockByIdHandler(
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
 ) {
     try {
         const blockId = req.params.id as string;
@@ -278,7 +276,7 @@ export async function getClusterBlockByIdHandler(
 
 export async function listClusterBlocksHandler(
     req: AuthenticatedRequest,
-    res: Response
+    res: Response,
 ) {
     try {
         const clusterId = req.params.clusterId as string;

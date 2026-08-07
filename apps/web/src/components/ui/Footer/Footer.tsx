@@ -46,10 +46,7 @@ export const Footer = ({ className, basePath = '' }: FooterProps) => {
                     </p>
                 </div>
 
-                <nav
-                    className="ui-footer__nav"
-                    aria-label="Footer navigation"
-                >
+                <nav className="ui-footer__nav" aria-label="Footer navigation">
                     {footerLinks.map((link) => (
                         <RouterLink key={link.to} to={link.to}>
                             {link.label}

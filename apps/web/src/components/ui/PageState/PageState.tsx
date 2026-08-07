@@ -37,19 +37,13 @@ export const PageState = ({
             </div>
 
             {eyebrow && (
-                <span className="ui-page-state__eyebrow">
-                    {eyebrow}
-                </span>
+                <span className="ui-page-state__eyebrow">{eyebrow}</span>
             )}
 
-            <h1 className="ui-page-state__title">
-                {title}
-            </h1>
+            <h1 className="ui-page-state__title">{title}</h1>
 
             {description && (
-                <p className="ui-page-state__description">
-                    {description}
-                </p>
+                <p className="ui-page-state__description">{description}</p>
             )}
 
             {hasAction && actionTo && (
@@ -57,9 +51,7 @@ export const PageState = ({
                     to={actionTo}
                     className="ui-page-state__action-link"
                 >
-                    <Button variants="primary">
-                        {actionLabel}
-                    </Button>
+                    <Button variants="primary">{actionLabel}</Button>
                 </RouterLink>
             )}
 

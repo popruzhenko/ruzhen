@@ -40,8 +40,13 @@ export const ArticleCandidateCard = ({
                         Needs embedding
                     </span>
                 ) : (
-                    
-                    <b className={similarityToCluster >= 0.75 ? "article_candidate_card__similarity_green" : "article_candidate_card__similarity_red"}>
+                    <b
+                        className={
+                            similarityToCluster >= 0.75
+                                ? 'article_candidate_card__similarity_green'
+                                : 'article_candidate_card__similarity_red'
+                        }
+                    >
                         {similarityToCluster?.toFixed(3) ?? '—'}
                     </b>
                 )}

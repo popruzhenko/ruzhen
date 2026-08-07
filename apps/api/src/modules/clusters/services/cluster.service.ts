@@ -1,5 +1,10 @@
 import 'dotenv/config';
-import { PrismaClient, ClusterStatus, ArticleStatus, ClusterArticleMethod } from '@prisma/client';
+import {
+    PrismaClient,
+    ClusterStatus,
+    ArticleStatus,
+    ClusterArticleMethod,
+} from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
@@ -205,7 +210,7 @@ export async function createCluster(input: CreateClusterInput) {
 
     if (!title || title.trim().length < 5) {
         throw new Error(
-            'Title is required and must be at least 5 characters long'
+            'Title is required and must be at least 5 characters long',
         );
     }
 
@@ -424,13 +429,14 @@ export async function listClusters(input: ListClustersInput) {
     };
 }
 
-export async function updateCluster(id: string,
+export async function updateCluster(
+    id: string,
     data: {
         title?: string;
         summary?: string;
         mainCountry?: string;
         status?: ClusterStatus;
-    }
+    },
 ) {
     const cluster = await prisma.cluster.update({
         where: { id },
@@ -572,13 +578,12 @@ export async function createClusterFromArticles(
 
     const resolvedMainCountry = null;
 
-    const resolvedStartDate =
-        startDate
-            ? new Date(startDate)
-            : articles
-                  .map((article) => article.publishedAt)
-                  .filter((date): date is Date => date !== null)
-                  .sort((a, b) => a.getTime() - b.getTime())[0] ?? null;
+    const resolvedStartDate = startDate
+        ? new Date(startDate)
+        : (articles
+              .map((article) => article.publishedAt)
+              .filter((date): date is Date => date !== null)
+              .sort((a, b) => a.getTime() - b.getTime())[0] ?? null);
 
     const cluster = await prisma.$transaction(async (tx) => {
         const createdCluster = await tx.cluster.create({
@@ -691,7 +696,9 @@ export async function updateClusterStatus(
         }
 
         if (facts.length === 0) {
-            errors.push('At least one fact block is required before publishing.');
+            errors.push(
+                'At least one fact block is required before publishing.',
+            );
         }
 
         if (context.length === 0) {
@@ -701,7 +708,9 @@ export async function updateClusterStatus(
         }
 
         if (hasEmptyBlockContent) {
-            errors.push('All semantic blocks must have content before publishing.');
+            errors.push(
+                'All semantic blocks must have content before publishing.',
+            );
         }
 
         if (errors.length > 0) {
@@ -755,10 +764,7 @@ const normalizePagination = (page: number, limit: number) => {
 };
 
 export async function listPublishedClusters(input: ListPublishedClustersInput) {
-    const { page, limit, skip } = normalizePagination(
-        input.page,
-        input.limit,
-    );
+    const { page, limit, skip } = normalizePagination(input.page, input.limit);
 
     const where = {
         status: ClusterStatus.PUBLISHED,

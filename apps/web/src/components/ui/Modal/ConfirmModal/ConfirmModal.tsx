@@ -37,7 +37,9 @@ export const ConfirmModal = ({
 
                     <Button
                         type="button"
-                        variants={variant === 'danger' ? 'secondary' : 'primary'}
+                        variants={
+                            variant === 'danger' ? 'secondary' : 'primary'
+                        }
                         onClick={onConfirm}
                         disabled={isLoading}
                     >

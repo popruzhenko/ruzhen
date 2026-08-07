@@ -39,8 +39,4 @@ export interface ClusterListItem {
     averageSimilarity: number;
 }
 
-export type ClusteringArticleStatus =
-    | 'APPROVED'
-    | 'EMBEDDED'
-    | 'CLUSTERED';
-
+export type ClusteringArticleStatus = 'APPROVED' | 'EMBEDDED' | 'CLUSTERED';

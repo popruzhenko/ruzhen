@@ -9,9 +9,7 @@ export const PrivacyPolicyPage = () => {
         <ReadableLayout>
             <div className="static-page">
                 <section className="static-page__hero">
-                    <span className="static-page__eyebrow">
-                        Privacy Policy
-                    </span>
+                    <span className="static-page__eyebrow">Privacy Policy</span>
 
                     <h1>Privacy Policy for Ruzhen.</h1>
 
@@ -45,9 +43,7 @@ export const PrivacyPolicyPage = () => {
                 <section className="static-page__section">
                     <h2>2. What data we collect</h2>
 
-                    <p>
-                        Ruzhen may collect and process the following data:
-                    </p>
+                    <p>Ruzhen may collect and process the following data:</p>
 
                     <ul className="static-page__list">
                         <li>
@@ -86,11 +82,21 @@ export const PrivacyPolicyPage = () => {
                     <ul className="static-page__list">
                         <li>creating and maintaining user accounts;</li>
                         <li>authenticating users and protecting sessions;</li>
-                        <li>publishing and managing structured news materials;</li>
+                        <li>
+                            publishing and managing structured news materials;
+                        </li>
                         <li>receiving and responding to contact messages;</li>
-                        <li>reviewing corrections, source suggestions and partnership requests;</li>
-                        <li>protecting the platform from abuse, spam and unauthorized access;</li>
-                        <li>improving reliability, usability and performance.</li>
+                        <li>
+                            reviewing corrections, source suggestions and
+                            partnership requests;
+                        </li>
+                        <li>
+                            protecting the platform from abuse, spam and
+                            unauthorized access;
+                        </li>
+                        <li>
+                            improving reliability, usability and performance.
+                        </li>
                     </ul>
                 </section>
 
@@ -129,9 +135,7 @@ export const PrivacyPolicyPage = () => {
                 <section className="static-page__section">
                     <h2>6. Data sharing</h2>
 
-                    <p>
-                        Ruzhen does not sell personal data.
-                    </p>
+                    <p>Ruzhen does not sell personal data.</p>
 
                     <p>
                         We may share limited data with service providers that

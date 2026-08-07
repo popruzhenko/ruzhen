@@ -78,7 +78,10 @@
 
     &__body {
         display: grid;
-        grid-template-columns: minmax(260px, 1.7fr) minmax(130px, 160px) minmax(130px, 160px) minmax(150px, 180px) minmax(150px, 180px) auto auto;
+        grid-template-columns: minmax(260px, 1.7fr) minmax(130px, 160px) minmax(
+                130px,
+                160px
+            ) minmax(150px, 180px) minmax(150px, 180px) auto auto;
         align-items: end;
         gap: 12px;
     }

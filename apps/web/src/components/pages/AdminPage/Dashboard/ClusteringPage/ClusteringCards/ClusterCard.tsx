@@ -14,9 +14,7 @@ export const ClusterCard = ({
         >
             <span className="cluster_card__id">ID: {cluster.id}</span>
 
-            <strong className="cluster_card__title">
-                {cluster.title}
-            </strong>
+            <strong className="cluster_card__title">{cluster.title}</strong>
 
             <small className="cluster_card__meta">
                 {cluster.articlesCount} articles

@@ -33,7 +33,6 @@ app.use('/api/clusters', publicClusterArticleRouter);
 app.use('/api/articles', publicArticleRouter);
 app.use('/api/public/contact', publicContactRouter);
 
-
 app.use('/api/public/clusters', publicClusterRouter);
 app.use('/api/public/clusters', publicClusterBlockRouter);
 app.use('/api/public/clusters', publicClusterArticleRouter);

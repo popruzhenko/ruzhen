@@ -418,11 +418,15 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                         Cleaned
                     </Badge>
 
-                    <Badge type={article.pipeline.embedded ? 'done' : 'pending'}>
+                    <Badge
+                        type={article.pipeline.embedded ? 'done' : 'pending'}
+                    >
                         Embedded
                     </Badge>
 
-                    <Badge type={article.pipeline.clustered ? 'done' : 'pending'}>
+                    <Badge
+                        type={article.pipeline.clustered ? 'done' : 'pending'}
+                    >
                         Clustered
                     </Badge>
                 </div>

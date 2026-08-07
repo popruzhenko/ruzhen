@@ -5,7 +5,5 @@ import type { GetPublicClusterByHumanIdResponse } from '../model/types';
 export async function getPublicClusterByHumanId(
     humanId: string,
 ): Promise<GetPublicClusterByHumanIdResponse> {
-    return apiClient<GetPublicClusterByHumanIdResponse>(
-        `/clusters/${humanId}`,
-    );
+    return apiClient<GetPublicClusterByHumanIdResponse>(`/clusters/${humanId}`);
 }

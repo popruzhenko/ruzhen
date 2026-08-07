@@ -6,8 +6,17 @@ import { fetchNewArticlesHandler } from '../controller/article.controller';
 
 const adminArticleRouter = Router();
 
-adminArticleRouter.post('/generate-embeddings', requireAuth, requireAdmin, generateArticleEmbeddingsHandler);
-adminArticleRouter.post('/fetch-new', requireAuth, requireAdmin, fetchNewArticlesHandler);
-
+adminArticleRouter.post(
+    '/generate-embeddings',
+    requireAuth,
+    requireAdmin,
+    generateArticleEmbeddingsHandler,
+);
+adminArticleRouter.post(
+    '/fetch-new',
+    requireAuth,
+    requireAdmin,
+    fetchNewArticlesHandler,
+);
 
 export default adminArticleRouter;

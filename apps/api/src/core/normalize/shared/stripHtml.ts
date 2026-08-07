@@ -1,3 +1,3 @@
 export function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, ' ');
+    return html.replace(/<[^>]*>/g, ' ');
 }

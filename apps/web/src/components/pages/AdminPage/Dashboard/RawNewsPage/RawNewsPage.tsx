@@ -219,10 +219,7 @@ export const RawNewsPage = () => {
             ) : (
                 <div className="raw_news__list">
                     {filteredArticles.map((article) => (
-                        <RawArticleCard
-                            key={article.id}
-                            article={article}
-                        />
+                        <RawArticleCard key={article.id} article={article} />
                     ))}
                 </div>
             )}

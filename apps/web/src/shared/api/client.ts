@@ -40,9 +40,7 @@ export async function apiClient<T>(
         ...restOptions,
         headers: {
             'Content-Type': 'application/json',
-            ...(accessToken
-                ? { Authorization: `Bearer ${accessToken}` }
-                : {}),
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
             ...headers,
         },
         body: json !== undefined ? JSON.stringify(json) : restOptions.body,

@@ -29,11 +29,7 @@ export const ClusterBlock = ({
             ])}
         >
             <div className="ui-cluster-block__top">
-                {title && (
-                    <h3 className="ui-cluster-block__title">
-                        {title}
-                    </h3>
-                )}
+                {title && <h3 className="ui-cluster-block__title">{title}</h3>}
 
                 {normalizedType === 'opinion' && stance && (
                     <Badge type={stance.toLowerCase() as BadgeVariants}>
@@ -42,9 +38,7 @@ export const ClusterBlock = ({
                 )}
             </div>
 
-            <p className="ui-cluster-block__content">
-                {content}
-            </p>
+            <p className="ui-cluster-block__content">{content}</p>
 
             {sourceName && (
                 <div className="ui-cluster-block__source">

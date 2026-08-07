@@ -24,21 +24,16 @@ const userNavItems = [
     },
     {
         label: 'Privacy Policy',
-        to: '/privacy'
-    }
+        to: '/privacy',
+    },
 ];
 
 export const UserLayout = ({ children }: UserLayoutProps) => {
     return (
         <div className="user-layout">
-            <Header
-                variant="user"
-                navItems={userNavItems}
-            />
+            <Header variant="user" navItems={userNavItems} />
 
-            <main className="user-layout__content">
-                {children}
-            </main>
+            <main className="user-layout__content">{children}</main>
 
             <Footer basePath="/user" />
         </div>

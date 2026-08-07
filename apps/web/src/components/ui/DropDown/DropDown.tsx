@@ -104,9 +104,7 @@ export const DropDown: React.FC<DropDownProps> = ({
         : 'ui-dropdown__options';
 
     const arrowColor =
-        isAccountMenu && accountVariant === 'admin'
-            ? '#ffffff'
-            : '#475569';
+        isAccountMenu && accountVariant === 'admin' ? '#ffffff' : '#475569';
 
     return (
         <div className={rootClasses} ref={rootRef}>

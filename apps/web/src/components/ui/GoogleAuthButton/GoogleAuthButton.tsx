@@ -3,40 +3,34 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '../Button/Button';
 import { Icon } from '../Icon/Icon';
 
+import './GoogleAuthButton.scss';
+
 interface GoogleAuthButtonProps {
     disabled?: boolean;
-    onCredential: (credential: string) => void;
+    onCode: (code: string) => void;
     onError?: (message: string) => void;
 }
 
-interface GoogleCredentialResponse {
-    credential?: string;
+interface GoogleCodeResponse {
+    code?: string;
+    error?: string;
 }
 
-interface GooglePromptMomentNotification {
-    isNotDisplayed: () => boolean;
-    isSkippedMoment: () => boolean;
-    getNotDisplayedReason: () => string;
-    getSkippedReason: () => string;
+interface GoogleCodeClient {
+    requestCode: () => void;
 }
 
 declare global {
     interface Window {
         google?: {
-            accounts: {
-                id: {
-                    initialize: (config: {
+            accounts?: {
+                oauth2?: {
+                    initCodeClient: (config: {
                         client_id: string;
-                        callback: (
-                            response: GoogleCredentialResponse,
-                        ) => void;
-                    }) => void;
-                    prompt: (
-                        momentListener?: (
-                            notification: GooglePromptMomentNotification,
-                        ) => void,
-                    ) => void;
-                    cancel: () => void;
+                        scope: string;
+                        ux_mode: 'popup';
+                        callback: (response: GoogleCodeResponse) => void;
+                    }) => GoogleCodeClient;
                 };
             };
         };
@@ -70,13 +64,43 @@ const loadGoogleScript = () => {
     });
 };
 
+const waitForGoogleOAuth = () => {
+    return new Promise<void>((resolve, reject) => {
+        let attempts = 0;
+        const maxAttempts = 30;
+
+        const intervalId = window.setInterval(() => {
+            attempts += 1;
+
+            if (window.google?.accounts?.oauth2) {
+                window.clearInterval(intervalId);
+                resolve();
+                return;
+            }
+
+            if (attempts >= maxAttempts) {
+                window.clearInterval(intervalId);
+                reject(new Error('Google OAuth service is not available.'));
+            }
+        }, 100);
+    });
+};
+
 export const GoogleAuthButton = ({
     disabled = false,
-    onCredential,
+    onCode,
     onError,
 }: GoogleAuthButtonProps) => {
     const [isReady, setIsReady] = useState(false);
-    const isInitializedRef = useRef(false);
+
+    const codeClientRef = useRef<GoogleCodeClient | null>(null);
+    const onCodeRef = useRef(onCode);
+    const onErrorRef = useRef(onError);
+
+    useEffect(() => {
+        onCodeRef.current = onCode;
+        onErrorRef.current = onError;
+    }, [onCode, onError]);
 
     useEffect(() => {
         const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as
@@ -84,91 +108,91 @@ export const GoogleAuthButton = ({
             | undefined;
 
         if (!googleClientId) {
-            onError?.('Google client id is not configured.');
+            onErrorRef.current?.('Google client id is not configured.');
             return;
         }
 
+        const checkedGoogleClientId = googleClientId;
+
         let isMounted = true;
 
-        loadGoogleScript()
-            .then(() => {
+        async function initializeGoogleAuth() {
+            try {
+                await loadGoogleScript();
+                await waitForGoogleOAuth();
+
                 if (!isMounted) return;
 
-                if (!window.google) {
-                    throw new Error(
-                        'Google Identity Services is not available.',
-                    );
+                const googleOAuth = window.google?.accounts?.oauth2;
+
+                if (!googleOAuth) {
+                    throw new Error('Google OAuth service is not available.');
                 }
 
-                if (!isInitializedRef.current) {
-                    window.google.accounts.id.initialize({
-                        client_id: googleClientId,
-                        callback: (response) => {
-                            if (!response.credential) {
-                                onError?.(
-                                    'Google credential was not returned.',
-                                );
-                                return;
-                            }
+                codeClientRef.current = googleOAuth.initCodeClient({
+                    client_id: checkedGoogleClientId,
+                    scope: 'openid email profile',
+                    ux_mode: 'popup',
+                    callback: (response) => {
+                        if (response.error) {
+                            onErrorRef.current?.(
+                                `Google login failed: ${response.error}`,
+                            );
+                            return;
+                        }
 
-                            onCredential(response.credential);
-                        },
-                    });
+                        if (!response.code) {
+                            onErrorRef.current?.(
+                                'Google authorization code was not returned.',
+                            );
+                            return;
+                        }
 
-                    isInitializedRef.current = true;
-                }
+                        onCodeRef.current(response.code);
+                    },
+                });
 
                 setIsReady(true);
-            })
-            .catch((error) => {
-                onError?.(
+            } catch (error) {
+                onErrorRef.current?.(
                     error instanceof Error
                         ? error.message
                         : 'Failed to initialize Google login.',
                 );
-            });
+            }
+        }
+
+        initializeGoogleAuth();
 
         return () => {
             isMounted = false;
         };
-    }, [onCredential, onError]);
+    }, []);
 
     const handleClick = () => {
         if (disabled) {
             return;
         }
 
-        if (!isReady || !window.google) {
-            onError?.('Google login is not ready yet.');
+        if (!isReady || !codeClientRef.current) {
+            onErrorRef.current?.('Google login is not ready yet.');
             return;
         }
 
-        window.google.accounts.id.prompt((notification) => {
-            if (notification.isNotDisplayed()) {
-                onError?.(
-                    `Google login was not displayed: ${notification.getNotDisplayedReason()}`,
-                );
-                return;
-            }
-
-            if (notification.isSkippedMoment()) {
-                onError?.(
-                    `Google login was skipped: ${notification.getSkippedReason()}`,
-                );
-            }
-        });
+        codeClientRef.current.requestCode();
     };
 
     return (
-        <Button
-            type="button"
-            variants="secondary"
-            disabled={disabled || !isReady}
-            leftIcon={<Icon name="google" size={18} />}
-            onClick={handleClick}
-            className='google-auth-button'
-        >
-            Continue with Google
-        </Button>
+        <div className="google-auth-button">
+            <Button
+                type="button"
+                variants="secondary"
+                disabled={disabled || !isReady}
+                leftIcon={<Icon name="google" size={18} />}
+                onClick={handleClick}
+            >
+                Continue with Google
+            </Button>
+        </div>
     );
 };

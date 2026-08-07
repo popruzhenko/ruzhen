@@ -138,7 +138,7 @@
         align-items: center;
         flex-direction: row;
     }
-    
+
     &__link {
         display: flex;
         margin-top: auto;
@@ -148,16 +148,15 @@
         flex-direction: row;
         gap: 8px;
     }
-    
 }
-
 
 .review_modal__fields {
     display: flex;
     flex-direction: column;
     margin-top: 10px;
 
-    input, textarea {
+    input,
+    textarea {
         font-weight: normal;
     }
 }

@@ -78,7 +78,6 @@ export const PublicArticleDetailsPage = () => {
     if (publicClusterQuery.isError) {
         return (
             <PublicLayout>
-
                 <div className="public-article-details__container">
                     <PageState
                         variant="error"
@@ -95,7 +94,6 @@ export const PublicArticleDetailsPage = () => {
     if (!cluster) {
         return (
             <PublicLayout>
-
                 <div className="public-article-details__container">
                     <PageState
                         variant="not-found"
@@ -112,7 +110,6 @@ export const PublicArticleDetailsPage = () => {
 
     return (
         <PublicLayout>
-
             <div className="public-article-details__container">
                 <RouterLink
                     to="/articles"
@@ -278,7 +275,7 @@ export const PublicArticleDetailsPage = () => {
                         </section>
                     </aside>
                 </article>
-            </div>        
+            </div>
         </PublicLayout>
     );
 };

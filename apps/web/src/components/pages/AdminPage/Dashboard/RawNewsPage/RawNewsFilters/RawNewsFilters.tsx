@@ -49,9 +49,7 @@ export const RawNewsFilters = ({
                 <div>
                     <h2>Filters</h2>
 
-                    <p>
-                        Find, review and prepare raw articles for clustering.
-                    </p>
+                    <p>Find, review and prepare raw articles for clustering.</p>
 
                     <span className="raw_news_filters__counter">
                         Showing {filteredCount} of {totalCount} articles
@@ -90,10 +88,7 @@ export const RawNewsFilters = ({
                         options={statusOptions}
                         value={filters.status}
                         onChange={(value) =>
-                            onChange(
-                                'status',
-                                value as typeof filters.status,
-                            )
+                            onChange('status', value as typeof filters.status)
                         }
                     />
                 </div>
@@ -158,7 +153,7 @@ export const RawNewsFilters = ({
                     variants="secondary"
                     onClick={onClear}
                     disabled={!hasActiveFilters}
-                    leftIcon={<Icon name='trash'></Icon>}
+                    leftIcon={<Icon name="trash"></Icon>}
                 >
                     Clear
                 </Button>

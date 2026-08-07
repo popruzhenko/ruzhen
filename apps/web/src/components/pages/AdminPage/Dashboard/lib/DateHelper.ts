@@ -1,4 +1,4 @@
-import { type RawNewsDateFilter } from '../RawNewsPage/RawNewsFilters/TypesRawNewsFilters'
+import { type RawNewsDateFilter } from '../RawNewsPage/RawNewsFilters/TypesRawNewsFilters';
 
 const getStartOfDay = (date: Date) => {
     const start = new Date(date);
@@ -34,8 +34,7 @@ export const isDateInFetchedRange = (
 
     if (filter === 'TODAY') {
         return (
-            articleDate >= getStartOfDay(now) &&
-            articleDate <= getEndOfDay(now)
+            articleDate >= getStartOfDay(now) && articleDate <= getEndOfDay(now)
         );
     }
 

@@ -1,4 +1,4 @@
-import { apiClient } from "../../../shared/api/client";
+import { apiClient } from '../../../shared/api/client';
 
 export type ContextBlockType = 'FACT' | 'CONTEXT' | 'OPINION';
 export type OpinionStance = 'PRO' | 'CONTRA' | 'NEUTRAL';

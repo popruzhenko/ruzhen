@@ -132,7 +132,7 @@ type UpdateClusterBlockInput = {
 
 export async function updateClusterBlock(
     input: UpdateClusterBlockInput,
-    blockId: string
+    blockId: string,
 ) {
     const existingBlock = await prisma.clusterBlock.findUnique({
         where: { id: blockId },

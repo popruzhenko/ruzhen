@@ -1,10 +1,5 @@
 export type PageStateVariant =
-    | 'loading'
-    | 'empty'
-    | 'error'
-    | 'not-found'
-    | 'unauthorized'
-    | 'forbidden';
+    'loading' | 'empty' | 'error' | 'not-found' | 'unauthorized' | 'forbidden';
 
 export interface PageStateProps {
     variant?: PageStateVariant;

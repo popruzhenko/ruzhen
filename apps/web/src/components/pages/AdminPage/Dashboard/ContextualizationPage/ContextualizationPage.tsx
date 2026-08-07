@@ -31,12 +31,7 @@ type ContextBlockType = 'FACT' | 'CONTEXT' | 'OPINION';
 type OpinionStance = 'PRO' | 'CONTRA' | 'NEUTRAL';
 
 type ContextBlockField =
-    | 'title'
-    | 'content'
-    | 'stance'
-    | 'sourceName'
-    | 'sourceUrl'
-    | 'authorName';
+    'title' | 'content' | 'stance' | 'sourceName' | 'sourceUrl' | 'authorName';
 
 interface ContextBlockDraft {
     id: string;
@@ -112,9 +107,7 @@ const getContextDraftValidationErrors = ({
         errors.push('At least one semantic block is required.');
     }
 
-    const hasEmptyBlockContent = blocks.some(
-        (block) => !block.content.trim(),
-    );
+    const hasEmptyBlockContent = blocks.some((block) => !block.content.trim());
 
     if (hasEmptyBlockContent) {
         errors.push('All semantic blocks must have content.');
@@ -218,9 +211,7 @@ export const ContextualizationPage = () => {
     const [draftSummary, setDraftSummary] = useState('');
     const [blocks, setBlocks] = useState<ContextBlockDraft[]>([]);
 
-    const [blockIdToRemove, setBlockIdToRemove] = useState<string | null>(
-        null,
-    );
+    const [blockIdToRemove, setBlockIdToRemove] = useState<string | null>(null);
 
     const [filters, setFilters] = useState<ContextualizationFiltersState>(
         initialContextualizationFilters,
@@ -228,7 +219,7 @@ export const ContextualizationPage = () => {
 
     const { showToast } = useToast();
 
-    const clustersQuery = useClustersQuery({page: 1, limit: 500,});
+    const clustersQuery = useClustersQuery({ page: 1, limit: 500 });
     const selectedClusterQuery = useClusterByIdQuery(selectedClusterId);
 
     const generateAnalyzedNewsMutation = useGenerateAnalyzedNewsMutation();
@@ -438,9 +429,10 @@ export const ContextualizationPage = () => {
         }
 
         try {
-            const response = await generateAnalyzedNewsMutation.mutateAsync(
-                selectedClusterId,
-            );
+            const response =
+                await generateAnalyzedNewsMutation.mutateAsync(
+                    selectedClusterId,
+                );
 
             setDraftTitle(response.cluster.title);
             setDraftSummary(response.cluster.summary ?? '');
@@ -541,7 +533,7 @@ export const ContextualizationPage = () => {
                         authorName: block.authorName?.trim() || null,
                         stance:
                             block.type === 'OPINION'
-                                ? block.stance ?? 'NEUTRAL'
+                                ? (block.stance ?? 'NEUTRAL')
                                 : null,
                     })),
                 },
@@ -799,9 +791,7 @@ export const ContextualizationPage = () => {
                                     key={block.id}
                                     block={block}
                                     onUpdateBlock={handleUpdateBlock}
-                                    onRemoveBlock={
-                                        handleOpenRemoveBlockConfirm
-                                    }
+                                    onRemoveBlock={handleOpenRemoveBlockConfirm}
                                 />
                             ))
                         )}

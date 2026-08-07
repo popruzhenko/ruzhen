@@ -1,4 +1,4 @@
-import { apiClient } from "../../../shared/api/client";
+import { apiClient } from '../../../shared/api/client';
 import type { ArticleApiItem } from '../model/types';
 
 interface ReviewArticleContentResponse {

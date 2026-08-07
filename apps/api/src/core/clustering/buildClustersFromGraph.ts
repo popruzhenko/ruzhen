@@ -1,42 +1,40 @@
 import { SimilarityGraph, ClusterGroup } from './clustering.types';
 
-export function buildClustersFromGraph(
-  graph: SimilarityGraph,
-): ClusterGroup[] {
-  const visited = new Set<string>();
-  const clusters: ClusterGroup[] = [];
+export function buildClustersFromGraph(graph: SimilarityGraph): ClusterGroup[] {
+    const visited = new Set<string>();
+    const clusters: ClusterGroup[] = [];
 
-  function dfs(start: string, group: string[]) {
-    const stack = [start];
+    function dfs(start: string, group: string[]) {
+        const stack = [start];
 
-    while (stack.length > 0) {
-      const node = stack.pop()!;
+        while (stack.length > 0) {
+            const node = stack.pop()!;
 
-      if (visited.has(node)) {
-        continue;
-      }
+            if (visited.has(node)) {
+                continue;
+            }
 
-      visited.add(node);
-      group.push(node);
+            visited.add(node);
+            group.push(node);
 
-      for (const neighbor of graph[node]) {
-        if (!visited.has(neighbor.to)) {
-          stack.push(neighbor.to);
+            for (const neighbor of graph[node]) {
+                if (!visited.has(neighbor.to)) {
+                    stack.push(neighbor.to);
+                }
+            }
         }
-      }
     }
-  }
 
-  for (const node of Object.keys(graph)) {
-    if (!visited.has(node)) {
-      const group: string[] = [];
-      dfs(node, group);
+    for (const node of Object.keys(graph)) {
+        if (!visited.has(node)) {
+            const group: string[] = [];
+            dfs(node, group);
 
-      clusters.push({
-        articleIds: group,
-      });
+            clusters.push({
+                articleIds: group,
+            });
+        }
     }
-  }
 
-  return clusters;
+    return clusters;
 }

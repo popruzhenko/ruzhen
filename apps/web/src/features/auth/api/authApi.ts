@@ -1,5 +1,4 @@
 import { getAccessToken } from '../lib/authStorage';
-
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
 export type UserRole = 'USER' | 'ADMIN';
@@ -29,7 +28,7 @@ interface AuthCredentials {
 }
 
 export interface GoogleLoginPayload {
-    credential: string;
+    code: string;
 }
 
 export async function registerRequest(
@@ -72,6 +71,23 @@ export async function loginRequest(
     return data;
 }
 
+interface AuthErrorResponse {
+    message?: string;
+}
+
+async function parseAuthResponse<T>(
+    response: Response,
+    fallbackMessage: string,
+): Promise<T> {
+    const data = (await response.json()) as T & AuthErrorResponse;
+
+    if (!response.ok) {
+        throw new Error(data.message || fallbackMessage);
+    }
+
+    return data;
+}
+
 export async function loginWithGoogleRequest(
     payload: GoogleLoginPayload,
 ): Promise<LoginResponse> {
@@ -83,13 +99,10 @@ export async function loginWithGoogleRequest(
         body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.message || 'Google login failed');
-    }
-
-    return data;
+    return parseAuthResponse<LoginResponse>(
+        response,
+        'Google login failed',
+    );
 }
 
 export async function logoutRequest(): Promise<void> {

@@ -1,6 +1,12 @@
-import { color } from "storybook/theming";
+import { color } from 'storybook/theming';
 
-export const TrashIcon = ({ size = 16, color = '#323749' }: { size?: number; color?: string }) => (
+export const TrashIcon = ({
+    size = 16,
+    color = '#323749',
+}: {
+    size?: number;
+    color?: string;
+}) => (
     <svg
         width={size}
         height={size}

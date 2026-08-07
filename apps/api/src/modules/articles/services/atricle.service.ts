@@ -1,5 +1,9 @@
 import 'dotenv/config';
-import { PrismaClient, ArticleStatus, ContentAvailability } from '@prisma/client';
+import {
+    PrismaClient,
+    ArticleStatus,
+    ContentAvailability,
+} from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
@@ -175,7 +179,6 @@ export async function deleteAllArticles() {
     await prisma.article.deleteMany({});
 }
 
-
 interface UpdateArticleInput {
     title?: string;
     summary?: string;
@@ -244,8 +247,7 @@ export async function updateArticle(
         }
 
         if (
-            currentArticle.contentAvailability !==
-            ContentAvailability.FULL_TEXT
+            currentArticle.contentAvailability !== ContentAvailability.FULL_TEXT
         ) {
             errors.push('Article must have FULL_TEXT content before approval.');
         }

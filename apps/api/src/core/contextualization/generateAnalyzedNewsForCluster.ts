@@ -1,8 +1,4 @@
-import {
-    BlockType,
-    OpinionStance,
-    PrismaClient,
-} from '@prisma/client';
+import { BlockType, OpinionStance, PrismaClient } from '@prisma/client';
 import type { AnalyzedNewsProvider } from './analyzedNewsProvider';
 import { buildAnalyzedNewsPrompt } from './buildAnalyzedNewsPrompt';
 import { parseAnalyzedNewsResponse } from './parseAnalyzedNewsResponse';
@@ -12,8 +8,7 @@ import type {
     GenerateAnalyzedNewsForClusterResult,
 } from './analyzedNews.types';
 
-interface GenerateAnalyzedNewsForClusterServiceInput
-    extends GenerateAnalyzedNewsForClusterInput {
+interface GenerateAnalyzedNewsForClusterServiceInput extends GenerateAnalyzedNewsForClusterInput {
     prisma: PrismaClient;
     provider: AnalyzedNewsProvider;
 }

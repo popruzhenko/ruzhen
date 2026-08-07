@@ -1,4 +1,3 @@
-
 import { Request, Response } from 'express';
 import { AuthenticatedRequest } from '../../../shared/middleware/require-auth';
 import {
@@ -15,7 +14,10 @@ import { ClusterStatus } from '@prisma/client';
 import { updateClusterStatus } from '../services/cluster.service';
 import { updateClusterArticles } from '../services/cluster.service';
 
-import { getPublishedClusterByHumanId, listPublishedClusters } from '../services/cluster.service';
+import {
+    getPublishedClusterByHumanId,
+    listPublishedClusters,
+} from '../services/cluster.service';
 
 export async function updateClusterArticlesHandler(
     req: AuthenticatedRequest,
@@ -74,7 +76,10 @@ export async function updateClusterArticlesHandler(
     }
 }
 
-export async function createClusterHandler(req: AuthenticatedRequest, res: Response) {
+export async function createClusterHandler(
+    req: AuthenticatedRequest,
+    res: Response,
+) {
     try {
         if (!req.user) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -131,7 +136,10 @@ export async function listClustersHandler(
     }
 }
 
-export async function getClusterByIdHandler(req: AuthenticatedRequest, res: Response) {
+export async function getClusterByIdHandler(
+    req: AuthenticatedRequest,
+    res: Response,
+) {
     try {
         const id = req.params.id;
 
@@ -155,7 +163,10 @@ export async function getClusterByIdHandler(req: AuthenticatedRequest, res: Resp
     }
 }
 
-export async function updateClusterHandler(req: AuthenticatedRequest, res: Response) {
+export async function updateClusterHandler(
+    req: AuthenticatedRequest,
+    res: Response,
+) {
     try {
         const blockId = req.params.id;
 
@@ -175,7 +186,10 @@ export async function updateClusterHandler(req: AuthenticatedRequest, res: Respo
     }
 }
 
-export async function deleteClusterHandler(req: AuthenticatedRequest, res: Response) {
+export async function deleteClusterHandler(
+    req: AuthenticatedRequest,
+    res: Response,
+) {
     try {
         const id = req.params.id;
 

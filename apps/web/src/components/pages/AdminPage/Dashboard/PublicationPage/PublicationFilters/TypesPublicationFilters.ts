@@ -1,22 +1,11 @@
 export type PublicationStatusFilter =
-    | 'ALL'
-    | 'DRAFT'
-    | 'PUBLISHED'
-    | 'ARCHIVED';
+    'ALL' | 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
 export type PublicationUpdatedDateFilter =
-    | 'ALL'
-    | 'TODAY'
-    | 'YESTERDAY'
-    | 'LAST_7_DAYS'
-    | 'LAST_30_DAYS';
+    'ALL' | 'TODAY' | 'YESTERDAY' | 'LAST_7_DAYS' | 'LAST_30_DAYS';
 
 export type PublicationSourceCountFilter =
-    | 'ALL'
-    | 'GTE_2'
-    | 'GTE_3'
-    | 'GTE_5'
-    | 'GTE_10';
+    'ALL' | 'GTE_2' | 'GTE_3' | 'GTE_5' | 'GTE_10';
 
 export interface PublicationFiltersState {
     search: string;

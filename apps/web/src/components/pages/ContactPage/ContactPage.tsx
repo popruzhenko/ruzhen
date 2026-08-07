@@ -57,14 +57,15 @@ const topicOptions: Array<{
     {
         value: 'OTHER',
         label: 'Other',
-        description: 'Use this if none of the suggested topics fits your message.',
+        description:
+            'Use this if none of the suggested topics fits your message.',
     },
 ];
 
 const getTopicDescription = (topicValue: ContactTopic) => {
     return (
-        topicOptions.find((topic) => topic.value === topicValue)
-            ?.description ?? ''
+        topicOptions.find((topic) => topic.value === topicValue)?.description ??
+        ''
     );
 };
 
@@ -76,9 +77,7 @@ export const ContactPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { showToast } = useToast();
 
-    const [form, setForm] = useState<ContactFormState>(
-        initialContactFormState,
-    );
+    const [form, setForm] = useState<ContactFormState>(initialContactFormState);
 
     const [errors, setErrors] = useState<ContactFormErrors>({});
 
@@ -229,17 +228,14 @@ export const ContactPage = () => {
                                 }
                             />
 
-                                <DropDown
-                                    label="Topic"
-                                    value={form.topic}
-                                    options={topicOptions}
-                                    onChange={(value) =>
-                                        handleChange(
-                                            'topic',
-                                            value as ContactTopic,
-                                        )
-                                    }
-                                />
+                            <DropDown
+                                label="Topic"
+                                value={form.topic}
+                                options={topicOptions}
+                                onChange={(value) =>
+                                    handleChange('topic', value as ContactTopic)
+                                }
+                            />
                         </div>
 
                         <Textarea
@@ -248,9 +244,7 @@ export const ContactPage = () => {
                             placeholder="Write your message here..."
                             value={form.message}
                             error={errors.message}
-                            onChange={(value) =>
-                                handleChange('message', value)
-                            }
+                            onChange={(value) => handleChange('message', value)}
                         />
 
                         <div className="static-page__form-actions">
@@ -266,8 +260,8 @@ export const ContactPage = () => {
                         <div>
                             <strong>Corrections</strong>
                             <p>
-                                Include the article title, source and what should
-                                be corrected.
+                                Include the article title, source and what
+                                should be corrected.
                             </p>
                         </div>
 

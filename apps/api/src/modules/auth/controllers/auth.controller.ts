@@ -51,9 +51,9 @@ export async function loginHandler(req: Request, res: Response) {
 
 export async function googleLoginHandler(req: Request, res: Response) {
     try {
-        const { credential } = req.body;
+        const { code } = req.body;
 
-        const authData = await loginWithGoogle(credential);
+        const authData = await loginWithGoogle(code);
 
         res.status(200).json({
             message: 'Google login successful',

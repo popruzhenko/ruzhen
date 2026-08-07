@@ -1,3 +1,3 @@
 export interface EmbeddingProvider {
-  createEmbedding(input: string): Promise<number[]>;
+    createEmbedding(input: string): Promise<number[]>;
 }

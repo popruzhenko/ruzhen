@@ -1,7 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { saveContextDraft, type SaveContextDraftPayload } from '../api/saveContextDraft';
+import {
+    saveContextDraft,
+    type SaveContextDraftPayload,
+} from '../api/saveContextDraft';
 
-interface SaveContextDraftMutationInput { clusterId: string; payload: SaveContextDraftPayload; }
+interface SaveContextDraftMutationInput {
+    clusterId: string;
+    payload: SaveContextDraftPayload;
+}
 
 export function useSaveContextDraftMutation() {
     const queryClient = useQueryClient();

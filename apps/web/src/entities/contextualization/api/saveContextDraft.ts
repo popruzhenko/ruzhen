@@ -1,9 +1,6 @@
-import { apiClient } from "../../../shared/api/client";
+import { apiClient } from '../../../shared/api/client';
 
-import type {
-    ContextBlockType,
-    OpinionStance,
-} from './generateAnalyzedNews';
+import type { ContextBlockType, OpinionStance } from './generateAnalyzedNews';
 
 export interface SaveContextDraftBlockPayload {
     type: ContextBlockType;

@@ -1,28 +1,14 @@
 export type ClusteringDateFilter =
-    | 'ALL'
-    | 'TODAY'
-    | 'YESTERDAY'
-    | 'LAST_7_DAYS'
-    | 'LAST_30_DAYS';
+    'ALL' | 'TODAY' | 'YESTERDAY' | 'LAST_7_DAYS' | 'LAST_30_DAYS';
 
 export type ClusteringEmbeddingFilter =
-    | 'ALL'
-    | 'WITH_EMBEDDING'
-    | 'WITHOUT_EMBEDDING';
+    'ALL' | 'WITH_EMBEDDING' | 'WITHOUT_EMBEDDING';
 
 export type ClusteringSimilarityFilter =
-    | 'ALL'
-    | 'GT_070'
-    | 'GT_075'
-    | 'GT_080'
-    | 'GT_085';
+    'ALL' | 'GT_070' | 'GT_075' | 'GT_080' | 'GT_085';
 
 export type ClusteringSortFilter =
-    | 'NEWEST'
-    | 'OLDEST'
-    | 'SIMILARITY_DESC'
-    | 'SIMILARITY_ASC'
-    | 'TITLE_ASC';
+    'NEWEST' | 'OLDEST' | 'SIMILARITY_DESC' | 'SIMILARITY_ASC' | 'TITLE_ASC';
 
 export interface ClusteringSourceOption {
     label: string;

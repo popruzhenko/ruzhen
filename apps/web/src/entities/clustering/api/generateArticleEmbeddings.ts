@@ -1,4 +1,3 @@
-
 import { apiClient } from '../../../shared/api/client';
 
 export interface GenerateArticleEmbeddingsResponse {
@@ -14,7 +13,7 @@ export async function generateArticleEmbeddings(): Promise<GenerateArticleEmbedd
         '/admin/articles/generate-embeddings',
         {
             method: 'POST',
-            
+
             json: {
                 limit: 999,
             },

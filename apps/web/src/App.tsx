@@ -39,58 +39,73 @@ import { AdminRoute } from './features/auth/components/AdminRoute';
 
 export function App() {
     return (
-      <Routes>
-        <Route path="/" element={<PublicArticlesPage />} />
+        <Routes>
+            <Route path="/" element={<PublicArticlesPage />} />
 
-        <Route path="/articles" element={<PublicArticlesPage />} />
-        <Route path="/articles/:humanId" element={<PublicArticleDetailsPage />}/>
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Route path="/articles" element={<PublicArticlesPage />} />
+            <Route
+                path="/articles/:humanId"
+                element={<PublicArticleDetailsPage />}
+            />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy" element={<PrivacyPolicyPage />} />
 
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/register" element={<SignUp />} />
+            <Route path="/login" element={<SignIn />} />
+            <Route path="/register" element={<SignUp />} />
 
-        <Route element={<ProtectedRoute />}>
-            <Route path="/user" element={<UserPage />} />
-            <Route path="/user/articles/:humanId" element={<UserArticleDetailsPage />} />
-            <Route path="/user/profile" element={<UserProfilePage />} />
-            <Route path="/user/settings" element={<UserSettingsPage />} />
+            <Route element={<ProtectedRoute />}>
+                <Route path="/user" element={<UserPage />} />
+                <Route
+                    path="/user/articles/:humanId"
+                    element={<UserArticleDetailsPage />}
+                />
+                <Route path="/user/profile" element={<UserProfilePage />} />
+                <Route path="/user/settings" element={<UserSettingsPage />} />
 
-            <Route path="/user/about" element={<AboutPage />} />
-            <Route path="/user/contact" element={<ContactPage />} />
-            <Route path="/user/privacy" element={<PrivacyPolicyPage />} />
+                <Route path="/user/about" element={<AboutPage />} />
+                <Route path="/user/contact" element={<ContactPage />} />
+                <Route path="/user/privacy" element={<PrivacyPolicyPage />} />
 
-            <Route path="/user/forbidden" element={<UserForbiddenPage />} />
-            <Route path="/user/not-found" element={<UserNotFoundPage />} />
-            <Route path="/user/*" element={<UserNotFoundPage />} />
-        </Route>
-
-        <Route element={<AdminRoute />}>
-            <Route path="/admin" element={<AdminPage />}>
-                <Route index element={<Navigate to="raw-news" replace />} />
-                <Route path="raw-news" element={<RawNewsPage />} />
-                <Route path="clustering" element={<ClusteringPage />} />
-                <Route path="contextualization" element={<ContextualizationPage />} />
-                <Route path="publication" element={<PublicationPage />} />
-
-                <Route path="public-articles" element={<PublicArticlesPreviewPage />}/>
-                <Route path="public-articles/:humanId" element={<PublicArticleDetailsPreviewPage />}/>
-
-                <Route path="profile" element={<AdminProfilePage />} />
-                <Route path="settings" element={<AdminSettingsPage />} />
-
-                <Route path="forbidden" element={<AdminForbiddenPage />} />
-                <Route path="not-found" element={<AdminNotFoundPage />} />
-                <Route path="*" element={<AdminNotFoundPage />} />
+                <Route path="/user/forbidden" element={<UserForbiddenPage />} />
+                <Route path="/user/not-found" element={<UserNotFoundPage />} />
+                <Route path="/user/*" element={<UserNotFoundPage />} />
             </Route>
-        </Route>
 
-        <Route path="/401" element={<UnauthorizedPage />} />
-        <Route path="/403" element={<RoleAwareForbiddenPage />} />
-        <Route path="/500" element={<ServerErrorPage />} />
+            <Route element={<AdminRoute />}>
+                <Route path="/admin" element={<AdminPage />}>
+                    <Route index element={<Navigate to="raw-news" replace />} />
+                    <Route path="raw-news" element={<RawNewsPage />} />
+                    <Route path="clustering" element={<ClusteringPage />} />
+                    <Route
+                        path="contextualization"
+                        element={<ContextualizationPage />}
+                    />
+                    <Route path="publication" element={<PublicationPage />} />
 
-        <Route path="*" element={<RoleAwareNotFoundPage />} />
-    </Routes>
+                    <Route
+                        path="public-articles"
+                        element={<PublicArticlesPreviewPage />}
+                    />
+                    <Route
+                        path="public-articles/:humanId"
+                        element={<PublicArticleDetailsPreviewPage />}
+                    />
+
+                    <Route path="profile" element={<AdminProfilePage />} />
+                    <Route path="settings" element={<AdminSettingsPage />} />
+
+                    <Route path="forbidden" element={<AdminForbiddenPage />} />
+                    <Route path="not-found" element={<AdminNotFoundPage />} />
+                    <Route path="*" element={<AdminNotFoundPage />} />
+                </Route>
+            </Route>
+
+            <Route path="/401" element={<UnauthorizedPage />} />
+            <Route path="/403" element={<RoleAwareForbiddenPage />} />
+            <Route path="/500" element={<ServerErrorPage />} />
+
+            <Route path="*" element={<RoleAwareNotFoundPage />} />
+        </Routes>
     );
 }

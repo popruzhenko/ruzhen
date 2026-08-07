@@ -100,7 +100,7 @@ export const ClusteringPage = () => {
 
     const { showToast } = useToast();
 
-    const clustersQuery = useClustersQuery({page: 1, limit: 500,});
+    const clustersQuery = useClustersQuery({ page: 1, limit: 500 });
     const selectedClusterQuery = useClusterByIdQuery(selectedClusterId);
     const articlesQuery = useArticlesQuery();
 
@@ -313,8 +313,7 @@ export const ClusteringPage = () => {
             }
 
             return (
-                (b.similarityToCluster ?? -1) -
-                (a.similarityToCluster ?? -1)
+                (b.similarityToCluster ?? -1) - (a.similarityToCluster ?? -1)
             );
         });
     }, [candidatesWithSimilarity, filters, selectedCandidateIds]);
@@ -773,7 +772,9 @@ export const ClusteringPage = () => {
                             <p>
                                 Average similarity:{' '}
                                 <strong>
-                                    {clusterMetrics.averageSimilarity.toFixed(3)}
+                                    {clusterMetrics.averageSimilarity.toFixed(
+                                        3,
+                                    )}
                                 </strong>
                             </p>
                         </div>
@@ -861,8 +862,8 @@ export const ClusteringPage = () => {
                             <h2>Candidate Articles</h2>
 
                             <p>
-                                Approved articles need embeddings before they can
-                                be added.
+                                Approved articles need embeddings before they
+                                can be added.
                             </p>
                         </div>
                     </div>

@@ -1,28 +1,14 @@
 export type ContextualizationStatusFilter =
-    | 'ALL'
-    | 'DRAFT'
-    | 'PUBLISHED'
-    | 'ARCHIVED';
+    'ALL' | 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
 export type ContextualizationDraftStateFilter =
-    | 'ALL'
-    | 'WITHOUT_BLOCKS'
-    | 'WITH_BLOCKS'
-    | 'READY_TO_REVIEW';
+    'ALL' | 'WITHOUT_BLOCKS' | 'WITH_BLOCKS' | 'READY_TO_REVIEW';
 
 export type ContextualizationDateFilter =
-    | 'ALL'
-    | 'TODAY'
-    | 'YESTERDAY'
-    | 'LAST_7_DAYS'
-    | 'LAST_30_DAYS';
+    'ALL' | 'TODAY' | 'YESTERDAY' | 'LAST_7_DAYS' | 'LAST_30_DAYS';
 
 export type ContextualizationSourceCountFilter =
-    | 'ALL'
-    | 'GTE_2'
-    | 'GTE_3'
-    | 'GTE_5'
-    | 'GTE_10';
+    'ALL' | 'GTE_2' | 'GTE_3' | 'GTE_5' | 'GTE_10';
 
 export interface ContextualizationFiltersState {
     search: string;

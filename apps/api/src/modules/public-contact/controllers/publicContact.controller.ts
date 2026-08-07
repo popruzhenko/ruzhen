@@ -3,10 +3,7 @@ import { ContactTopic } from '@prisma/client';
 
 import { createContactMessage } from '../services/publicContact.service';
 
-export async function createContactMessageHandler(
-    req: Request,
-    res: Response,
-) {
+export async function createContactMessageHandler(req: Request, res: Response) {
     try {
         const message = await createContactMessage({
             name: req.body.name ?? null,

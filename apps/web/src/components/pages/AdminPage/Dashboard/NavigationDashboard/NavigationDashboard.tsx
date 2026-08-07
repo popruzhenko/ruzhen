@@ -1,14 +1,17 @@
-import { NavLink } from "react-router-dom"
-import type { NavigationDashboardProps } from "./TypesNavigationDashboard"
+import { NavLink } from 'react-router-dom';
+import type { NavigationDashboardProps } from './TypesNavigationDashboard';
 
 export const NavigationDashboard = ({ navItems }: NavigationDashboardProps) => {
     return (
-        <aside  className="navigation_dashboard">
+        <aside className="navigation_dashboard">
             <div className="navigation_dashboard__container">
                 <nav className="navigation_dashboard__nav">
                     <ul className="navigation_dashboard__list">
                         {navItems?.map((item) => (
-                            <li key={item.to} className="navigation_dashboard__list-item">
+                            <li
+                                key={item.to}
+                                className="navigation_dashboard__list-item"
+                            >
                                 <NavLink
                                     to={item.to}
                                     className={({ isActive }) =>
@@ -25,7 +28,5 @@ export const NavigationDashboard = ({ navItems }: NavigationDashboardProps) => {
                 </nav>
             </div>
         </aside>
-
-    )
-
-}
+    );
+};

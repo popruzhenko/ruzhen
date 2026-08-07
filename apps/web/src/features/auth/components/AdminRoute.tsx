@@ -1,9 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-import {
-    getStoredUser,
-    hasAuthSession,
-} from '../lib/authStorage';
+import { getStoredUser, hasAuthSession } from '../lib/authStorage';
 
 export const AdminRoute = () => {
     const location = useLocation();
@@ -13,12 +10,7 @@ export const AdminRoute = () => {
             location.pathname + location.search,
         );
 
-        return (
-            <Navigate
-                to={`/login?redirectTo=${redirectTo}`}
-                replace
-            />
-        );
+        return <Navigate to={`/login?redirectTo=${redirectTo}`} replace />;
     }
 
     const user = getStoredUser();

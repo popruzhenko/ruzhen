@@ -20,7 +20,13 @@ export interface ContextualizationCardProps {
     block: ContextualizationBlockItem;
     onUpdateBlock: (
         blockId: string,
-        field: 'title' | 'content' | 'stance' | 'sourceUrl' | 'sourceName' | 'authorName',
+        field:
+            | 'title'
+            | 'content'
+            | 'stance'
+            | 'sourceUrl'
+            | 'sourceName'
+            | 'authorName',
         value: string,
     ) => void;
     onRemoveBlock: (blockId: string) => void;

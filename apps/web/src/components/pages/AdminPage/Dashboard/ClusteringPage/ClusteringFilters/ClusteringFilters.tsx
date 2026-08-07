@@ -64,23 +64,23 @@ export const ClusteringFilters = ({
                     variants="secondary"
                     onClick={onClear}
                     disabled={!hasActiveFilters}
-                    leftIcon={<Icon name='trash'></Icon>}
+                    leftIcon={<Icon name="trash"></Icon>}
                 >
                     Clear
                 </Button>
             </div>
-                <div className="clustering_filters__body">
-                    <label className="clustering_filters__search">
-                        <span>Search</span>
+            <div className="clustering_filters__body">
+                <label className="clustering_filters__search">
+                    <span>Search</span>
 
-                        <input
-                            value={filters.search}
-                            onChange={(event) =>
-                                onChange('search', event.target.value)
-                            }
-                            placeholder="Search title, source, ID..."
-                        />
-                    </label>
+                    <input
+                        value={filters.search}
+                        onChange={(event) =>
+                            onChange('search', event.target.value)
+                        }
+                        placeholder="Search title, source, ID..."
+                    />
+                </label>
                 <div className="clustering_filters__select">
                     <span>Date</span>
 

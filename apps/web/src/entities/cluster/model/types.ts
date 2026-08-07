@@ -99,4 +99,3 @@ export interface ClusterDetailsApiItem {
     }>;
     articles: ClusterDetailsArticleApiItem[];
 }
-
