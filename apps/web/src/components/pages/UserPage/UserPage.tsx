@@ -122,9 +122,7 @@ export const UserPage = () => {
                         <h1>Your Ruzhen feed</h1>
 
                         <p>
-                            Read published materials in a structured format:
-                            facts, context and opinions are separated so you can
-                            understand the event without unnecessary noise.
+                            Understand the story clearly. Ruzhen separates facts, context, and opinions, so you can quickly see what happened, why it matters, and how different sides interpret it.
                         </p>
                     </div>
                 </section>

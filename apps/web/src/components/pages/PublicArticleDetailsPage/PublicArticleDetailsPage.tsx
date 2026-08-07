@@ -8,7 +8,7 @@ import { Link } from '../../ui/Link/Link';
 import { PageState } from '../../ui/PageState/PageState';
 
 import './PublicArticleDetailsPage.scss';
-import { PublicLayout } from '../../layouts/PublicLayout/PublicLayout';
+import { ReadableLayout } from '../../layouts/ReadableLayout/ReadableLayout';
 
 const formatDate = (value?: string | null) => {
     if (!value) {
@@ -63,7 +63,7 @@ export const PublicArticleDetailsPage = () => {
 
     if (publicClusterQuery.isLoading) {
         return (
-            <PublicLayout>
+            <ReadableLayout>
                 <div className="public-article-details__container">
                     <PageState
                         variant="loading"
@@ -71,13 +71,13 @@ export const PublicArticleDetailsPage = () => {
                         description="Please wait while Ruzhen loads the article details."
                     />
                 </div>
-            </PublicLayout>
+            </ReadableLayout>
         );
     }
 
     if (publicClusterQuery.isError) {
         return (
-            <PublicLayout>
+            <ReadableLayout>
                 <div className="public-article-details__container">
                     <PageState
                         variant="error"
@@ -87,13 +87,13 @@ export const PublicArticleDetailsPage = () => {
                         actionTo="/articles"
                     />
                 </div>
-            </PublicLayout>
+            </ReadableLayout>
         );
     }
 
     if (!cluster) {
         return (
-            <PublicLayout>
+            <ReadableLayout>
                 <div className="public-article-details__container">
                     <PageState
                         variant="not-found"
@@ -104,12 +104,12 @@ export const PublicArticleDetailsPage = () => {
                         actionTo="/articles"
                     />
                 </div>
-            </PublicLayout>
+            </ReadableLayout>
         );
     }
 
     return (
-        <PublicLayout>
+        <ReadableLayout>
             <div className="public-article-details__container">
                 <RouterLink
                     to="/articles"
@@ -276,6 +276,6 @@ export const PublicArticleDetailsPage = () => {
                     </aside>
                 </article>
             </div>
-        </PublicLayout>
+        </ReadableLayout>
     );
 };

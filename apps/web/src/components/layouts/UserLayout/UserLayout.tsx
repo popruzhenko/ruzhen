@@ -12,19 +12,19 @@ interface UserLayoutProps {
 const userNavItems = [
     {
         label: 'Articles',
-        to: '/articles',
+        to: '/user/articles',
     },
     {
         label: 'About Us',
-        to: '/about',
+        to: '/user/about',
     },
     {
         label: 'Contact',
-        to: '/contact',
+        to: '/user/contact',
     },
     {
         label: 'Privacy Policy',
-        to: '/privacy',
+        to: '/user/privacy',
     },
 ];
 

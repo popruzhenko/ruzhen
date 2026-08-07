@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import { usePublicClustersQuery } from '../../../entities/public-clusters';
 
-import { PublicLayout } from '../../layouts/PublicLayout/PublicLayout';
+import { ReadableLayout } from '../../layouts/ReadableLayout/ReadableLayout';
 import { Pagination } from '../../ui/Pagination/Pagination';
 import { PageState } from '../../ui/PageState/PageState';
 
@@ -84,19 +84,19 @@ export const PublicArticlesPage = () => {
 
     if (publicClustersQuery.isLoading) {
         return (
-            <PublicLayout>
+            <ReadableLayout>
                 <PageState
                     variant="loading"
                     title="Loading published articles"
                     description="Please wait while Ruzhen loads the latest published materials."
                 />
-            </PublicLayout>
+            </ReadableLayout>
         );
     }
 
     if (publicClustersQuery.isError) {
         return (
-            <PublicLayout>
+            <ReadableLayout>
                 <PageState
                     variant="error"
                     title="Failed to load published articles"
@@ -106,12 +106,12 @@ export const PublicArticlesPage = () => {
                         void publicClustersQuery.refetch();
                     }}
                 />
-            </PublicLayout>
+            </ReadableLayout>
         );
     }
 
     return (
-        <PublicLayout>
+        <ReadableLayout>
             <div className="public-articles-page">
                 <section className="public-articles-page__hero">
                     <div>
@@ -212,6 +212,6 @@ export const PublicArticlesPage = () => {
                     </>
                 )}
             </div>
-        </PublicLayout>
+        </ReadableLayout>
     );
 };
