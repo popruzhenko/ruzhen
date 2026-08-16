@@ -3,7 +3,6 @@ import { Link as RouterLink, useParams } from 'react-router-dom';
 import { usePublicClusterByHumanIdQuery } from '../../../entities/public-clusters';
 
 import { ClusterBlock } from '../../ui/ClusterBlock/ClusterBlock';
-import { Header } from '../../ui/Header/Header';
 import { Link } from '../../ui/Link/Link';
 import { PageState } from '../../ui/PageState/PageState';
 
@@ -26,18 +25,6 @@ const formatDate = (value?: string | null) => {
         timeStyle: 'short',
     }).format(date);
 };
-
-const publicNavItems = [
-    {
-        label: 'Articles',
-        to: '/articles',
-        isActive: true,
-    },
-    {
-        label: 'About',
-        to: '/about',
-    },
-];
 
 export const PublicArticleDetailsPage = () => {
     const { humanId } = useParams<{ humanId: string }>();

@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { queryKeys } from '../../../shared/lib/queryKeys';
+
 import {
     saveContextDraft,
     type SaveContextDraftPayload,
@@ -18,15 +21,15 @@ export function useSaveContextDraftMutation() {
 
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: ['cluster', variables.clusterId],
+                queryKey: queryKeys.clusters.detail(variables.clusterId),
             });
 
             queryClient.invalidateQueries({
-                queryKey: ['clusters'],
+                queryKey: queryKeys.clusters.all,
             });
 
             queryClient.invalidateQueries({
-                queryKey: ['cluster-blocks', variables.clusterId],
+                queryKey: queryKeys.clusters.blocks(variables.clusterId),
             });
         },
     });

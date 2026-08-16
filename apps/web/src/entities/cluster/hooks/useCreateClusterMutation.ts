@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createCluster } from '../api/createCluster';
+import { queryKeys } from '../../../shared/lib/queryKeys';
 
 export function useCreateClusterMutation() {
     const queryClient = useQueryClient();
@@ -8,7 +9,7 @@ export function useCreateClusterMutation() {
         mutationFn: createCluster,
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ['clusters'],
+                queryKey: queryKeys.clusters.all,
             });
         },
     });

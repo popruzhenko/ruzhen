@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { queryKeys } from '../../../shared/lib/queryKeys';
+
 import { generateArticleEmbeddings } from '../api/generateArticleEmbeddings';
 
 export function useGenerateArticleEmbeddingsMutation() {
@@ -8,15 +11,11 @@ export function useGenerateArticleEmbeddingsMutation() {
         mutationFn: generateArticleEmbeddings,
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ['articles'],
+                queryKey: queryKeys.articles.all,
             });
 
             queryClient.invalidateQueries({
-                queryKey: ['clusters'],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: ['cluster'],
+                queryKey: queryKeys.clusters.all,
             });
         },
     });

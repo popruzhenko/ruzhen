@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { queryKeys } from '../../../shared/lib/queryKeys';
+
 import {
     updateClusterArticles,
     type UpdateClusterArticlesPayload,
@@ -23,15 +25,15 @@ export function useUpdateClusterArticlesMutation() {
             updateClusterArticles(clusterId, payload),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: ['clusters'],
+                queryKey: queryKeys.clusters.all,
             });
 
             queryClient.invalidateQueries({
-                queryKey: ['cluster', variables.clusterId],
+                queryKey: queryKeys.clusters.detail(variables.clusterId),
             });
 
             queryClient.invalidateQueries({
-                queryKey: ['articles'],
+                queryKey: queryKeys.articles.all,
             });
         },
     });

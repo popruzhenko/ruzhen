@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { queryKeys } from '../../../shared/lib/queryKeys';
+
 import {
     updateClusterStatus,
     type PublicationClusterStatus,
@@ -13,21 +16,16 @@ interface UpdateClusterStatusMutationInput {
 export function useUpdateClusterStatusMutation() {
     const queryClient = useQueryClient();
 
-    return useMutation<
-        UpdateClusterStatusResponse,
-        Error,
-        UpdateClusterStatusMutationInput
-    >({
-        mutationFn: ({ clusterId, status }) =>
-            updateClusterStatus(clusterId, status),
+    return useMutation<UpdateClusterStatusResponse, Error, UpdateClusterStatusMutationInput>({
+        mutationFn: ({ clusterId, status }) => updateClusterStatus(clusterId, status),
 
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: ['clusters'],
+                queryKey: queryKeys.clusters.all,
             });
 
             queryClient.invalidateQueries({
-                queryKey: ['cluster', variables.clusterId],
+                queryKey: queryKeys.clusters.detail(variables.clusterId),
             });
         },
     });

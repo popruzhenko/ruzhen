@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { queryKeys } from '../../../shared/lib/queryKeys';
+
 import { generateAnalyzedNews } from '../api/generateAnalyzedNews';
 
 export function useGenerateAnalyzedNewsMutation() {
@@ -8,15 +11,15 @@ export function useGenerateAnalyzedNewsMutation() {
         mutationFn: generateAnalyzedNews,
         onSuccess: (_, clusterId) => {
             queryClient.invalidateQueries({
-                queryKey: ['cluster', clusterId],
+                queryKey: queryKeys.clusters.detail(clusterId),
             });
 
             queryClient.invalidateQueries({
-                queryKey: ['clusters'],
+                queryKey: queryKeys.clusters.all,
             });
 
             queryClient.invalidateQueries({
-                queryKey: ['cluster-blocks', clusterId],
+                queryKey: queryKeys.clusters.blocks(clusterId),
             });
         },
     });

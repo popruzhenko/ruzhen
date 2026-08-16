@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { queryKeys } from '../../../shared/lib/queryKeys';
+
 import { reviewArticleContent } from '../api/reviewArticleContent';
 
 export function useReviewArticleContentMutation() {
@@ -8,7 +11,7 @@ export function useReviewArticleContentMutation() {
         mutationFn: reviewArticleContent,
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ['articles'],
+                queryKey: queryKeys.articles.all,
             });
         },
     });

@@ -62,13 +62,6 @@ const topicOptions: Array<{
     },
 ];
 
-const getTopicDescription = (topicValue: ContactTopic) => {
-    return (
-        topicOptions.find((topic) => topic.value === topicValue)?.description ??
-        ''
-    );
-};
-
 const isValidEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };

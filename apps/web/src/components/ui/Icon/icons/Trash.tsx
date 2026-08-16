@@ -1,5 +1,3 @@
-import { color } from 'storybook/theming';
-
 export const TrashIcon = ({
     size = 16,
     color = '#323749',

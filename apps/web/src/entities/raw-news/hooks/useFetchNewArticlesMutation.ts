@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { queryKeys } from '../../../shared/lib/queryKeys';
+
 import {
     fetchNewArticles,
     type FetchNewArticlesResponse,
@@ -11,7 +14,7 @@ export function useFetchNewArticlesMutation() {
         mutationFn: fetchNewArticles,
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ['articles'],
+                queryKey: queryKeys.articles.all,
             });
         },
     });

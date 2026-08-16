@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { queryKeys } from '../../../shared/lib/queryKeys';
+
 import { deleteCluster } from '../api/deleteCluster';
 
 export function useDeleteClusterMutation() {
@@ -8,15 +11,11 @@ export function useDeleteClusterMutation() {
         mutationFn: deleteCluster,
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ['clusters'],
+                queryKey: queryKeys.clusters.all,
             });
 
             queryClient.invalidateQueries({
-                queryKey: ['cluster'],
-            });
-
-            queryClient.invalidateQueries({
-                queryKey: ['articles'],
+                queryKey: queryKeys.articles.all,
             });
         },
     });

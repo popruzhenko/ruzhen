@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { queryKeys } from '../../../shared/lib/queryKeys';
+
 import { getPublicClusters } from '../api/getPublicClusters';
 
 interface UsePublicClustersQueryInput {
@@ -12,11 +14,7 @@ export function usePublicClustersQuery({
     limit,
 }: UsePublicClustersQueryInput) {
     return useQuery({
-        queryKey: ['public-clusters', page, limit],
-        queryFn: () =>
-            getPublicClusters({
-                page,
-                limit,
-            }),
+        queryKey: queryKeys.publicClusters.list({ page, limit }),
+        queryFn: () => getPublicClusters({ page, limit }),
     });
 }

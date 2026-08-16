@@ -15,9 +15,7 @@ import { PublicArticleDetailsPreviewPage } from './components/pages/AdminPage/Da
 import { PublicArticlesPage } from './components/pages/PublicArticlesPage/PublicArticlesPage';
 import { PublicArticleDetailsPage } from './components/pages/PublicArticleDetailsPage/PublicArticleDetailsPage';
 
-import { NotFoundPage } from './components/pages/ErrorPages/NotFoundPage';
 import { UnauthorizedPage } from './components/pages/ErrorPages/UnauthorizedPage';
-import { ForbiddenPage } from './components/pages/ErrorPages/ForbiddenPage';
 import { AboutPage } from './components/pages/AboutPage/AboutPage';
 import { ContactPage } from './components/pages/ContactPage/ContactPage';
 import { PrivacyPolicyPage } from './components/pages/PrivacyPolicyPage/PrivacyPolicyPage';
