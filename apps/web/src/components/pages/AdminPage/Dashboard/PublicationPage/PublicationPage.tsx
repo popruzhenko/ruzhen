@@ -31,6 +31,7 @@ import { getSourceCountThreshold } from '../lib/SourceCountThresholdHelper';
 import { useToast } from '../../../../ui/Toast/ToastProvider';
 
 import './PublicationPage.scss';
+import { TOAST_TYPE } from '../../../../ui/Toast/ToastConstants';
 
 const initialPublicationFilters: PublicationFiltersState = {
     search: '',
@@ -275,7 +276,7 @@ export const PublicationPage = () => {
     const handleUpdateStatus = async (status: PublicationClusterStatus) => {
         if (!selectedClusterId) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'No article selected',
                 message:
                     'Select an article before changing publication status.',
@@ -294,13 +295,13 @@ export const PublicationPage = () => {
             await clustersQuery.refetch();
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: getStatusSuccessTitle(status),
                 message: getStatusSuccessMessage(status),
             });
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to update status',
                 message:
                     error instanceof Error
@@ -313,7 +314,7 @@ export const PublicationPage = () => {
     const handleOpenPublishConfirm = () => {
         if (!selectedCluster) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'No article selected',
                 message: 'Select an article before publishing.',
             });
@@ -325,7 +326,7 @@ export const PublicationPage = () => {
 
         if (errors.length > 0) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Article is not ready to publish',
                 message: errors.join(' '),
                 autoCloseMs: 7000,
@@ -338,7 +339,7 @@ export const PublicationPage = () => {
 
         if (warnings.length > 0) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'Publication warning',
                 message: `${warnings.join(' ')} You can still publish this article.`,
                 autoCloseMs: 7000,
@@ -351,7 +352,7 @@ export const PublicationPage = () => {
     const handleConfirmPublish = async () => {
         if (!selectedCluster) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'No article selected',
                 message: 'Select an article before publishing.',
             });
@@ -364,7 +365,7 @@ export const PublicationPage = () => {
 
         if (errors.length > 0) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Article is not ready to publish',
                 message: errors.join(' '),
                 autoCloseMs: 7000,

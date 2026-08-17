@@ -26,6 +26,7 @@ import { isDateInFetchedRange } from '../lib/DateHelper';
 import { getSourceCountThreshold } from '../lib/SourceCountThresholdHelper';
 
 import './ContextualizationPage.scss';
+import { TOAST_TYPE } from '../../../../ui/Toast/ToastConstants';
 
 type ContextBlockType = 'FACT' | 'CONTEXT' | 'OPINION';
 type OpinionStance = 'PRO' | 'CONTRA' | 'NEUTRAL';
@@ -409,7 +410,7 @@ export const ContextualizationPage = () => {
         setBlockIdToRemove(null);
 
         showToast({
-            type: 'info',
+            type: TOAST_TYPE.INFO,
             title: 'Block removed',
             message: removedBlock
                 ? `${removedBlock.type} block was removed from the draft. Click Save draft to persist changes.`
@@ -420,7 +421,7 @@ export const ContextualizationPage = () => {
     const handleGenerateDraft = async () => {
         if (!selectedClusterId) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'No cluster selected',
                 message: 'Select a cluster before generating a draft.',
             });
@@ -457,7 +458,7 @@ export const ContextualizationPage = () => {
             );
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Draft generated',
                 message: 'Semantic blocks were generated successfully.',
             });
@@ -466,7 +467,7 @@ export const ContextualizationPage = () => {
             await selectedClusterQuery.refetch();
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to generate draft',
                 message:
                     error instanceof Error
@@ -479,7 +480,7 @@ export const ContextualizationPage = () => {
     const handleSaveDraft = async () => {
         if (!selectedClusterId) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'No cluster selected',
                 message: 'Select a cluster before saving a draft.',
             });
@@ -497,7 +498,7 @@ export const ContextualizationPage = () => {
 
         if (errors.length > 0) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Draft is not ready to save',
                 message: errors.join(' '),
                 autoCloseMs: 7000,
@@ -510,7 +511,7 @@ export const ContextualizationPage = () => {
 
         if (warnings.length > 0) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'Draft quality warning',
                 message: `${warnings.join(' ')} You can still save this draft.`,
                 autoCloseMs: 7000,
@@ -562,7 +563,7 @@ export const ContextualizationPage = () => {
             );
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Draft saved',
                 message: 'Contextual draft was saved successfully.',
             });
@@ -571,7 +572,7 @@ export const ContextualizationPage = () => {
             await selectedClusterQuery.refetch();
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to save draft',
                 message:
                     error instanceof Error

@@ -1,4 +1,4 @@
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
+import type { ToastType } from './ToastConstants';
 
 export type ToastPosition = 'top' | 'bottom';
 

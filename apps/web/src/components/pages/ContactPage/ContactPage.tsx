@@ -9,6 +9,7 @@ import { useToast } from '../../ui/Toast/ToastProvider';
 import { createContactMessageRequest } from '../../../entities/public-contact/api/publicContactApi';
 
 import '../AboutPage/AboutPage.scss';
+import { TOAST_TYPE } from '../../ui/Toast/ToastConstants';
 
 type ContactTopic = 'CORRECTIONS' | 'SOURCES' | 'PARTNERSHIPS' | 'OTHER';
 
@@ -126,7 +127,7 @@ export const ContactPage = () => {
             setErrors(validationErrors);
 
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Message is not ready',
                 message: 'Please fill in the required fields.',
             });
@@ -149,13 +150,13 @@ export const ContactPage = () => {
             setErrors({});
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Message sent',
                 message: 'Thank you. Your message has been received.',
             });
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Message was not sent',
                 message:
                     error instanceof Error

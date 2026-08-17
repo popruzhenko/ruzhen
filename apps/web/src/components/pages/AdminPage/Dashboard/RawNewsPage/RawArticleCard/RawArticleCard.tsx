@@ -15,6 +15,7 @@ import { useReviewArticleContentMutation } from '../../../../../../entities/raw-
 
 import './RawArticleCard.scss';
 import { ARTICLE_STATUS, CONTENT_AVAILABILITY, type ContentAvailability } from '../../../../../../entities/raw-news/model/articleConstants';
+import { TOAST_TYPE } from '../../../../../ui/Toast/ToastConstants';
 
 interface RawArticleCardProps {
     article: RawNewsFeedItem;
@@ -180,13 +181,13 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
             });
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Article rejected',
                 message: 'The article was rejected successfully.',
             });
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to reject article',
                 message:
                     error instanceof Error
@@ -201,7 +202,7 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
 
         if (errors.length > 0) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Article is not ready for approval',
                 message: errors.join(' '),
                 autoCloseMs: 7000,
@@ -222,13 +223,13 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
             });
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Article approved',
                 message: 'The article was approved and moved to clustering.',
             });
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to approve article',
                 message:
                     error instanceof Error
@@ -251,7 +252,7 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
 
         if (errors.length > 0) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Article review is not ready to save',
                 message: errors.join(' '),
                 autoCloseMs: 7000,
@@ -264,7 +265,7 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
 
         if (warnings.length > 0) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'Article quality warning',
                 message: `${warnings.join(' ')} You can still save this review.`,
                 autoCloseMs: 7000,
@@ -287,13 +288,13 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
             setIsReviewModalOpen(false);
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Article saved',
                 message: 'The article review was saved successfully.',
             });
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to save article',
                 message:
                     error instanceof Error

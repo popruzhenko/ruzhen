@@ -14,6 +14,7 @@ import type { RawNewsFiltersState } from './RawNewsFilters/TypesRawNewsFilters';
 
 import { isDateInFetchedRange } from '../lib/DateHelper';
 import { ARTICLE_STATUS, CONTENT_AVAILABILITY } from '../../../../../entities/raw-news/model/articleConstants';
+import { TOAST_TYPE } from '../../../../ui/Toast/ToastConstants';
 
 const initialRawNewsFilters: RawNewsFiltersState = {
     search: '',
@@ -139,7 +140,7 @@ export const RawNewsPage = () => {
             const response = await fetchNewArticlesMutation.mutateAsync();
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Articles fetched',
                 message:
                     response.message ??
@@ -149,7 +150,7 @@ export const RawNewsPage = () => {
             await articlesQuery.refetch();
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to fetch articles',
                 message:
                     error instanceof Error

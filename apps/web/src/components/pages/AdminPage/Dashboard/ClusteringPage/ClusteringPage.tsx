@@ -40,6 +40,7 @@ import {
     type ClusteringArticleStatus,
     type ArticleStatus,
 } from '../../../../../entities/raw-news/model/articleConstants';
+import { TOAST_TYPE } from '../../../../ui/Toast/ToastConstants';
 
 const hasClusteringArticleStatus = <T extends { status: ArticleStatus }>(
     article: T,
@@ -407,7 +408,7 @@ export const ClusteringPage = () => {
 
         if (articlesToAdd.length === 0) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'No articles added',
                 message: 'Select embedded candidate articles first.',
             });
@@ -427,7 +428,7 @@ export const ClusteringPage = () => {
             setSelectedCandidateIds([]);
 
             showToast({
-                type: 'info',
+                type: TOAST_TYPE.WARNING,
                 title: 'Nothing to add',
                 message: 'Selected articles are already in the cluster.',
             });
@@ -453,7 +454,7 @@ export const ClusteringPage = () => {
         setSelectedCandidateIds([]);
 
         showToast({
-            type: 'success',
+            type: TOAST_TYPE.SUCCESS,
             title: 'Articles added',
             message: `${clusterArticlesToAdd.length} article(s) added to the cluster draft.`,
         });
@@ -462,7 +463,7 @@ export const ClusteringPage = () => {
     const handleCreateCluster = async () => {
         if (clusterArticles.length === 0) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'Cannot create cluster',
                 message: 'Add at least one article before creating a cluster.',
             });
@@ -490,13 +491,13 @@ export const ClusteringPage = () => {
             await articlesQuery.refetch();
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Cluster created',
                 message: 'New cluster was created successfully.',
             });
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to create cluster',
                 message:
                     error instanceof Error
@@ -509,7 +510,7 @@ export const ClusteringPage = () => {
     const handleSaveCluster = async () => {
         if (!selectedClusterId) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'No cluster selected',
                 message: 'Select a cluster before saving.',
             });
@@ -519,7 +520,7 @@ export const ClusteringPage = () => {
 
         if (clusterArticles.length === 0) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'Cannot save empty cluster',
                 message: 'Add at least one article before saving the cluster.',
             });
@@ -543,7 +544,7 @@ export const ClusteringPage = () => {
             });
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Cluster saved',
                 message: 'Cluster articles were saved successfully.',
             });
@@ -553,7 +554,7 @@ export const ClusteringPage = () => {
             await articlesQuery.refetch();
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to save cluster',
                 message:
                     error instanceof Error
@@ -569,13 +570,13 @@ export const ClusteringPage = () => {
             await articlesQuery.refetch();
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Embeddings generated',
                 message: 'Article embeddings were generated successfully.',
             });
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to generate embeddings',
                 message:
                     error instanceof Error
@@ -620,7 +621,7 @@ export const ClusteringPage = () => {
 
         if (articlesToRemove.length > 0) {
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Articles removed',
                 message: `${articlesToRemove.length} article(s) removed from the cluster draft.`,
             });
@@ -630,7 +631,7 @@ export const ClusteringPage = () => {
     const handleOpenDeleteClusterConfirm = () => {
         if (!selectedClusterId) {
             showToast({
-                type: 'warning',
+                type: TOAST_TYPE.WARNING,
                 title: 'No cluster selected',
                 message: 'Select a cluster before deleting.',
             });
@@ -659,13 +660,13 @@ export const ClusteringPage = () => {
             await articlesQuery.refetch();
 
             showToast({
-                type: 'success',
+                type: TOAST_TYPE.SUCCESS,
                 title: 'Cluster deleted',
                 message: 'The cluster was deleted successfully.',
             });
         } catch (error) {
             showToast({
-                type: 'error',
+                type: TOAST_TYPE.ERROR,
                 title: 'Failed to delete cluster',
                 message:
                     error instanceof Error
