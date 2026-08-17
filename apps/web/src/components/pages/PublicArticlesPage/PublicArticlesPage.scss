@@ -1,3 +1,6 @@
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/tokens' as *;
+
 .public-articles-page {
     &__hero {
         display: grid;
@@ -8,7 +11,7 @@
     }
 
     &__eyebrow {
-        color: #174ea6;
+        color: $color-primary;
         font-size: 13px;
         font-weight: 900;
         letter-spacing: 0.11em;
@@ -18,7 +21,7 @@
     &__hero h1 {
         max-width: 760px;
         margin: 10px 0 0;
-        color: #07111f;
+        color: $color-text-main;
         font-size: 62px;
         font-weight: 900;
         line-height: 0.98;
@@ -36,7 +39,7 @@
 
     &__format-card {
         padding: 22px;
-        border: 1px solid #d8e3f2;
+        border: 1px solid $color-border;
         border-radius: 22px;
         background-color: rgba(255, 255, 255, 0.84);
         box-shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
@@ -44,7 +47,7 @@
         > span {
             display: block;
             margin-bottom: 16px;
-            color: #174ea6;
+            color: $color-primary;
             font-size: 12px;
             font-weight: 900;
             letter-spacing: 0.09em;
@@ -53,7 +56,7 @@
 
         div {
             padding: 14px 0;
-            border-top: 1px dashed #d8e3f2;
+            border-top: 1px dashed $color-border;
 
             &:first-of-type {
                 border-top: 0;
@@ -63,14 +66,14 @@
 
         strong {
             display: block;
-            color: #07111f;
+            color: $color-text-main;
             font-size: 15px;
             font-weight: 850;
         }
 
         p {
             margin: 5px 0 0;
-            color: #64748b;
+            color: $color-text-muted;
             font-size: 14px;
             line-height: 1.45;
         }
@@ -79,14 +82,14 @@
     &__feed-header {
         margin-bottom: 18px;
         padding-top: 24px;
-        border-top: 1px solid #d8e3f2;
+        border-top: 1px solid $color-border;
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
 
         h2 {
             margin: 0;
-            color: #07111f;
+            color: $color-text-main;
             font-size: 24px;
             font-weight: 850;
             letter-spacing: -0.035em;
@@ -94,7 +97,7 @@
 
         p {
             margin: 6px 0 0;
-            color: #64748b;
+            color: $color-text-muted;
             font-size: 14px;
             font-weight: 700;
         }
@@ -111,7 +114,7 @@
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: $breakpoint-tablet) {
     .public-articles-page {
         &__hero {
             grid-template-columns: 1fr;
@@ -128,7 +131,7 @@
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: $breakpoint-mobile) {
     .public-articles-page {
         &__hero {
             margin-bottom: 34px;

@@ -1,3 +1,6 @@
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/tokens' as *;
+
 .static-page {
     display: flex;
     flex-direction: column;
@@ -9,7 +12,7 @@
     }
 
     &__eyebrow {
-        color: #174ea6;
+        color: $color-primary;
         font-size: 13px;
         font-weight: 900;
         letter-spacing: 0.11em;
@@ -18,7 +21,7 @@
 
     &__hero h1 {
         margin: 12px 0 0;
-        color: #07111f;
+        color: $color-text-main;
         font-size: 54px;
         font-weight: 900;
         line-height: 1.02;
@@ -42,10 +45,10 @@
 
     &__card,
     &__section {
-        border: 1px solid #d8e3f2;
+        border: 1px solid $color-border;
         border-radius: 22px;
         background-color: rgba(255, 255, 255, 0.86);
-        box-shadow: 0 14px 38px rgba(15, 23, 42, 0.055);
+        box-shadow: 0 14px 38px $shadow-md;
     }
 
     &__card {
@@ -59,7 +62,7 @@
 
     h2 {
         margin: 0;
-        color: #07111f;
+        color: $color-text-main;
         font-size: 22px;
         font-weight: 850;
         line-height: 1.2;
@@ -68,14 +71,14 @@
 
     p {
         margin: 12px 0 0;
-        color: #475569;
+        color: $color-text-secondary;
         font-size: 16px;
         font-weight: 500;
         line-height: 1.6;
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: $breakpoint-tablet) {
     .static-page {
         &__grid {
             grid-template-columns: 1fr;
@@ -87,7 +90,7 @@
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: $breakpoint-mobile) {
     .static-page {
         gap: 26px;
 
@@ -116,10 +119,10 @@
 
     &__contact-form,
     &__contact-card {
-        border: 1px solid #d8e3f2;
+        border: 1px solid $color-border;
         border-radius: 22px;
         background-color: rgba(255, 255, 255, 0.88);
-        box-shadow: 0 14px 38px rgba(15, 23, 42, 0.055);
+        box-shadow: 0 14px 38px $shadow-md;
     }
 
     &__contact-form {
@@ -148,7 +151,7 @@
     &__field-hint {
         min-height: 19px;
         margin: 0;
-        color: #64748b;
+        color: $color-text-muted;
         font-size: 13px;
         font-weight: 600;
         line-height: 1.45;
@@ -166,7 +169,7 @@
         > span {
             display: block;
             margin-bottom: 16px;
-            color: #174ea6;
+            color: $color-primary;
             font-size: 12px;
             font-weight: 900;
             letter-spacing: 0.09em;
@@ -175,7 +178,7 @@
 
         div {
             padding: 14px 0;
-            border-top: 1px dashed #d8e3f2;
+            border-top: 1px dashed $color-border;
 
             &:first-of-type {
                 border-top: 0;
@@ -185,21 +188,21 @@
 
         strong {
             display: block;
-            color: #07111f;
+            color: $color-text-main;
             font-size: 15px;
             font-weight: 850;
         }
 
         p {
             margin: 5px 0 0;
-            color: #64748b;
+            color: $color-text-muted;
             font-size: 14px;
             line-height: 1.45;
         }
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: $breakpoint-tablet) {
     .static-page {
         &__contact-layout {
             grid-template-columns: 1fr;
@@ -211,7 +214,7 @@
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: $breakpoint-mobile) {
     .static-page {
         &__contact-form,
         &__contact-card {
@@ -238,7 +241,7 @@
 .static-page {
     &__meta {
         margin-top: 14px;
-        color: #64748b;
+        color: $color-text-muted;
         font-size: 14px;
         font-weight: 700;
     }
@@ -246,7 +249,7 @@
     &__list {
         margin: 16px 0 0;
         padding-left: 22px;
-        color: #475569;
+        color: $color-text-secondary;
         font-size: 16px;
         font-weight: 500;
         line-height: 1.65;
@@ -256,7 +259,7 @@
         }
 
         strong {
-            color: #07111f;
+            color: $color-text-main;
             font-weight: 850;
         }
     }

@@ -1,3 +1,5 @@
+@use '../../../styles/tokens' as *;
+
 .ui-modal__overlay {
     position: fixed;
     inset: 0;
@@ -36,7 +38,7 @@
     justify-content: space-between;
 
     padding-bottom: 16px;
-    border-bottom: 1px solid rgba(222, 223, 229, 1);
+    border-bottom: 1px solid $color-button-border;
 }
 
 .ui-modal__body {
@@ -48,7 +50,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    color: rgba(50, 55, 73, 1);
+    color: $color-button-bg;
     letter-spacing: -0.3px;
     font-weight: 400;
 
@@ -59,7 +61,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 24px;
     font-weight: 700;
-    color: rgba(50, 55, 73, 1);
+    color: $color-button-bg;
     margin: 0;
 }
 
@@ -73,7 +75,7 @@
     place-items: center;
     font-size: 22px;
     line-height: 1;
-    color: rgba(50, 55, 73, 1);
+    color: $color-button-bg;
     padding: 0;
     margin: 0;
 }
@@ -82,7 +84,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 16px;
     line-height: 20px;
-    color: rgba(50, 55, 73, 1);
+    color: $color-button-bg;
     letter-spacing: -0.3px;
     font-weight: 400;
     font-size: 16px;
@@ -97,7 +99,7 @@
     flex-shrink: 0;
     padding-top: 16px;
     margin-top: 16px;
-    border-top: 1px solid rgba(222, 223, 229, 1);
+    border-top: 1px solid $color-button-border;
 }
 .ui-modal__content {
     border-radius: 12px;

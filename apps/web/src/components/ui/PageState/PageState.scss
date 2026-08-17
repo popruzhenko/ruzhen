@@ -1,16 +1,19 @@
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/tokens' as *;
+
 .ui-page-state {
     width: 100%;
     min-height: 320px;
-    border: 1px solid #d8e3f2;
+    border: 1px solid $color-border;
     border-radius: 24px;
     background:
         radial-gradient(
             circle at top left,
-            rgba(23, 78, 166, 0.08),
+            $color-primary-subtle-bg,
             transparent 34%
         ),
-        #ffffff;
-    box-shadow: 0 16px 44px rgba(15, 23, 42, 0.055);
+        $color-white;
+    box-shadow: 0 16px 44px $shadow-md;
     font-family: 'Inter', sans-serif;
     box-sizing: border-box;
 
@@ -30,7 +33,7 @@
         justify-content: center;
         border-radius: 999px;
         background-color: #e8f1ff;
-        color: #174ea6;
+        color: $color-primary;
         font-size: 14px;
         font-weight: 950;
         line-height: 1;
@@ -38,7 +41,7 @@
     }
 
     &__eyebrow {
-        color: #174ea6;
+        color: $color-primary;
         font-size: 12px;
         font-weight: 900;
         line-height: 1;
@@ -49,7 +52,7 @@
     &__title {
         max-width: 620px;
         margin: 0;
-        color: #07111f;
+        color: $color-text-main;
         font-size: 32px;
         font-weight: 900;
         line-height: 1.08;
@@ -59,7 +62,7 @@
     &__description {
         max-width: 560px;
         margin: 0;
-        color: #64748b;
+        color: $color-text-muted;
         font-size: 16px;
         font-weight: 500;
         line-height: 1.58;
@@ -81,22 +84,22 @@
     &--unauthorized,
     &--forbidden {
         .ui-page-state__icon {
-            background-color: #fee2e2;
-            color: #b91c1c;
+            background-color: $color-danger-bg;
+            color: $color-danger-strong;
         }
     }
 
     &--forbidden {
         .ui-page-state__icon {
-            background-color: #fef3c7;
-            color: #92400e;
+            background-color: $color-warning-bg;
+            color: $color-warning;
         }
     }
 
     &--empty {
         .ui-page-state__icon {
-            background-color: #f1f5f9;
-            color: #475569;
+            background-color: $color-surface;
+            color: $color-text-secondary;
         }
     }
 }
@@ -118,7 +121,7 @@
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: $breakpoint-mobile) {
     .ui-page-state {
         min-height: 260px;
         padding: 34px 22px;

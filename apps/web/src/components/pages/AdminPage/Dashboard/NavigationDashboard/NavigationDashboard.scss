@@ -1,8 +1,9 @@
 @use '../../../../ui/mixin' as *;
+@use '../../../../../styles/tokens' as *;
 
-$navigationDashboardBg: #1e5bb6;
+$navigationDashboardBg: $color-primary-hover;
 $navigationDashboardTextColor: rgba(255, 255, 255, 0.82);
-$navigationDashboardTextActiveColor: #ffffff;
+$navigationDashboardTextActiveColor: $color-white;
 $navigationDashboardHoverBg: rgba(255, 255, 255, 0.08);
 $navigationDashboardActiveBg: rgba(255, 255, 255, 0.14);
 $navigationDashboardBorderColor: rgba(255, 255, 255, 0.12);

@@ -1,3 +1,4 @@
+@use '../../../styles/tokens' as *;
 $accent-color: #1f5fbf;
 
 .ui-link {
@@ -18,7 +19,7 @@ $accent-color: #1f5fbf;
     }
 
     &:active {
-        color: #1e5bb6;
+        color: $color-primary-hover;
         text-decoration: underline;
     }
 }

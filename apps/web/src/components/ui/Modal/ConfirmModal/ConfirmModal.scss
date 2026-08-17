@@ -1,3 +1,5 @@
+@use '../../../../styles/tokens' as *;
+
 .confirm_modal {
     width: min(460px, 100%);
 
@@ -9,7 +11,7 @@
 
     &__description {
         margin: 0;
-        color: #475569;
+        color: $color-text-secondary;
         font-size: 15px;
         line-height: 1.6;
     }

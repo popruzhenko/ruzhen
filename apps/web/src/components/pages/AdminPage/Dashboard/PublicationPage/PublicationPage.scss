@@ -1,3 +1,5 @@
+@use '../../../../../styles/tokens' as *;
+
 .publication {
     display: flex;
     flex-direction: column;
@@ -19,7 +21,7 @@
         min-height: 0;
         border: 1px solid #d8e0ec;
         border-radius: 18px;
-        background-color: #ffffff;
+        background-color: $color-white;
         box-shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
         overflow: hidden;
         box-sizing: border-box;
@@ -32,7 +34,7 @@
     &__preview {
         position: relative;
         overflow-y: auto;
-        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        background: linear-gradient(180deg, $color-white 0%, #fbfdff 100%);
     }
 
     &__panel-header {
@@ -42,7 +44,7 @@
 
         h2 {
             margin: 0;
-            color: #0f172a;
+            color: $color-text-strong;
             font-size: 19px;
             font-weight: 750;
             letter-spacing: -0.02em;
@@ -70,7 +72,7 @@
 
         h2 {
             margin: 0 0 10px;
-            color: #0f172a;
+            color: $color-text-strong;
             font-size: 28px;
             font-weight: 760;
             letter-spacing: -0.03em;
@@ -79,7 +81,7 @@
         p {
             max-width: 420px;
             margin: 0;
-            color: #64748b;
+            color: $color-text-muted;
             text-align: center;
             font-size: 16px;
             line-height: 1.55;
@@ -92,12 +94,12 @@
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 24px;
         border-bottom: 1px solid #e6ebf2;
-        background-color: #ffffff;
+        background-color: $color-white;
 
         h1 {
             max-width: 920px;
             margin: 12px 0 0;
-            color: #07111f;
+            color: $color-text-main;
             font-size: 38px;
             font-weight: 760;
             line-height: 1.15;
@@ -108,7 +110,7 @@
     &__id {
         display: inline-flex;
         align-items: center;
-        color: #64748b;
+        color: $color-text-muted;
         font-size: 13px;
         font-weight: 600;
     }
@@ -132,13 +134,13 @@
             padding: 14px 16px;
             border: 1px solid #edf1f7;
             border-radius: 14px;
-            background-color: #f8fafc;
+            background-color: $color-page-bg;
         }
 
         span {
             display: block;
             margin-bottom: 7px;
-            color: #64748b;
+            color: $color-text-muted;
             font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.02em;
@@ -146,7 +148,7 @@
         }
 
         strong {
-            color: #0f172a;
+            color: $color-text-strong;
             font-size: 14px;
             font-weight: 750;
         }
@@ -164,7 +166,7 @@
 
         h2 {
             margin: 0 0 16px;
-            color: #174ea6;
+            color: $color-primary;
             font-size: 24px;
             font-weight: 760;
             line-height: 1.2;
@@ -172,11 +174,11 @@
         }
 
         &:nth-child(2) h2 {
-            color: #7c4a03;
+            color: $color-purple-dark;
         }
 
         &:nth-child(3) h2 {
-            color: #6d28d9;
+            color: $color-purple;
         }
     }
 
@@ -185,7 +187,7 @@
         align-items: center;
         border-radius: 999px;
         padding: 5px 9px;
-        background-color: #f1f5f9;
+        background-color: $color-surface;
         color: #334155;
         font-size: 11px;
         font-weight: 800;
@@ -216,7 +218,7 @@
 
     &__hint {
         margin: 14px 0 0;
-        color: #64748b;
+        color: $color-text-muted;
         font-size: 14px;
         line-height: 1.5;
     }

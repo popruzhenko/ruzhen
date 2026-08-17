@@ -1,3 +1,5 @@
+@use '../../../styles/tokens' as *;
+
 .ui-pagination {
     display: flex;
     align-items: center;
@@ -16,7 +18,7 @@
         padding: 0 10px;
         border: 1px solid #d8e0ec;
         border-radius: 10px;
-        background-color: #ffffff;
+        background-color: $color-white;
         color: #334155;
         font-family: 'Inter', sans-serif;
         font-size: 14px;
@@ -24,19 +26,19 @@
         cursor: pointer;
 
         &:hover {
-            background-color: #f8fafc;
+            background-color: $color-page-bg;
             border-color: #b7c5d8;
         }
 
         &--active {
-            background-color: #174ea6;
-            border-color: #174ea6;
-            color: #ffffff;
+            background-color: $color-primary;
+            border-color: $color-primary;
+            color: $color-white;
 
             &:hover {
-                background-color: #174ea6;
-                border-color: #174ea6;
-                color: #ffffff;
+                background-color: $color-primary;
+                border-color: $color-primary;
+                color: $color-white;
             }
         }
     }

@@ -35,7 +35,7 @@ export const PublicLayout = ({ children }: PublicLayoutProps) => {
 
             <div className="public-layout__content">{children}</div>
 
-            <Footer basePath="" />
+            <Footer />
         </main>
     );
 };

@@ -1,3 +1,5 @@
+@use '../../../styles/tokens' as *;
+
 .error-page {
     min-height: 100vh;
     background:
@@ -6,7 +8,7 @@
             rgba(23, 78, 166, 0.11),
             transparent 32%
         ),
-        linear-gradient(180deg, #f8fbff 0%, #ffffff 42%, #f8fafc 100%);
+        $gradient-app-bg;
     font-family: 'Inter', sans-serif;
 
     &__container {

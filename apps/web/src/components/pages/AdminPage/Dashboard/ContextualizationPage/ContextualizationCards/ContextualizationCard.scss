@@ -1,10 +1,12 @@
+@use '../../../../../../styles/tokens' as *;
+
 .contextualization_card {
     display: flex;
     flex-direction: column;
     padding: 14px;
-    border: 1px solid #e5eaf2;
+    border: 1px solid $color-border-panel;
     border-radius: 12px;
-    background-color: #f8fafc;
+    background-color: $color-page-bg;
 
     &__top {
         display: flex;
@@ -23,8 +25,8 @@
         letter-spacing: 0.04em;
 
         &--fact {
-            color: #1d4ed8;
-            background-color: #dbeafe;
+            color: $color-info-text;
+            background-color: $color-info-bg;
         }
 
         &--context {
@@ -33,8 +35,8 @@
         }
 
         &--opinion {
-            color: #92400e;
-            background-color: #fef3c7;
+            color: $color-warning;
+            background-color: $color-warning-bg;
         }
     }
 
@@ -48,7 +50,7 @@
         margin-left: auto;
         border: 0;
         background: transparent;
-        color: #dc2626;
+        color: $color-danger;
         font: inherit;
         font-size: 13px;
         cursor: pointer;
@@ -64,7 +66,7 @@
         gap: 6px;
 
         span {
-            color: #475569;
+            color: $color-text-secondary;
             font-size: 13px;
             font-weight: 700;
         }
@@ -72,17 +74,17 @@
         input,
         textarea {
             width: 100%;
-            border: 1px solid #d7dde8;
+            border: 1px solid $color-border-strong;
             border-radius: 10px;
             padding: 10px 12px;
-            color: #0f172a;
-            background-color: #ffffff;
+            color: $color-text-strong;
+            background-color: $color-white;
             font: inherit;
 
             &:focus {
                 outline: none;
-                border-color: #4177cc;
-                box-shadow: 0 0 0 3px rgba(65, 119, 204, 0.12);
+                border-color: $color-primary-soft;
+                box-shadow: 0 0 0 3px $color-primary-muted-bg;
             }
         }
 

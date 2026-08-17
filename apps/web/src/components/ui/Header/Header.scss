@@ -1,4 +1,6 @@
 @use '../_mixin.scss' as *;
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/tokens' as *;
 
 .ui-header {
     position: sticky;
@@ -26,12 +28,12 @@
     &__brand {
         display: inline-flex;
         align-items: center;
-        color: #07111f;
+        color: $color-text-main;
         text-decoration: none;
     }
 
     &__brand-text {
-        color: #07111f;
+        color: $color-text-main;
         font-size: 22px;
         font-weight: 950;
         line-height: 1;
@@ -61,7 +63,7 @@
         border: none;
         border-radius: 999px;
         background-color: transparent;
-        color: #475569;
+        color: $color-text-secondary;
         font-size: 14px;
         font-weight: 750;
         line-height: 1;
@@ -72,13 +74,13 @@
             color 0.16s ease;
 
         &:hover {
-            background-color: #f1f5f9;
-            color: #174ea6;
+            background-color: $color-surface;
+            color: $color-primary;
         }
 
         &--active {
             background-color: #e8f1ff;
-            color: #174ea6;
+            color: $color-primary;
         }
     }
 
@@ -96,15 +98,15 @@
         align-items: center;
         justify-content: center;
         padding: 0 16px;
-        border: 1px solid #d8e3f2;
+        border: 1px solid $color-border;
         border-radius: 999px;
-        background-color: #ffffff;
-        color: #174ea6;
+        background-color: $color-white;
+        color: $color-primary;
         font-size: 14px;
         font-weight: 850;
         line-height: 1;
         cursor: pointer;
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+        box-shadow: 0 8px 20px $shadow-soft;
         transition:
             background-color 0.16s ease,
             border-color 0.16s ease,
@@ -114,9 +116,9 @@
 
         &:hover {
             transform: translateY(-1px);
-            border-color: #174ea6;
-            background-color: #174ea6;
-            color: #ffffff;
+            border-color: $color-primary;
+            background-color: $color-primary;
+            color: $color-white;
             box-shadow: 0 12px 26px rgba(23, 78, 166, 0.18);
         }
     }
@@ -129,7 +131,7 @@
     }
 
     &--admin {
-        background-color: #1e5bb6;
+        background-color: $color-primary-hover;
         display: grid;
         grid-template-columns: 175px 1fr;
 
@@ -142,7 +144,7 @@
         }
         .ui-header__brand,
         .ui-header__brand-text {
-            color: #ffffff;
+            color: $color-white;
         }
 
         .ui-header__nav-item {
@@ -150,12 +152,12 @@
 
             &:hover {
                 background-color: rgba(255, 255, 255, 0.08);
-                color: #ffffff;
+                color: $color-white;
             }
 
             &--active {
                 background-color: rgba(255, 255, 255, 0.13);
-                color: #ffffff;
+                color: $color-white;
             }
         }
     }
@@ -172,7 +174,7 @@
     }
 }
 
-@media (max-width: 720px) {
+@media (max-width: $breakpoint-header-mobile) {
     .ui-header {
         &__container {
             width: min(100% - 28px, 1180px);

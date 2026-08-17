@@ -1,3 +1,5 @@
+@use '../../../styles/tokens' as *;
+
 .ui-badge {
     display: inline-flex;
     align-items: center;
@@ -17,22 +19,22 @@
     border: 1px solid transparent;
     &.ui-badge--fact {
         background-color: #e8f1ff;
-        color: #4177cc;
+        color: $color-primary-soft;
     }
     &.ui-badge--context {
-        background-color: #fef3c7;
-        color: #7c4a03;
+        background-color: $color-warning-bg;
+        color: $color-purple-dark;
     }
     &.ui-badge--opinion {
         background-color: #ede9fe;
-        color: #6d28d9;
+        color: $color-purple;
     }
     &.ui-badge--pro {
-        background-color: #dcfce7;
-        color: #166534;
+        background-color: $color-success-bg;
+        color: $color-success;
     }
     &.ui-badge--contra {
-        background-color: #fee2e2;
+        background-color: $color-danger-bg;
         color: #991b1b;
     }
     &.ui-badge--neutral {
@@ -44,8 +46,8 @@
         color: #23407e;
     }
     &.ui-badge--new {
-        background-color: #fef3c7;
-        color: #92400e;
+        background-color: $color-warning-bg;
+        color: $color-warning;
     }
 
     &.ui-badge--raw {
@@ -65,7 +67,7 @@
 
     &.ui-badge--approved {
         background-color: #d8f5df;
-        color: #166534;
+        color: $color-success;
     }
 
     &.ui-badge--rejected {
@@ -74,13 +76,13 @@
     }
 
     &.ui-badge--embedded {
-        background-color: #dbeafe;
-        color: #1d4ed8;
+        background-color: $color-info-bg;
+        color: $color-info-text;
     }
 
     &.ui-badge--clustered {
         background-color: #eadcff;
-        color: #6d28d9;
+        color: $color-purple;
     }
 
     &.ui-badge--processing {
@@ -89,8 +91,8 @@
     }
 
     &.ui-badge--error {
-        background-color: #fee2e2;
-        color: #b91c1c;
+        background-color: $color-danger-bg;
+        color: $color-danger-strong;
     }
 
     &.ui-badge--done {
@@ -99,8 +101,8 @@
     }
 
     &.ui-badge--pending {
-        background-color: #f1f5f9;
-        color: #64748b;
+        background-color: $color-surface;
+        color: $color-text-muted;
     }
 
     &.ui-badge--primary {
@@ -108,13 +110,13 @@
         color: white;
     }
     &.ui-badge--draft {
-        background-color: #f1f5f9;
-        color: #475569;
+        background-color: $color-surface;
+        color: $color-text-secondary;
     }
 
     &.ui-badge--published {
-        background-color: #dcfce7;
-        color: #166534;
+        background-color: $color-success-bg;
+        color: $color-success;
     }
 
     &.ui-badge--archived {

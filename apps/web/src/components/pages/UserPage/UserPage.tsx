@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { usePublicClustersQuery } from '../../../entities/public-clusters';
+import { usePublicClustersQuery, type PublicClusterListItem } from '../../../entities/public-clusters';
 
 import { UserLayout } from '../../layouts/UserLayout/UserLayout';
 import { PageState } from '../../ui/PageState/PageState';
@@ -48,7 +48,8 @@ export const UserPage = () => {
     });
 
     const data = publicClustersQuery.data;
-    const articles = data?.items ?? [];
+    const EMPTY_ARTICLES: PublicClusterListItem[] = [];
+    const articles = data?.items ?? EMPTY_ARTICLES;
     const pagination = data?.pagination;
 
     const filteredArticles = useMemo(() => {

@@ -1,10 +1,13 @@
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/tokens' as *;
+
 .user-page {
     &__hero {
         margin-bottom: 32px;
     }
 
     &__eyebrow {
-        color: #174ea6;
+        color: $color-primary;
         font-size: 13px;
         font-weight: 900;
         letter-spacing: 0.11em;
@@ -14,7 +17,7 @@
     &__hero h1 {
         max-width: 760px;
         margin: 10px 0 0;
-        color: #07111f;
+        color: $color-text-main;
         font-size: 48px;
         font-weight: 900;
         line-height: 1.02;
@@ -41,7 +44,7 @@
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: $breakpoint-mobile) {
     .user-page {
         &__hero {
             margin-bottom: 26px;
