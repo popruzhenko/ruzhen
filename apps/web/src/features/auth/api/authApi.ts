@@ -1,7 +1,8 @@
 import { getAccessToken } from '../lib/authStorage';
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+import type { UserRole } from '../lib/authConstants';
+export type { UserRole } from '../lib/authConstants';
 
-export type UserRole = 'USER' | 'ADMIN';
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
 export interface AuthUser {
     id: string;

@@ -34,6 +34,18 @@ import { isDateInFetchedRange } from '../lib/DateHelper';
 import { getSimilarityThreshold } from '../lib/SimilarityThresholdHelper';
 
 import './ClusteringPage.scss';
+import {
+    ARTICLE_STATUS,
+    isClusteringArticleStatus,
+    type ClusteringArticleStatus,
+    type ArticleStatus,
+} from '../../../../../entities/raw-news/model/articleConstants';
+
+const hasClusteringArticleStatus = <T extends { status: ArticleStatus }>(
+    article: T,
+): article is T & { status: ClusteringArticleStatus } => {
+    return isClusteringArticleStatus(article.status);
+};
 
 type FilterableCandidateArticle = EmbeddedArticleItem & {
     createdAt: string | null;
@@ -149,7 +161,7 @@ export const ClusteringPage = () => {
                     similarityToCentroid: article.confidence ?? null,
                     confidence: article.confidence ?? null,
                     isPrimary: article.isPrimary,
-                    status: 'CLUSTERED',
+                    status: ARTICLE_STATUS.CLUSTERED,
                 };
             },
         );
@@ -165,15 +177,12 @@ export const ClusteringPage = () => {
         );
 
         const mappedCandidates: FilterableCandidateArticle[] = articles
+            .filter(hasClusteringArticleStatus)
             .filter((article) => {
-                const isAllowedStatus =
-                    article.status === 'APPROVED' ||
-                    article.status === 'EMBEDDED';
-
                 const hasTitle = Boolean(article.title?.trim());
                 const isAlreadyInCluster = clusterArticleIds.has(article.id);
 
-                return isAllowedStatus && hasTitle && !isAlreadyInCluster;
+                return hasTitle && !isAlreadyInCluster;
             })
             .map((article) => ({
                 id: article.id,
@@ -183,7 +192,7 @@ export const ClusteringPage = () => {
                 country: article.country ?? null,
                 publishedAt: article.publishedAt ?? null,
                 createdAt: article.createdAt ?? null,
-                status: article.status as 'APPROVED' | 'EMBEDDED' | 'CLUSTERED',
+                status: article.status,
                 embedding: toNumberArray(article.embedding),
                 similarityToCluster: null,
             }));
@@ -433,7 +442,7 @@ export const ClusteringPage = () => {
                 isPrimary: false,
                 confidence: null,
                 similarityToCentroid: 0,
-                status: 'CLUSTERED',
+                status: ARTICLE_STATUS.EMBEDDED,
             }));
 
         setClusterArticles((currentArticles) => [
@@ -599,7 +608,7 @@ export const ClusteringPage = () => {
                     ...article,
                     createdAt: null,
                     similarityToCluster: null,
-                    status: 'EMBEDDED' as const,
+                    status: ARTICLE_STATUS.EMBEDDED,
                     embedding: Array.isArray(article.embedding)
                         ? article.embedding
                         : null,

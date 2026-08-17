@@ -14,6 +14,7 @@ import { useUpdateArticleMutation } from '../../../../../../entities/raw-news/ho
 import { useReviewArticleContentMutation } from '../../../../../../entities/raw-news/hooks/useReviewArticleContentMutation';
 
 import './RawArticleCard.scss';
+import { ARTICLE_STATUS, CONTENT_AVAILABILITY, type ContentAvailability } from '../../../../../../entities/raw-news/model/articleConstants';
 
 interface RawArticleCardProps {
     article: RawNewsFeedItem;
@@ -26,7 +27,7 @@ interface RawArticleValidationInput {
     preview: string | null;
     url: string | null;
     sourceName: string | null;
-    contentAvailability: string | null;
+    contentAvailability: ContentAvailability | null;
 }
 
 const formatDate = (value?: string | null) => {
@@ -133,7 +134,7 @@ const getApproveValidationErrors = ({
         errors.push('Content is required before approval.');
     }
 
-    if (contentAvailability && contentAvailability !== 'FULL_TEXT') {
+    if (contentAvailability && contentAvailability !== CONTENT_AVAILABILITY.FULL_TEXT) {
         errors.push('Article must have FULL_TEXT content before approval.');
     }
 
@@ -175,7 +176,7 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
         try {
             await updateArticleMutation.mutateAsync({
                 id: article.id,
-                status: 'REJECTED',
+                status: ARTICLE_STATUS.REJECTED,
             });
 
             showToast({
@@ -217,7 +218,7 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                 content: content.trim(),
                 preview: preview.trim(),
                 cleanedAccessibleText: content.trim(),
-                status: 'APPROVED',
+                status: ARTICLE_STATUS.APPROVED,
             });
 
             showToast({
@@ -278,7 +279,7 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                 content: content.trim(),
                 preview: preview.trim(),
                 cleanedAccessibleText: content.trim(),
-                status: 'REVIEWED',
+                status: ARTICLE_STATUS.REVIEWED,
             });
 
             await reviewArticleContentMutation.mutateAsync(article.id);
@@ -453,8 +454,8 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                         <Button
                             variants="secondary"
                             disabled={
-                                article.status === 'NEEDS_REVIEW' ||
-                                article.status === 'NEW' ||
+                                article.status === ARTICLE_STATUS.NEEDS_REVIEW ||
+                                article.status === ARTICLE_STATUS.NEW ||
                                 updateArticleMutation.isPending
                             }
                             onClick={handleRejectClick}
@@ -465,8 +466,8 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                         <Button
                             variants="secondary"
                             disabled={
-                                article.status === 'NEEDS_REVIEW' ||
-                                article.status === 'NEW' ||
+                                article.status === ARTICLE_STATUS.NEEDS_REVIEW ||
+                                article.status === ARTICLE_STATUS.NEW ||
                                 updateArticleMutation.isPending
                             }
                             onClick={handleApproveClick}

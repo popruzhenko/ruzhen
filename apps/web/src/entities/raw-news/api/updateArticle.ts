@@ -1,4 +1,5 @@
 import { apiClient } from '../../../shared/api/client';
+import type { ArticleStatus } from '../model/articleConstants';
 import type { ArticleApiItem } from '../model/types';
 
 export interface UpdateArticlePayload {
@@ -8,14 +9,7 @@ export interface UpdateArticlePayload {
     content?: string;
     preview?: string;
     cleanedAccessibleText?: string;
-    status?:
-        | 'NEW'
-        | 'NEEDS_REVIEW'
-        | 'REVIEWED'
-        | 'EMBEDDED'
-        | 'CLUSTERED'
-        | 'APPROVED'
-        | 'REJECTED';
+    status?: ArticleStatus;
 }
 
 export async function updateArticle(

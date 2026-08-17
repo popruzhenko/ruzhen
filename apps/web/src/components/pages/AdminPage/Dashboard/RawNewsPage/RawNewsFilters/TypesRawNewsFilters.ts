@@ -1,20 +1,10 @@
+import type { ArticleStatus, ContentAvailability } from '../../../../../../entities/raw-news/model/articleConstants';
+
 export type RawNewsStatusFilter =
-    | 'ALL'
-    | 'NEW'
-    | 'NEEDS_REVIEW'
-    | 'REVIEWED'
-    | 'APPROVED'
-    | 'REJECTED'
-    | 'EMBEDDED'
-    | 'CLUSTERED';
+    | 'ALL' | ArticleStatus;
 
 export type RawNewsContentFilter =
-    | 'ALL'
-    | 'FULL_TEXT'
-    | 'PARTIAL_TEXT'
-    | 'SUMMARY_ONLY'
-    | 'TITLE_ONLY'
-    | 'PREVIEW_ONLY';
+    | 'ALL' | ContentAvailability;
 
 export type RawNewsDateFilter =
     'ALL' | 'TODAY' | 'YESTERDAY' | 'LAST_7_DAYS' | 'LAST_30_DAYS';

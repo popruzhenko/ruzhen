@@ -1,4 +1,4 @@
-export type ArticleStatus = 'NEW' | 'EMBEDDED' | 'CLUSTERED' | 'REJECTED';
+import type { ArticleStatus } from '../../../../../../entities/raw-news/model/articleConstants';
 
 export interface RawArticleCardData {
     id: string;

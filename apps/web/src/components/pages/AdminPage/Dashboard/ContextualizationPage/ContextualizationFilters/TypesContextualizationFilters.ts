@@ -1,5 +1,7 @@
+import type { ClusterStatus } from "../../../../../../entities/cluster/model/clusterConstants";
+
 export type ContextualizationStatusFilter =
-    'ALL' | 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    'ALL' | ClusterStatus;
 
 export type ContextualizationDraftStateFilter =
     'ALL' | 'WITHOUT_BLOCKS' | 'WITH_BLOCKS' | 'READY_TO_REVIEW';

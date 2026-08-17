@@ -3,25 +3,26 @@ import { DropDown } from '../../../../../ui/DropDown/DropDown';
 import type { RawNewsFiltersProps } from './TypesRawNewsFilters';
 import './RawNewsFilters.scss';
 import { Icon } from '../../../../../ui/Icon/Icon';
+import { ARTICLE_STATUS, CONTENT_AVAILABILITY } from '../../../../../../entities/raw-news/model/articleConstants';
 
 const statusOptions = [
     { label: 'All statuses', value: 'ALL' },
-    { label: 'New', value: 'NEW' },
-    { label: 'Needs review', value: 'NEEDS_REVIEW' },
-    { label: 'Reviewed', value: 'REVIEWED' },
-    { label: 'Approved', value: 'APPROVED' },
-    { label: 'Rejected', value: 'REJECTED' },
-    { label: 'Embedded', value: 'EMBEDDED' },
-    { label: 'Clustered', value: 'CLUSTERED' },
+    { label: 'New', value: ARTICLE_STATUS.NEW },
+    { label: 'Needs review', value: ARTICLE_STATUS.NEEDS_REVIEW },
+    { label: 'Reviewed', value: ARTICLE_STATUS.REVIEWED },
+    { label: 'Approved', value: ARTICLE_STATUS.APPROVED },
+    { label: 'Rejected', value: ARTICLE_STATUS.REJECTED },
+    { label: 'Embedded', value: ARTICLE_STATUS.EMBEDDED },
+    { label: 'Clustered', value: ARTICLE_STATUS.CLUSTERED },
 ];
 
 const contentOptions = [
     { label: 'All content', value: 'ALL' },
-    { label: 'Full text', value: 'FULL_TEXT' },
-    { label: 'Partial text', value: 'PARTIAL_TEXT' },
-    { label: 'Summary only', value: 'SUMMARY_ONLY' },
-    { label: 'Title only', value: 'TITLE_ONLY' },
-    { label: 'Preview only', value: 'PREVIEW_ONLY' },
+    { label: 'Full text', value: CONTENT_AVAILABILITY.FULL_TEXT },
+    { label: 'Partial text', value: CONTENT_AVAILABILITY.PARTIAL_TEXT },
+    { label: 'Summary only', value: CONTENT_AVAILABILITY.SUMMARY_ONLY },
+    { label: 'Title only', value: CONTENT_AVAILABILITY.TITLE_ONLY },
+    { label: 'Preview only', value: CONTENT_AVAILABILITY.PREVIEW_ONLY },
 ];
 
 const dateOptions = [

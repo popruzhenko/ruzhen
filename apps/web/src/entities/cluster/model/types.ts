@@ -1,10 +1,12 @@
+import type { ClusterStatus } from "./clusterConstants";
+
 export interface ClusterApiItem {
     id: string;
     humanId: string;
     title: string;
     summary: string | null;
     mainCountry: string | null;
-    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    status: ClusterStatus;
     createdAt: string;
     updatedAt: string;
     publishedAt: string | null;
@@ -70,7 +72,7 @@ export interface ClusterDetailsApiItem {
     summary: string | null;
     mainCountry: string | null;
     startDate: string | null;
-    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    status: ClusterStatus;
     publishedAt: string | null;
     createdAt: string;
     createdByUserId: string;

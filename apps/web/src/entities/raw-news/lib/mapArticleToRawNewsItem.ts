@@ -1,3 +1,4 @@
+import { ARTICLE_STATUS } from '../model/articleConstants';
 import type { ArticleApiItem, RawNewsFeedItem } from '../model/types';
 
 export function mapArticleToRawNewsItem(
@@ -29,7 +30,7 @@ export function mapArticleToRawNewsItem(
 
         embedding: article.embedding ?? [0],
 
-        contentAvailability: article.contentAvailability ?? 'Unknown',
+        contentAvailability: article.contentAvailability ?? null,
         embeddingBasis: article.embeddingBasis ?? '—',
         cleaningMethod: article.cleaningMethod ?? '—',
         embeddingModel: article.embeddingModel ?? '—',
@@ -43,9 +44,9 @@ export function mapArticleToRawNewsItem(
             fetched: Boolean(article.raw?.fetchedAt),
             cleaned: Boolean(article.cleanedAccessibleText),
             embedded:
-                article.status === 'EMBEDDED' || article.status === 'CLUSTERED',
+                article.status === ARTICLE_STATUS.EMBEDDED || article.status === ARTICLE_STATUS.CLUSTERED,
             clustered:
-                article.status === 'CLUSTERED' ||
+                article.status === ARTICLE_STATUS.CLUSTERED ||
                 article._count.clusterLinks > 0,
         },
     };

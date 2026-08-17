@@ -8,11 +8,12 @@ import { DropDown } from '../DropDown/DropDown';
 import { clearAuthData } from '../../../features/auth/lib/authStorage';
 import { logoutRequest } from '../../../features/auth/api/authApi';
 import { Button } from '../Button/Button';
+import { USER_ROLE } from '../../../features/auth/lib/authConstants';
 
 export const Header = ({
     variant = 'public',
     navItems = [],
-    userName = 'User',
+    userName = USER_ROLE.USER,
     onLoginClick,
     className,
 }: HeaderProps) => {

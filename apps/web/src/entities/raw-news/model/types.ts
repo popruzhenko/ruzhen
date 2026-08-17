@@ -1,15 +1,6 @@
-export type ArticleStatus =
-    | 'NEW'
-    | 'NEEDS_REVIEW'
-    | 'REVIEWED'
-    | 'REJECTED'
-    | 'APPROVED'
-    | 'EMBEDDED'
-    | 'CLUSTERED'
-    | string;
+import type { ArticleStatus, ContentAvailability } from "./articleConstants";
 
-export type ContentAvailability =
-    'FULL' | 'SUMMARY_ONLY' | 'NO_CONTENT' | string;
+    
 
 export interface ArticleSourceApiItem {
     id: string;
@@ -81,7 +72,7 @@ export interface RawNewsFeedItem {
     country: string;
     language: string;
     embedding: number[] | null;
-    contentAvailability: string;
+    contentAvailability: ContentAvailability | null;
     embeddingBasis: string;
     cleaningMethod: string;
     embeddingModel: string;

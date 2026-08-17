@@ -1,6 +1,7 @@
 import { apiClient } from '../../../shared/api/client';
+import type { ClusterStatus } from '../../cluster/model/clusterConstants';
 
-export type PublicationClusterStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+export type PublicationClusterStatus = ClusterStatus;
 
 export interface UpdateClusterStatusResponse {
     message: string;
@@ -9,7 +10,7 @@ export interface UpdateClusterStatusResponse {
         humanId: string;
         title: string;
         summary: string | null;
-        status: PublicationClusterStatus;
+        status: ClusterStatus;
         mainCountry: string | null;
         startDate: string | null;
         publishedAt: string | null;

@@ -5,12 +5,13 @@ import { Icon } from '../../../../../ui/Icon/Icon';
 import type { PublicationFiltersProps } from './TypesPublicationFilters';
 
 import './PublicationFilters.scss';
+import { CLUSTER_STATUS } from '../../../../../../entities/cluster/model/clusterConstants';
 
 const statusOptions = [
     { label: 'All statuses', value: 'ALL' },
-    { label: 'Draft', value: 'DRAFT' },
-    { label: 'Published', value: 'PUBLISHED' },
-    { label: 'Archived', value: 'ARCHIVED' },
+    { label: 'Draft', value: CLUSTER_STATUS.DRAFT },
+    { label: 'Published', value: CLUSTER_STATUS.PUBLISHED },
+    { label: 'Archived', value: CLUSTER_STATUS.ARCHIVED },
 ];
 
 const dateOptions = [

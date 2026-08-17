@@ -3,12 +3,13 @@ import { DropDown } from '../../../../../ui/DropDown/DropDown';
 import type { ContextualizationFiltersProps } from './TypesContextualizationFilters';
 import './ContextualizationFilters.scss';
 import { Icon } from '../../../../../ui/Icon/Icon';
+import { CLUSTER_STATUS } from '../../../../../../entities/cluster/model/clusterConstants';
 
 const statusOptions = [
     { label: 'All statuses', value: 'ALL' },
-    { label: 'Draft', value: 'DRAFT' },
-    { label: 'Published', value: 'PUBLISHED' },
-    { label: 'Archived', value: 'ARCHIVED' },
+    { label: 'Draft', value: CLUSTER_STATUS.DRAFT },
+    { label: 'Published', value: CLUSTER_STATUS.PUBLISHED },
+    { label: 'Archived', value: CLUSTER_STATUS.ARCHIVED },
 ];
 
 const draftStateOptions = [

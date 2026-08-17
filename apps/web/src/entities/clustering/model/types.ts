@@ -1,3 +1,6 @@
+import type { ClusterStatus } from "../../cluster/model/clusterConstants";
+import type { ClusteringArticleStatus } from "../../raw-news/model/articleConstants";
+
 export interface EmbeddedArticleItem {
     id: string;
     title: string;
@@ -34,9 +37,8 @@ export interface ClusterListItem {
     humanId: string;
     title: string;
     summary: string | null;
-    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    status: ClusterStatus;
     articlesCount: number;
     averageSimilarity: number;
 }
 
-export type ClusteringArticleStatus = 'APPROVED' | 'EMBEDDED' | 'CLUSTERED';

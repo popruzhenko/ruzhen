@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
-
+import {
+    CLUSTER_STATUS
+} from '../../../../../entities/cluster/model/clusterConstants';
 import {
     useClusterByIdQuery,
     useClustersQuery,
@@ -89,11 +91,11 @@ const getClusterBlocksSearchText = (cluster: unknown): string => {
 };
 
 const getStatusSuccessMessage = (status: PublicationClusterStatus): string => {
-    if (status === 'PUBLISHED') {
+    if (status === CLUSTER_STATUS.PUBLISHED) {
         return 'Article was published successfully.';
     }
 
-    if (status === 'DRAFT') {
+    if (status === CLUSTER_STATUS.DRAFT) {
         return 'Article was moved back to draft.';
     }
 
@@ -101,11 +103,11 @@ const getStatusSuccessMessage = (status: PublicationClusterStatus): string => {
 };
 
 const getStatusSuccessTitle = (status: PublicationClusterStatus): string => {
-    if (status === 'PUBLISHED') {
+    if (status === CLUSTER_STATUS.PUBLISHED) {
         return 'Article published';
     }
 
-    if (status === 'DRAFT') {
+    if (status === CLUSTER_STATUS.DRAFT) {
         return 'Moved to draft';
     }
 
@@ -372,7 +374,7 @@ export const PublicationPage = () => {
             return;
         }
 
-        await handleUpdateStatus('PUBLISHED');
+        await handleUpdateStatus(CLUSTER_STATUS.PUBLISHED);
         setIsPublishConfirmOpen(false);
     };
 
@@ -621,7 +623,7 @@ export const PublicationPage = () => {
                                 onClick={handleOpenPublishConfirm}
                                 disabled={
                                     !selectedCluster ||
-                                    selectedCluster.status === 'PUBLISHED' ||
+                                    selectedCluster.status === CLUSTER_STATUS.PUBLISHED ||
                                     updateStatusMutation.isPending
                                 }
                             >
@@ -630,10 +632,10 @@ export const PublicationPage = () => {
 
                             <Button
                                 variants="secondary"
-                                onClick={() => handleUpdateStatus('DRAFT')}
+                                onClick={() => handleUpdateStatus(CLUSTER_STATUS.DRAFT)}
                                 disabled={
                                     !selectedCluster ||
-                                    selectedCluster.status === 'DRAFT' ||
+                                    selectedCluster.status === CLUSTER_STATUS.DRAFT ||
                                     updateStatusMutation.isPending
                                 }
                             >
@@ -642,10 +644,10 @@ export const PublicationPage = () => {
 
                             <Button
                                 variants="secondary"
-                                onClick={() => handleUpdateStatus('ARCHIVED')}
+                                onClick={() => handleUpdateStatus(CLUSTER_STATUS.ARCHIVED)}
                                 disabled={
                                     !selectedCluster ||
-                                    selectedCluster.status === 'ARCHIVED' ||
+                                    selectedCluster.status === CLUSTER_STATUS.ARCHIVED ||
                                     updateStatusMutation.isPending
                                 }
                             >
