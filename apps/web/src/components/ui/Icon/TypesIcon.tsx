@@ -1,19 +1,19 @@
 export type IconName =
     | 'cart'
     | 'check'
-    | 'checkbox-fill'
-    | 'checkbox-line'
-    | 'chevron-down'
-    | 'chevron-right'
-    | 'chevron-left'
-    | 'chevron-up'
+    | 'checkboxFill'
+    | 'checkboxLine'
+    | 'chevronDown'
+    | 'chevronRight'
+    | 'chevronLeft'
+    | 'chevronUp'
     | 'close'
     | 'default'
     | 'delete'
-    | 'down-small'
+    | 'downSmall'
     | 'edit'
     | 'eye'
-    | 'open-eye'
+    | 'openEye'
     | 'google'
     | 'info'
     | 'logout'
@@ -25,7 +25,7 @@ export type IconName =
     | 'truck'
     | 'user'
     | 'color'
-    | 'color-selected';
+    | 'colorSelected';
 
 export type IconProps = {
     name: IconName;

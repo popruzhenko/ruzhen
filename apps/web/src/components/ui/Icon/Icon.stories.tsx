@@ -41,6 +41,6 @@ export const Gallery: Story = {
 
 export const SingleIcon: Story = {
     args: {
-        name: 'chevron-left',
+        name: 'chevronLeft',
     },
 };
