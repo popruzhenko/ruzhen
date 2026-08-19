@@ -1,4 +1,4 @@
-import { useRef, useEffect, useId } from 'react';
+import { useRef, useId } from 'react';
 
 import type { TextareaProps } from './TypesTextarea';
 import { classesJoined } from '../Utils/classesJoined';
@@ -14,23 +14,11 @@ export const Textarea: React.FC<TextareaProps> = ({
     onInput,
     onChange,
     disabled,
+    maxHeight,
     ...rest
 }) => {
     const textareaId = id ?? useId();
     const ref = useRef<HTMLTextAreaElement>(null);
-
-    const autoResize = () => {
-        const el = ref.current;
-
-        if (!el) return;
-
-        el.style.height = 'auto';
-        el.style.height = `${el.scrollHeight}px`;
-    };
-
-    useEffect(() => {
-        autoResize();
-    }, [rest.value, rest.defaultValue]);
 
     const rootClasses = classesJoined([
         'ui-textarea',
@@ -59,13 +47,13 @@ export const Textarea: React.FC<TextareaProps> = ({
                 aria-invalid={!!error}
                 aria-describedby={error ? `${textareaId}-error` : undefined}
                 onInput={(event) => {
-                    autoResize();
                     onInput?.(event);
                 }}
                 onChange={(event) => {
                     onChange?.(event.target.value);
                 }}
                 {...rest}
+                style={{ height: maxHeight ? `${maxHeight}px` : undefined}}
             />
 
             <div

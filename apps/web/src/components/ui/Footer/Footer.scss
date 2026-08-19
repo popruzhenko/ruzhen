@@ -31,6 +31,12 @@
         }
     }
 
+    &__logo-wrapper {
+        display: inline-flex;
+        margin: 0;
+        font: inherit;
+    }
+
     &__logo {
         color: $color-text-main;
         font-size: 22px;
@@ -47,10 +53,23 @@
 
     &__nav {
         display: flex;
+        justify-content: flex-end;
+    }
+
+    &__nav-list {
+        display: flex;
         align-items: center;
         justify-content: flex-end;
         flex-wrap: wrap;
         gap: 16px 22px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__nav-item {
+        margin: 0;
+        padding: 0;
 
         a {
             color: $color-text-secondary;
@@ -88,6 +107,10 @@
         }
 
         &__nav {
+            justify-content: flex-start;
+        }
+
+        &__nav-list {
             justify-content: flex-start;
         }
 

@@ -33,12 +33,14 @@ export const Footer = ({ className, basePath = '' }: FooterProps) => {
         <footer className={classesJoined(['ui-footer', className])}>
             <div className="ui-footer__inner">
                 <div className="ui-footer__brand">
-                    <RouterLink
-                        to={basePath ? '/user' : '/'}
-                        className="ui-footer__logo"
-                    >
-                        Ruzhen
-                    </RouterLink>
+                    <strong className="ui-footer__logo-wrapper">
+                        <RouterLink
+                            to={basePath ? '/user' : '/'}
+                            className="ui-footer__logo"
+                        >
+                            <span>Ruzhen</span>
+                        </RouterLink>
+                    </strong>
 
                     <p>
                         Structured news intelligence with facts, context and
@@ -47,11 +49,18 @@ export const Footer = ({ className, basePath = '' }: FooterProps) => {
                 </div>
 
                 <nav className="ui-footer__nav" aria-label="Footer navigation">
-                    {footerLinks.map((link) => (
-                        <RouterLink key={link.to} to={link.to}>
-                            {link.label}
-                        </RouterLink>
-                    ))}
+                    <ul className="ui-footer__nav-list">
+                        {footerLinks.map((link) => (
+                            <li
+                                key={link.to}
+                                className="ui-footer__nav-item"
+                            >
+                                <RouterLink to={link.to}>
+                                    {link.label}
+                                </RouterLink>
+                            </li>
+                        ))}
+                    </ul>
                 </nav>
 
                 <div className="ui-footer__bottom">

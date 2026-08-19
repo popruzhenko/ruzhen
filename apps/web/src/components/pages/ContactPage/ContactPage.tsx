@@ -251,37 +251,37 @@ export const ContactPage = () => {
                     <aside className="static-page__contact-card">
                         <span>Before sending</span>
 
-                        <div>
-                            <strong>Corrections</strong>
-                            <p>
-                                Include the article title, source and what
-                                should be corrected.
-                            </p>
-                        </div>
+                        <ul className="static-page__contact-list">
+                            <li className="static-page__contact-item">
+                                <strong>Corrections</strong>
+                                <p>
+                                    Include the article title, source and what should be corrected.
+                                </p>
+                            </li>
 
-                        <div>
-                            <strong>Sources</strong>
-                            <p>
-                                Suggest sources with stable publishing quality
-                                and clear editorial standards.
-                            </p>
-                        </div>
+                            <li className="static-page__contact-item">
+                                <strong>Sources</strong>
+                                <p>
+                                    Suggest sources with stable publishing quality and clear
+                                    editorial standards.
+                                </p>
+                            </li>
 
-                        <div>
-                            <strong>Partnerships</strong>
-                            <p>
-                                Briefly describe the collaboration idea and why
-                                it fits Ruzhen.
-                            </p>
-                        </div>
+                            <li className="static-page__contact-item">
+                                <strong>Partnerships</strong>
+                                <p>
+                                    Briefly describe the collaboration idea and why it fits Ruzhen.
+                                </p>
+                            </li>
 
-                        <div>
-                            <strong>Other</strong>
-                            <p>
-                                Use this topic for general feedback or messages
-                                that do not fit the predefined categories.
-                            </p>
-                        </div>
+                            <li className="static-page__contact-item">
+                                <strong>Other</strong>
+                                <p>
+                                    Use this topic for general feedback or messages that do not fit
+                                    the predefined categories.
+                                </p>
+                            </li>
+                        </ul>
                     </aside>
                 </section>
             </div>

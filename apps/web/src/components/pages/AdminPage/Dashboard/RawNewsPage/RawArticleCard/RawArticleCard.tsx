@@ -548,6 +548,7 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                     <Textarea
                         label="Content"
                         value={content}
+                        maxHeight={400}
                         onChange={(value) => setContent(value.toString())}
                     />
                 </div>

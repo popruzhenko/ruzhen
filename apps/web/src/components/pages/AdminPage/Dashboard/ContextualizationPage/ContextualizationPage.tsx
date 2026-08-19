@@ -27,6 +27,7 @@ import { getSourceCountThreshold } from '../lib/SourceCountThresholdHelper';
 
 import './ContextualizationPage.scss';
 import { TOAST_TYPE } from '../../../../ui/Toast/ToastConstants';
+import { Textarea } from '../../../../ui/Textarea/Textarea';
 
 type ContextBlockType = 'FACT' | 'CONTEXT' | 'OPINION';
 type OpinionStance = 'PRO' | 'CONTRA' | 'NEUTRAL';
@@ -722,11 +723,12 @@ export const ContextualizationPage = () => {
                                     <label className="contextualization__field contextualization__field--summary">
                                         <span>Summary</span>
 
-                                        <textarea
+                                        <Textarea
+                                            maxHeight={350}
                                             value={draftSummary}
-                                            onChange={(event) =>
+                                            onChange={(value) =>
                                                 setDraftSummary(
-                                                    event.target.value,
+                                                    value.toString(),
                                                 )
                                             }
                                             placeholder="Short summary of the cluster"

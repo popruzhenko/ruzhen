@@ -47,12 +47,6 @@
         min-height: 0;
     }
 
-    &__field--summary textarea {
-        flex: 1;
-        min-height: 0;
-        resize: none;
-    }
-
     &__draft-actions,
     &__block-actions {
         display: flex;
@@ -204,7 +198,6 @@
             color: $color-text-strong;
             background-color: $color-white;
             font: inherit;
-            resize: vertical;
 
             &:focus {
                 outline: none;

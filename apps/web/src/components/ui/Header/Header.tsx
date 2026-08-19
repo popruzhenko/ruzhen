@@ -104,55 +104,66 @@ export const Header = ({
             ])}
         >
             {variant === 'admin' && <div className="ui-header__empty-block" />}
+
             <div className="ui-header__inner">
                 <div className="ui-header__left">
-                    <RouterLink to={brandTo} className="ui-header__brand">
-                        <span className="ui-header__brand-text">RUZHEN</span>
-                    </RouterLink>
+                    <strong className="ui-header__brand">
+                        <RouterLink
+                            to={brandTo}
+                            className="ui-header__brand-link"
+                        >
+                            <span className="ui-header__brand-text">
+                                RUZHEN
+                            </span>
+                        </RouterLink>
+                    </strong>
                 </div>
 
                 <nav className="ui-header__nav" aria-label="Main navigation">
-                    {navItems.map((item) => {
-                        const navClassName = classesJoined([
-                            'ui-header__nav-item',
-                            item.isActive && 'ui-header__nav-item--active',
-                        ]);
+                    <ul className="ui-header__nav-list">
+                        {navItems.map((item) => {
+                            const navClassName = classesJoined([
+                                'ui-header__nav-link',
+                                item.isActive &&
+                                    'ui-header__nav-link--active',
+                            ]);
 
-                        if (item.to) {
                             return (
-                                <RouterLink
+                                <li
                                     key={item.label}
-                                    to={item.to}
-                                    className={navClassName}
+                                    className="ui-header__nav-item"
                                 >
-                                    {item.label}
-                                </RouterLink>
-                            );
-                        }
+                                    {item.to && (
+                                        <RouterLink
+                                            to={item.to}
+                                            className={navClassName}
+                                        >
+                                            {item.label}
+                                        </RouterLink>
+                                    )}
 
-                        if (item.href) {
-                            return (
-                                <a
-                                    key={item.label}
-                                    href={item.href}
-                                    className={navClassName}
-                                >
-                                    {item.label}
-                                </a>
-                            );
-                        }
+                                    {item.href && (
+                                        <a
+                                            href={item.href}
+                                            className={navClassName}
+                                        >
+                                            {item.label}
+                                        </a>
+                                    )}
 
-                        return (
-                            <Button
-                                key={item.label}
-                                type="button"
-                                className={navClassName}
-                                onClick={item.onClick}
-                            >
-                                {item.label}
-                            </Button>
-                        );
-                    })}
+                                    {!item.to && !item.href && (
+                                        <Button
+                                            type="button"
+                                            className={navClassName}
+                                            onClick={item.onClick}
+                                        >
+                                            {item.label}
+                                        </Button>
+                                    )}
+                                </li>
+                            );
+                        })}
+                    </ul>
                 </nav>
 
                 <div className="ui-header__right">

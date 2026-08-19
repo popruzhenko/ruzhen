@@ -7,5 +7,6 @@ export interface TextareaProps extends Omit<
     label?: string;
     requiredMark?: boolean;
     error?: string;
+    maxHeight?: number;
     onChange?: (value: string) => void;
 }

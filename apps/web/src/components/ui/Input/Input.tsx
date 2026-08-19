@@ -77,7 +77,7 @@ export const Input: React.FC<InputProps> = ({
                     >
                         {
                             <Icon
-                                name={isPasswordVisible ? 'open-eye' : 'eye'}
+                                name={isPasswordVisible ? 'openEye' : 'eye'}
                                 size={16}
                             ></Icon>
                         }

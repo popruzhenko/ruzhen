@@ -7,6 +7,7 @@ import { Badge } from '../../../../../ui/Badge/Badge';
 import { Button } from '../../../../../ui/Button/Button';
 import { Icon } from '../../../../../ui/Icon/Icon';
 import { DropDown } from '../../../../../ui/DropDown/DropDown';
+import { Textarea } from '../../../../../ui/Textarea/Textarea';
 
 const stanceOptions = [
     {
@@ -73,10 +74,10 @@ export const ContextualizationCard = ({
             <label className="contextualization_card__field contextualization_card__field--content">
                 <span>Block content</span>
 
-                <textarea
+                <Textarea
                     value={block.content}
-                    onChange={(event) =>
-                        onUpdateBlock(block.id, 'content', event.target.value)
+                    onChange={(value) =>
+                        onUpdateBlock(block.id, 'content', value.toString())
                     }
                     placeholder="Write the meaning of this block"
                 />

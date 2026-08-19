@@ -129,7 +129,7 @@ export const DropDown: React.FC<DropDownProps> = ({
                 </div>
 
                 <Icon
-                    name="down-small"
+                    name="downSmall"
                     size={18}
                     className="ui-dropdown__arrow"
                     color={arrowColor}

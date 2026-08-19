@@ -29,9 +29,10 @@
         font-size: 15px;
         font-weight: 550;
         line-height: 1.5;
-        resize: vertical;
+        resize: none;
         outline: none;
         box-sizing: border-box;
+        overflow-y: auto;
 
         &::placeholder {
             color: $color-text-soft;
