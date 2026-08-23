@@ -1,10 +1,13 @@
 import { Request, Response } from 'express';
+
 import {
     registerUser,
     loginUser,
+    loginWithGoogle,
     getCurrentUser,
     logoutUser,
 } from '../services/auth.service';
+
 import { AuthenticatedRequest } from '../../../shared/middleware/require-auth';
 
 export async function registerHandler(req: Request, res: Response) {
@@ -42,6 +45,28 @@ export async function loginHandler(req: Request, res: Response) {
 
         res.status(401).json({
             message: error instanceof Error ? error.message : 'Login failed',
+        });
+    }
+}
+
+export async function googleLoginHandler(req: Request, res: Response) {
+    try {
+        const { code } = req.body;
+
+        const authData = await loginWithGoogle(code);
+
+        res.status(200).json({
+            message: 'Google login successful',
+            ...authData,
+        });
+    } catch (error) {
+        console.error('Google login error: ', error);
+
+        res.status(401).json({
+            message:
+                error instanceof Error
+                    ? error.message
+                    : 'Google login failed',
         });
     }
 }

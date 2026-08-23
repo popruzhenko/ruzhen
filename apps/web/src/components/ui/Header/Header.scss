@@ -1,0 +1,220 @@
+@use '../_mixin.scss' as *;
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/tokens' as *;
+
+.ui-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+
+    &__inner {
+        min-height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: min(1180px, 100% - 40px);
+        margin: 0 auto;
+    }
+
+    &__left {
+        display: flex;
+        align-items: center;
+        min-width: 170px;
+    }
+
+    &__brand {
+        display: inline-flex;
+        margin: 0;
+        font: inherit;
+    }
+
+    &__brand-link {
+        display: inline-flex;
+        align-items: center;
+        color: $color-text-main;
+        text-decoration: none;
+    }
+
+    &__brand-text {
+        color: inherit;
+        font-size: 22px;
+        font-weight: 950;
+        line-height: 1;
+        letter-spacing: -0.06em;
+    }
+
+    &__empty-block {
+        display: flex;
+        width: 175px;
+        height: stretch;
+    }
+
+    &__nav {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+    &__nav-list {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__nav-item {
+        margin: 0;
+        padding: 0;
+    }
+
+    &__nav-link {
+        min-height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 13px;
+        border: none;
+        border-radius: 999px;
+        background-color: transparent;
+        color: $color-text-secondary;
+        font-size: 14px;
+        font-weight: 750;
+        line-height: 1;
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+            background-color 0.16s ease,
+            color 0.16s ease;
+
+        &:hover {
+            background-color: $color-surface;
+            color: $color-primary;
+        }
+
+        &--active {
+            background-color: #e8f1ff;
+            color: $color-primary;
+        }
+    }
+
+    &__right {
+        min-width: 170px;
+        height: stretch;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    &__login-button {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 16px;
+        border: 1px solid $color-border;
+        border-radius: 999px;
+        background-color: $color-white;
+        color: $color-primary;
+        font-size: 14px;
+        font-weight: 850;
+        line-height: 1;
+        cursor: pointer;
+        box-shadow: 0 8px 20px $shadow-soft;
+        transition:
+            background-color 0.16s ease,
+            border-color 0.16s ease,
+            color 0.16s ease,
+            transform 0.16s ease,
+            box-shadow 0.16s ease;
+
+        &:hover {
+            transform: translateY(-1px);
+            border-color: $color-primary;
+            background-color: $color-primary;
+            color: $color-white;
+            box-shadow: 0 12px 26px rgba(23, 78, 166, 0.18);
+        }
+    }
+
+    &--user,
+    &--public {
+        border-bottom: 1px solid rgba(216, 227, 242, 0.78);
+        background-color: rgba(255, 255, 255, 0.84);
+        backdrop-filter: blur(14px);
+    }
+
+    &--admin {
+        background-color: $color-primary-hover;
+        display: grid;
+        grid-template-columns: 175px 1fr;
+
+        .ui-header__inner {
+            margin: 0;
+            padding: 0 24px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .ui-header__brand-link {
+            color: $color-white;
+        }
+
+        .ui-header__nav-link {
+            color: rgba(255, 255, 255, 0.82);
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.08);
+                color: $color-white;
+            }
+
+            &--active {
+                background-color: rgba(255, 255, 255, 0.13);
+                color: $color-white;
+            }
+        }
+    }
+
+    &--public,
+    &--user {
+        display: flex;
+
+        .ui-header__container {
+            max-width: 1180px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-header-mobile) {
+    .ui-header {
+        &__container {
+            width: min(100% - 28px, 1180px);
+        }
+
+        &__inner {
+            min-height: 62px;
+        }
+
+        &__left,
+        &__right {
+            min-width: auto;
+        }
+
+        &__nav {
+            display: none;
+        }
+
+        &__brand-text {
+            font-size: 15px;
+        }
+    }
+}

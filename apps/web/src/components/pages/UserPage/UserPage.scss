@@ -1,0 +1,61 @@
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/tokens' as *;
+
+.user-page {
+    &__hero {
+        margin-bottom: 32px;
+    }
+
+    &__eyebrow {
+        color: $color-primary;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+    }
+
+    &__hero h1 {
+        max-width: 760px;
+        margin: 10px 0 0;
+        color: $color-text-main;
+        font-size: 48px;
+        font-weight: 900;
+        line-height: 1.02;
+        letter-spacing: -0.06em;
+    }
+
+    &__hero p {
+        max-width: 760px;
+        margin: 18px 0 0;
+        color: #334155;
+        font-size: 18px;
+        font-weight: 450;
+        line-height: 1.55;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    &__pagination {
+        margin-top: 34px;
+    }
+}
+
+@media (max-width: $breakpoint-mobile) {
+    .user-page {
+        &__hero {
+            margin-bottom: 26px;
+        }
+
+        &__hero h1 {
+            font-size: 38px;
+        }
+
+        &__hero p {
+            font-size: 16px;
+        }
+    }
+}

@@ -1,0 +1,122 @@
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/tokens' as *;
+
+.ui-footer {
+    border-top: 1px solid rgba(216, 227, 242, 0.9);
+    background-color: rgba(255, 255, 255, 0.74);
+    backdrop-filter: blur(14px);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    margin-top: auto;
+
+    &__inner {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 34px 0 28px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 28px;
+        align-items: start;
+    }
+
+    &__brand {
+        max-width: 430px;
+
+        p {
+            margin: 10px 0 0;
+            color: $color-text-muted;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.55;
+        }
+    }
+
+    &__logo-wrapper {
+        display: inline-flex;
+        margin: 0;
+        font: inherit;
+    }
+
+    &__logo {
+        color: $color-text-main;
+        font-size: 22px;
+        font-weight: 950;
+        line-height: 1;
+        letter-spacing: -0.055em;
+        text-decoration: none;
+        text-transform: uppercase;
+
+        &:hover {
+            color: $color-primary;
+        }
+    }
+
+    &__nav {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &__nav-list {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 16px 22px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__nav-item {
+        margin: 0;
+        padding: 0;
+
+        a {
+            color: $color-text-secondary;
+            font-size: 14px;
+            font-weight: 750;
+            line-height: 1;
+            text-decoration: none;
+
+            &:hover {
+                color: $color-primary;
+            }
+        }
+    }
+
+    &__bottom {
+        grid-column: 1 / -1;
+        padding-top: 22px;
+        border-top: 1px solid $color-border-muted;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        color: $color-text-soft;
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1.4;
+    }
+}
+
+@media (max-width: $breakpoint-footer-mobile) {
+    .ui-footer {
+        &__inner {
+            width: min(100% - 28px, 1180px);
+            grid-template-columns: 1fr;
+        }
+
+        &__nav {
+            justify-content: flex-start;
+        }
+
+        &__nav-list {
+            justify-content: flex-start;
+        }
+
+        &__bottom {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+}

@@ -1,6 +1,13 @@
 node_modules
 dist
+build
 coverage
+.next
+.vercel
+.env
+.env.*
 package-lock.json
-apps/api/node_modules
-apps/web/node_modules
+pnpm-lock.yaml
+yarn.lock
+
+apps/api/prisma/migrations

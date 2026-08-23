@@ -1,0 +1,351 @@
+@use '../../../styles/tokens' as *;
+
+$headerBg: $color-primary-hover;
+$headerNavHoverBg: #2f67ba;
+$headerNavFocusBg: #2c69c4;
+
+.ui-dropdown {
+    width: 100%;
+    min-width: 120px;
+    height: 36px;
+    display: flex;
+    position: relative;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    box-sizing: border-box;
+    background-color: $color-white;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+    &:hover {
+        background-color: $color-page-bg;
+    }
+
+    &:focus-within {
+        border-color: $color-primary;
+        box-shadow: 0 0 0 4px $color-primary-soft-bg;
+    }
+
+    &--disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+}
+
+.ui-dropdown__trigger {
+    width: 100%;
+    height: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 0 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
+}
+
+.ui-dropdown__label {
+    display: none;
+}
+
+.ui-dropdown__valueRow {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ui-dropdown__value {
+    min-width: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: $color-text-main;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ui-dropdown__arrow {
+    flex-shrink: 0;
+    margin-left: auto;
+    transition: transform 0.2s ease;
+}
+
+.ui-dropdown--open .ui-dropdown__arrow,
+.ui-account_menu--open .ui-dropdown__arrow {
+    transform: rotate(180deg);
+}
+
+.ui-dropdown__options {
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 1000;
+    border-radius: 8px;
+    border: 1px solid $color-border;
+    background-color: $color-white;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.16);
+    padding: 6px;
+    margin: 0;
+    box-sizing: border-box;
+    animation: dropdown-slide-down 0.16s ease-out;
+    transform-origin: top center;
+}
+
+.ui-dropdown__option {
+    list-style: none;
+    width: 100%;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: $color-text-secondary;
+    cursor: pointer;
+    transition:
+        background-color 0.16s ease,
+        color 0.16s ease;
+
+    &:hover {
+        background-color: $color-surface;
+        color: $color-primary;
+    }
+
+    &:active {
+        background-color: $color-border-muted;
+    }
+
+    &--dropdowned {
+        background-color: $color-primary-glow-bg;
+        color: $color-primary;
+        font-weight: 500;
+    }
+}
+
+.ui-account_menu {
+    width: 120px;
+    height: 100%;
+    display: flex;
+    position: relative;
+    box-sizing: border-box;
+    z-index: 100;
+
+    &--disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+}
+
+.ui-account_menu__trigger {
+    width: 100%;
+    height: 100%;
+    text-align: left;
+    border: none;
+    padding: 0 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    box-sizing: border-box;
+    transition:
+        background-color 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.ui-account_menu__value {
+    min-width: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 750;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ui-account_menu__options {
+    width: 100%;
+    height: auto;
+    overflow-y: auto;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: auto;
+    z-index: 1000;
+    padding: 4px 0;
+    margin: 0;
+    box-sizing: border-box;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
+    animation: account-menu-slide-down 0.16s ease-out;
+    transform-origin: top center;
+}
+
+.ui-account_menu__option {
+    list-style: none;
+    width: 100%;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border-radius: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background-color 0.16s ease,
+        color 0.16s ease;
+
+    button {
+        width: 100%;
+        min-height: 38px;
+        border: none;
+        background: transparent;
+        padding: 0;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+}
+
+.ui-account_menu--admin {
+    color: $color-white;
+
+    .ui-account_menu__trigger {
+        background-color: $headerBg;
+        color: $color-white;
+
+        &:hover {
+            background-color: $headerNavHoverBg;
+        }
+
+        &:focus-visible {
+            outline: none;
+            background-color: $headerNavFocusBg;
+        }
+    }
+
+    .ui-account_menu__value {
+        color: $color-white;
+    }
+
+    .ui-account_menu__options {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-top: none;
+        background-color: $headerNavHoverBg;
+    }
+
+    .ui-account_menu__option {
+        color: $color-white;
+
+        &:hover {
+            background-color: $headerBg;
+            color: $color-white;
+        }
+
+        &:active {
+            background-color: $headerNavFocusBg;
+        }
+
+        &--dropdowned {
+            background-color: rgba(255, 255, 255, 0.12);
+            color: $color-white;
+        }
+    }
+}
+
+.ui-account_menu--user {
+    color: $color-text-main;
+
+    .ui-account_menu__trigger {
+        background-color: rgba(255, 255, 255, 0.72);
+        color: $color-text-main;
+        backdrop-filter: blur(14px);
+
+        &:hover {
+            background-color: rgba(248, 250, 252, 0.96);
+        }
+
+        &:focus-visible {
+            outline: none;
+            background-color: $color-white;
+            box-shadow: inset 0 0 0 1px rgba(23, 78, 166, 0.22);
+        }
+    }
+
+    .ui-account_menu__value {
+        color: $color-text-main;
+    }
+
+    .ui-account_menu__options {
+        border: 1px solid rgba(216, 227, 242, 0.95);
+        border-top: none;
+        background-color: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(14px);
+    }
+
+    .ui-account_menu__option {
+        color: $color-text-secondary;
+
+        &:hover {
+            background-color: $color-surface;
+            color: $color-primary;
+        }
+
+        &:active {
+            background-color: $color-border-muted;
+            color: $color-primary;
+        }
+
+        &--dropdowned {
+            background-color: $color-primary-glow-bg;
+            color: $color-primary;
+        }
+    }
+}
+
+.ui-icon--down-small {
+    display: flex;
+    flex-shrink: 0;
+}
+
+@keyframes dropdown-slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scaleY(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scaleY(1);
+    }
+}
+
+@keyframes account-menu-slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scaleY(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scaleY(1);
+    }
+}

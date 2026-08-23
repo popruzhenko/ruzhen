@@ -1,0 +1,11 @@
+.icons-display {
+    display: flex;
+    flex-wrap: wrap;
+    width: 345px;
+    height: 110px;
+    border-radius: 5px;
+    padding: 15px;
+    box-sizing: border-box;
+    background-color: rgba(205, 205, 205, 1);
+    gap: 10px;
+}

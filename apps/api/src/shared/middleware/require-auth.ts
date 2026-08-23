@@ -12,7 +12,7 @@ export type AuthenticatedRequest = Request & {
 export function requireAuth(
     req: AuthenticatedRequest,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
 ) {
     try {
         const authHeader = req.headers.authorization;

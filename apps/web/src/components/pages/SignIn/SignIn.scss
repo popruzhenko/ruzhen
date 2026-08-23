@@ -1,0 +1,151 @@
+@use '../../ui/mixin' as *;
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/tokens' as *;
+
+$authBg:
+    radial-gradient(
+        circle at top left,
+        $color-primary-soft-bg,
+        transparent 32%
+    ),
+    linear-gradient(135deg, #eef2f7 0%, $color-page-bg 100%);
+
+$authCardBg: rgba(255, 255, 255, 0.92);
+$authBorder: $color-border;
+$authTitle: $color-text-main;
+$authSubtitle: $color-text-muted;
+
+$authCardSet: (
+    background-color: $authCardBg,
+    border: 1px solid $authBorder,
+    border-radius: 22px,
+);
+
+.auth {
+    min-height: 100vh;
+    background: $authBg;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+
+    &__logo {
+        margin-bottom: 28px;
+        color: $authTitle;
+        font-size: 30px;
+        font-weight: 950;
+        line-height: 1;
+        letter-spacing: -0.055em;
+        text-transform: uppercase;
+    }
+
+    &__card {
+        @include apply-set($authCardSet);
+        width: 100%;
+        max-width: 460px;
+        padding: 30px;
+        box-shadow: 0 22px 54px rgba(15, 23, 42, 0.09);
+        backdrop-filter: blur(14px);
+        box-sizing: border-box;
+    }
+
+    &__header {
+        margin-bottom: 26px;
+        text-align: center;
+    }
+
+    &__title {
+        margin: 0;
+        color: $authTitle;
+        font-size: 30px;
+        font-weight: 900;
+        line-height: 1.08;
+        letter-spacing: -0.055em;
+    }
+
+    &__subtitle {
+        max-width: 340px;
+        margin: 10px auto 0;
+        color: $authSubtitle;
+        font-size: 14px;
+        font-weight: 550;
+        line-height: 1.5;
+    }
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    &__error {
+        padding: 12px 14px;
+        border: 1px solid rgba(220, 38, 38, 0.22);
+        border-radius: 14px;
+        background-color: rgba(254, 226, 226, 0.74);
+        color: $color-danger-strong;
+        font-size: 13px;
+        font-weight: 750;
+        line-height: 1.45;
+    }
+
+    &__footer {
+        margin-top: 22px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 7px;
+        color: $authSubtitle;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .ui-input {
+        max-width: 100%;
+    }
+
+    &__divider {
+        margin: 18px 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: $color-text-soft;
+        font-size: 13px;
+        font-weight: 750;
+        line-height: 1;
+        text-transform: uppercase;
+
+        &::before,
+        &::after {
+            content: '';
+            height: 1px;
+            flex: 1;
+            background-color: $color-border-muted;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-mobile-small) {
+    .auth {
+        justify-content: flex-start;
+        padding-top: 42px;
+
+        &__card {
+            padding: 24px;
+            border-radius: 20px;
+        }
+
+        &__title {
+            font-size: 26px;
+        }
+
+        &__footer {
+            flex-wrap: wrap;
+            text-align: center;
+        }
+    }
+}
