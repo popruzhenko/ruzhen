@@ -124,8 +124,7 @@ export const Header = ({
                         {navItems.map((item) => {
                             const navClassName = classesJoined([
                                 'ui-header__nav-link',
-                                item.isActive &&
-                                    'ui-header__nav-link--active',
+                                item.isActive && 'ui-header__nav-link--active',
                             ]);
 
                             return (

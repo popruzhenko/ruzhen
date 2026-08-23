@@ -14,7 +14,11 @@ import { useUpdateArticleMutation } from '../../../../../../entities/raw-news/ho
 import { useReviewArticleContentMutation } from '../../../../../../entities/raw-news/hooks/useReviewArticleContentMutation';
 
 import './RawArticleCard.scss';
-import { ARTICLE_STATUS, CONTENT_AVAILABILITY, type ContentAvailability } from '../../../../../../entities/raw-news/model/articleConstants';
+import {
+    ARTICLE_STATUS,
+    CONTENT_AVAILABILITY,
+    type ContentAvailability,
+} from '../../../../../../entities/raw-news/model/articleConstants';
 import { TOAST_TYPE } from '../../../../../ui/Toast/ToastConstants';
 
 interface RawArticleCardProps {
@@ -135,7 +139,10 @@ const getApproveValidationErrors = ({
         errors.push('Content is required before approval.');
     }
 
-    if (contentAvailability && contentAvailability !== CONTENT_AVAILABILITY.FULL_TEXT) {
+    if (
+        contentAvailability &&
+        contentAvailability !== CONTENT_AVAILABILITY.FULL_TEXT
+    ) {
         errors.push('Article must have FULL_TEXT content before approval.');
     }
 
@@ -455,7 +462,8 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                         <Button
                             variants="secondary"
                             disabled={
-                                article.status === ARTICLE_STATUS.NEEDS_REVIEW ||
+                                article.status ===
+                                    ARTICLE_STATUS.NEEDS_REVIEW ||
                                 article.status === ARTICLE_STATUS.NEW ||
                                 updateArticleMutation.isPending
                             }
@@ -467,7 +475,8 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                         <Button
                             variants="secondary"
                             disabled={
-                                article.status === ARTICLE_STATUS.NEEDS_REVIEW ||
+                                article.status ===
+                                    ARTICLE_STATUS.NEEDS_REVIEW ||
                                 article.status === ARTICLE_STATUS.NEW ||
                                 updateArticleMutation.isPending
                             }

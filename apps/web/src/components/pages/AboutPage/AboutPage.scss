@@ -82,7 +82,6 @@
         font-weight: 500;
         line-height: 1.6;
     }
-
 }
 
 @media (max-width: $breakpoint-tablet) {
@@ -122,7 +121,7 @@
 }
 
 .static-page {
-     &__numbered-sections {
+    &__numbered-sections {
         display: grid;
         gap: 34px;
         counter-reset: static-section;
@@ -148,7 +147,7 @@
             }
         }
     }
-    
+
     &__contact-layout {
         display: grid;
         grid-template-columns: minmax(0, 1fr) 340px;

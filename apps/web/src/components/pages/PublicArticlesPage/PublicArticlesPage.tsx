@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { usePublicClustersQuery, type PublicClusterListItem } from '../../../entities/public-clusters';
+import {
+    usePublicClustersQuery,
+    type PublicClusterListItem,
+} from '../../../entities/public-clusters';
 
 import { ReadableLayout } from '../../layouts/ReadableLayout/ReadableLayout';
 import { Pagination } from '../../ui/Pagination/Pagination';

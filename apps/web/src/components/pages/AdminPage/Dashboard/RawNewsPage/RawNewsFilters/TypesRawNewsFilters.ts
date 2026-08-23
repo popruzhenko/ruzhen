@@ -1,10 +1,11 @@
-import type { ArticleStatus, ContentAvailability } from '../../../../../../entities/raw-news/model/articleConstants';
+import type {
+    ArticleStatus,
+    ContentAvailability,
+} from '../../../../../../entities/raw-news/model/articleConstants';
 
-export type RawNewsStatusFilter =
-    | 'ALL' | ArticleStatus;
+export type RawNewsStatusFilter = 'ALL' | ArticleStatus;
 
-export type RawNewsContentFilter =
-    | 'ALL' | ContentAvailability;
+export type RawNewsContentFilter = 'ALL' | ContentAvailability;
 
 export type RawNewsDateFilter =
     'ALL' | 'TODAY' | 'YESTERDAY' | 'LAST_7_DAYS' | 'LAST_30_DAYS';

@@ -100,10 +100,7 @@ export async function loginWithGoogleRequest(
         body: JSON.stringify(payload),
     });
 
-    return parseAuthResponse<LoginResponse>(
-        response,
-        'Google login failed',
-    );
+    return parseAuthResponse<LoginResponse>(response, 'Google login failed');
 }
 
 export async function logoutRequest(): Promise<void> {

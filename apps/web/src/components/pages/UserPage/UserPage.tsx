@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { usePublicClustersQuery, type PublicClusterListItem } from '../../../entities/public-clusters';
+import {
+    usePublicClustersQuery,
+    type PublicClusterListItem,
+} from '../../../entities/public-clusters';
 
 import { UserLayout } from '../../layouts/UserLayout/UserLayout';
 import { PageState } from '../../ui/PageState/PageState';
@@ -123,7 +126,10 @@ export const UserPage = () => {
                         <h1>Your Ruzhen feed</h1>
 
                         <p>
-                            Understand the story clearly. Ruzhen separates facts, context, and opinions, so you can quickly see what happened, why it matters, and how different sides interpret it.
+                            Understand the story clearly. Ruzhen separates
+                            facts, context, and opinions, so you can quickly see
+                            what happened, why it matters, and how different
+                            sides interpret it.
                         </p>
                     </div>
                 </section>

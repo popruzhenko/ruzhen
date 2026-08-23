@@ -1,7 +1,6 @@
-import type { ClusterStatus } from "../../../../../../entities/cluster/model/clusterConstants";
+import type { ClusterStatus } from '../../../../../../entities/cluster/model/clusterConstants';
 
-export type ContextualizationStatusFilter =
-    'ALL' | ClusterStatus;
+export type ContextualizationStatusFilter = 'ALL' | ClusterStatus;
 
 export type ContextualizationDraftStateFilter =
     'ALL' | 'WITHOUT_BLOCKS' | 'WITH_BLOCKS' | 'READY_TO_REVIEW';

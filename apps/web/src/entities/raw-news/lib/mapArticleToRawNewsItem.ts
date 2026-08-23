@@ -44,7 +44,8 @@ export function mapArticleToRawNewsItem(
             fetched: Boolean(article.raw?.fetchedAt),
             cleaned: Boolean(article.cleanedAccessibleText),
             embedded:
-                article.status === ARTICLE_STATUS.EMBEDDED || article.status === ARTICLE_STATUS.CLUSTERED,
+                article.status === ARTICLE_STATUS.EMBEDDED ||
+                article.status === ARTICLE_STATUS.CLUSTERED,
             clustered:
                 article.status === ARTICLE_STATUS.CLUSTERED ||
                 article._count.clusterLinks > 0,
