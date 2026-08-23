@@ -109,7 +109,9 @@ export const UserArticleDetailsPage = () => {
 
                                 <span>
                                     {cluster.sources.length}{' '}
-                                    {cluster.sources.length === 1 ? 'source' : 'sources'}
+                                    {cluster.sources.length === 1
+                                        ? 'source'
+                                        : 'sources'}
                                 </span>
 
                                 {cluster.mainCountry && (

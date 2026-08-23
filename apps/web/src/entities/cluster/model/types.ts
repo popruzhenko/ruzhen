@@ -1,4 +1,4 @@
-import type { ClusterStatus } from "./clusterConstants";
+import type { ClusterStatus } from './clusterConstants';
 
 export interface ClusterApiItem {
     id: string;

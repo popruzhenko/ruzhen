@@ -47,4 +47,9 @@ $shadow-lg: rgba(15, 23, 42, 0.06);
 $color-button-bg: rgba(50, 55, 73, 1);
 $color-button-border: rgba(222, 223, 229, 1);
 
-$gradient-app-bg: linear-gradient(180deg, #f8fbff 0%, #ffffff 42%, #f8fafc 100%);
+$gradient-app-bg: linear-gradient(
+    180deg,
+    #f8fbff 0%,
+    #ffffff 42%,
+    #f8fafc 100%
+);

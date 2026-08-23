@@ -64,9 +64,7 @@ export async function googleLoginHandler(req: Request, res: Response) {
 
         res.status(401).json({
             message:
-                error instanceof Error
-                    ? error.message
-                    : 'Google login failed',
+                error instanceof Error ? error.message : 'Google login failed',
         });
     }
 }

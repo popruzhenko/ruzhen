@@ -1,5 +1,5 @@
-import type { ClusterStatus } from "../../cluster/model/clusterConstants";
-import type { ClusteringArticleStatus } from "../../raw-news/model/articleConstants";
+import type { ClusterStatus } from '../../cluster/model/clusterConstants';
+import type { ClusteringArticleStatus } from '../../raw-news/model/articleConstants';
 
 export interface EmbeddedArticleItem {
     id: string;
@@ -41,4 +41,3 @@ export interface ClusterListItem {
     articlesCount: number;
     averageSimilarity: number;
 }
-

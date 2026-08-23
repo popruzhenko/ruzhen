@@ -53,7 +53,7 @@ export const Textarea: React.FC<TextareaProps> = ({
                     onChange?.(event.target.value);
                 }}
                 {...rest}
-                style={{ height: maxHeight ? `${maxHeight}px` : undefined}}
+                style={{ height: maxHeight ? `${maxHeight}px` : undefined }}
             />
 
             <div

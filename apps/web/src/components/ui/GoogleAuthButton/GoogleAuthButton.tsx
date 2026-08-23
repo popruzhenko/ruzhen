@@ -104,8 +104,7 @@ export const GoogleAuthButton = ({
 
     useEffect(() => {
         const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as
-            | string
-            | undefined;
+            string | undefined;
 
         if (!googleClientId) {
             onErrorRef.current?.('Google client id is not configured.');

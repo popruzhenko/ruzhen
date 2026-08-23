@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react';
-import {
-    CLUSTER_STATUS
-} from '../../../../../entities/cluster/model/clusterConstants';
+import { CLUSTER_STATUS } from '../../../../../entities/cluster/model/clusterConstants';
 import {
     useClusterByIdQuery,
     useClustersQuery,
@@ -624,7 +622,8 @@ export const PublicationPage = () => {
                                 onClick={handleOpenPublishConfirm}
                                 disabled={
                                     !selectedCluster ||
-                                    selectedCluster.status === CLUSTER_STATUS.PUBLISHED ||
+                                    selectedCluster.status ===
+                                        CLUSTER_STATUS.PUBLISHED ||
                                     updateStatusMutation.isPending
                                 }
                             >
@@ -633,10 +632,13 @@ export const PublicationPage = () => {
 
                             <Button
                                 variants="secondary"
-                                onClick={() => handleUpdateStatus(CLUSTER_STATUS.DRAFT)}
+                                onClick={() =>
+                                    handleUpdateStatus(CLUSTER_STATUS.DRAFT)
+                                }
                                 disabled={
                                     !selectedCluster ||
-                                    selectedCluster.status === CLUSTER_STATUS.DRAFT ||
+                                    selectedCluster.status ===
+                                        CLUSTER_STATUS.DRAFT ||
                                     updateStatusMutation.isPending
                                 }
                             >
@@ -645,10 +647,13 @@ export const PublicationPage = () => {
 
                             <Button
                                 variants="secondary"
-                                onClick={() => handleUpdateStatus(CLUSTER_STATUS.ARCHIVED)}
+                                onClick={() =>
+                                    handleUpdateStatus(CLUSTER_STATUS.ARCHIVED)
+                                }
                                 disabled={
                                     !selectedCluster ||
-                                    selectedCluster.status === CLUSTER_STATUS.ARCHIVED ||
+                                    selectedCluster.status ===
+                                        CLUSTER_STATUS.ARCHIVED ||
                                     updateStatusMutation.isPending
                                 }
                             >

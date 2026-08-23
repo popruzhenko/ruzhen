@@ -1,7 +1,6 @@
-import type { ClusterStatus } from "../../../../../../entities/cluster/model/clusterConstants";
+import type { ClusterStatus } from '../../../../../../entities/cluster/model/clusterConstants';
 
-export type PublicationStatusFilter =
-    'ALL' | ClusterStatus;
+export type PublicationStatusFilter = 'ALL' | ClusterStatus;
 
 export type PublicationUpdatedDateFilter =
     'ALL' | 'TODAY' | 'YESTERDAY' | 'LAST_7_DAYS' | 'LAST_30_DAYS';

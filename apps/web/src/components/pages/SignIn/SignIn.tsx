@@ -199,7 +199,7 @@ export const SignIn = () => {
                     onCode={handleGoogleCode}
                     onError={handleGoogleError}
                 />
-                
+
                 <div className="auth__footer">
                     <span>Don’t have an account?</span>
 

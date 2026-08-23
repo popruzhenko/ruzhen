@@ -3,7 +3,10 @@ import { DropDown } from '../../../../../ui/DropDown/DropDown';
 import type { RawNewsFiltersProps } from './TypesRawNewsFilters';
 import './RawNewsFilters.scss';
 import { Icon } from '../../../../../ui/Icon/Icon';
-import { ARTICLE_STATUS, CONTENT_AVAILABILITY } from '../../../../../../entities/raw-news/model/articleConstants';
+import {
+    ARTICLE_STATUS,
+    CONTENT_AVAILABILITY,
+} from '../../../../../../entities/raw-news/model/articleConstants';
 
 const statusOptions = [
     { label: 'All statuses', value: 'ALL' },

@@ -15,8 +15,7 @@ export const queryKeys = {
 
     publicClusters: {
         all: ['public-clusters'] as const,
-        list: (params: object) =>
-            ['public-clusters', 'list', params] as const,
+        list: (params: object) => ['public-clusters', 'list', params] as const,
         detail: (humanId?: string) =>
             ['public-clusters', humanId ?? null] as const,
     },

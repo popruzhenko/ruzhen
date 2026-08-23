@@ -1,6 +1,4 @@
-import type { ArticleStatus, ContentAvailability } from "./articleConstants";
-
-    
+import type { ArticleStatus, ContentAvailability } from './articleConstants';
 
 export interface ArticleSourceApiItem {
     id: string;

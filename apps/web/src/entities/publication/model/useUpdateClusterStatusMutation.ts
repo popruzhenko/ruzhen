@@ -16,8 +16,13 @@ interface UpdateClusterStatusMutationInput {
 export function useUpdateClusterStatusMutation() {
     const queryClient = useQueryClient();
 
-    return useMutation<UpdateClusterStatusResponse, Error, UpdateClusterStatusMutationInput>({
-        mutationFn: ({ clusterId, status }) => updateClusterStatus(clusterId, status),
+    return useMutation<
+        UpdateClusterStatusResponse,
+        Error,
+        UpdateClusterStatusMutationInput
+    >({
+        mutationFn: ({ clusterId, status }) =>
+            updateClusterStatus(clusterId, status),
 
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({

@@ -255,30 +255,33 @@ export const ContactPage = () => {
                             <li className="static-page__contact-item">
                                 <strong>Corrections</strong>
                                 <p>
-                                    Include the article title, source and what should be corrected.
+                                    Include the article title, source and what
+                                    should be corrected.
                                 </p>
                             </li>
 
                             <li className="static-page__contact-item">
                                 <strong>Sources</strong>
                                 <p>
-                                    Suggest sources with stable publishing quality and clear
-                                    editorial standards.
+                                    Suggest sources with stable publishing
+                                    quality and clear editorial standards.
                                 </p>
                             </li>
 
                             <li className="static-page__contact-item">
                                 <strong>Partnerships</strong>
                                 <p>
-                                    Briefly describe the collaboration idea and why it fits Ruzhen.
+                                    Briefly describe the collaboration idea and
+                                    why it fits Ruzhen.
                                 </p>
                             </li>
 
                             <li className="static-page__contact-item">
                                 <strong>Other</strong>
                                 <p>
-                                    Use this topic for general feedback or messages that do not fit
-                                    the predefined categories.
+                                    Use this topic for general feedback or
+                                    messages that do not fit the predefined
+                                    categories.
                                 </p>
                             </li>
                         </ul>

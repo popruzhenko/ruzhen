@@ -13,7 +13,10 @@ import { RawNewsFilters } from './RawNewsFilters/RawNewsFilters';
 import type { RawNewsFiltersState } from './RawNewsFilters/TypesRawNewsFilters';
 
 import { isDateInFetchedRange } from '../lib/DateHelper';
-import { ARTICLE_STATUS, CONTENT_AVAILABILITY } from '../../../../../entities/raw-news/model/articleConstants';
+import {
+    ARTICLE_STATUS,
+    CONTENT_AVAILABILITY,
+} from '../../../../../entities/raw-news/model/articleConstants';
 import { TOAST_TYPE } from '../../../../ui/Toast/ToastConstants';
 
 const initialRawNewsFilters: RawNewsFiltersState = {
@@ -74,7 +77,8 @@ export const RawNewsPage = () => {
             const matchesProblematic =
                 !filters.onlyProblematic ||
                 article.status === ARTICLE_STATUS.NEEDS_REVIEW ||
-                article.contentAvailability !== CONTENT_AVAILABILITY.FULL_TEXT ||
+                article.contentAvailability !==
+                    CONTENT_AVAILABILITY.FULL_TEXT ||
                 !article.title?.trim() ||
                 !article.summary?.trim() ||
                 !article.url?.trim();
