@@ -5,7 +5,9 @@
     "main": "index.js",
     "scripts": {
         "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-        "build": "tsc --noEmit",
+        "build": "tsc",
+        "typecheck": "tsc --noEmit",
+        "start": "node dist/server.js",
         "dev:restart_bd": "npx prisma migrate reset",
         "dev:seed": "tsx prisma/seed.ts",
         "prisma:generate": "prisma generate",
