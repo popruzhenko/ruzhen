@@ -57,6 +57,7 @@ const initialClusteringFilters: ClusteringFiltersState = {
     search: '',
     fetchedDate: 'ALL',
     sourceName: 'ALL',
+    status: 'READY_FOR_CLUSTERING',
     embedding: 'ALL',
     similarity: 'ALL',
     sort: 'SIMILARITY_DESC',
@@ -81,6 +82,24 @@ const hasEmbedding = (
     article: FilterableCandidateArticle,
 ): article is FilterableCandidateArticle & { embedding: number[] } => {
     return Array.isArray(article.embedding);
+};
+
+const matchesStatusFilter = (
+    articleStatus: ArticleStatus,
+    statusFilter: ClusteringFiltersState['status'],
+): boolean => {
+    if (statusFilter === 'ALL') {
+        return true;
+    }
+
+    if (statusFilter === 'READY_FOR_CLUSTERING') {
+        return (
+            articleStatus === ARTICLE_STATUS.APPROVED ||
+            articleStatus === ARTICLE_STATUS.EMBEDDED
+        );
+    }
+
+    return articleStatus === statusFilter;
 };
 
 export const ClusteringPage = () => {
@@ -259,6 +278,11 @@ export const ClusteringPage = () => {
                 filters.sourceName === 'ALL' ||
                 sourceName === filters.sourceName;
 
+            const matchesStatus = matchesStatusFilter(
+                article.status,
+                filters.status,
+            );
+
             const articleHasEmbedding = Array.isArray(article.embedding);
 
             const matchesEmbedding =
@@ -283,6 +307,7 @@ export const ClusteringPage = () => {
                 matchesSearch &&
                 matchesDate &&
                 matchesSource &&
+                matchesStatus &&
                 matchesEmbedding &&
                 matchesSimilarity &&
                 matchesSelected
@@ -332,6 +357,7 @@ export const ClusteringPage = () => {
         filters.search.trim() !== '' ||
         filters.fetchedDate !== 'ALL' ||
         filters.sourceName !== 'ALL' ||
+        filters.status !== 'READY_FOR_CLUSTERING' ||
         filters.embedding !== 'ALL' ||
         filters.similarity !== 'ALL' ||
         filters.sort !== 'SIMILARITY_DESC' ||
@@ -394,15 +420,17 @@ export const ClusteringPage = () => {
         );
     };
 
-    const hasAddableSelectedCandidates = candidateArticles.some((article) => {
-        return (
-            selectedCandidateIds.includes(article.id) &&
-            Array.isArray(article.embedding)
-        );
-    });
+    const hasAddableSelectedCandidates = filteredCandidateArticles.some(
+        (article) => {
+            return (
+                selectedCandidateIds.includes(article.id) &&
+                Array.isArray(article.embedding)
+            );
+        },
+    );
 
     const handleAddToCluster = () => {
-        const articlesToAdd = candidateArticles
+        const articlesToAdd = filteredCandidateArticles
             .filter((article) => selectedCandidateIds.includes(article.id))
             .filter(hasEmbedding);
 
@@ -890,7 +918,7 @@ export const ClusteringPage = () => {
                             <PageState
                                 variant="empty"
                                 title="No candidates match filters"
-                                description="Try changing search, date, source, embedding, similarity or selected-only filters."
+                                description="Try changing search, date, source, status, embedding, similarity or selected-only filters."
                                 actionLabel="Clear filters"
                                 onAction={handleClearFilters}
                                 className="clustering__side-state"

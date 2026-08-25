@@ -12,6 +12,14 @@ const dateOptions = [
     { label: 'Last 30 days', value: 'LAST_30_DAYS' },
 ];
 
+const statusOptions = [
+    { label: 'Ready for clustering', value: 'READY_FOR_CLUSTERING' },
+    { label: 'Approved', value: 'APPROVED' },
+    { label: 'Embedded', value: 'EMBEDDED' },
+    { label: 'Clustered', value: 'CLUSTERED' },
+    { label: 'All statuses', value: 'ALL' },
+];
+
 const embeddingOptions = [
     { label: 'All embeddings', value: 'ALL' },
     { label: 'With embedding', value: 'WITH_EMBEDDING' },
@@ -105,6 +113,19 @@ export const ClusteringFilters = ({
                         options={sourceOptions}
                         value={filters.sourceName}
                         onChange={(value) => onChange('sourceName', value)}
+                    />
+                </div>
+
+                <div className="clustering_filters__select">
+                    <span>Status</span>
+
+                    <DropDown
+                        label="Status"
+                        options={statusOptions}
+                        value={filters.status}
+                        onChange={(value) =>
+                            onChange('status', value as typeof filters.status)
+                        }
                     />
                 </div>
 
