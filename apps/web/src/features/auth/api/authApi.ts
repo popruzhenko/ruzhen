@@ -75,10 +75,7 @@ export async function registerRequest(
         body: JSON.stringify(credentials),
     });
 
-    return parseAuthResponse<RegisterResponse>(
-        response,
-        'Registration failed',
-    );
+    return parseAuthResponse<RegisterResponse>(response, 'Registration failed');
 }
 
 export async function loginRequest(
