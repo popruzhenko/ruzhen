@@ -3,7 +3,11 @@ import {
     getAccessToken,
 } from '../../features/auth/lib/authStorage';
 
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+if (!API_BASE_URL) {
+    throw new Error('VITE_API_URL is not defined');
+}
 
 interface RequestOptions extends RequestInit {
     json?: unknown;
@@ -33,7 +37,6 @@ export async function apiClient<T>(
     options: RequestOptions = {},
 ): Promise<T> {
     const { json, headers, skipAuthRedirect, ...restOptions } = options;
-
     const accessToken = getAccessToken();
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
