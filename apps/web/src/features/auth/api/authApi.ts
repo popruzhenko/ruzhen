@@ -1,8 +1,13 @@
 import { getAccessToken } from '../lib/authStorage';
 import type { UserRole } from '../lib/authConstants';
+
 export type { UserRole } from '../lib/authConstants';
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL;
+
+if (!API_URL) {
+    throw new Error('VITE_API_URL is not defined');
+}
 
 export interface AuthUser {
     id: string;
@@ -32,6 +37,33 @@ export interface GoogleLoginPayload {
     code: string;
 }
 
+interface AuthErrorResponse {
+    message?: string;
+}
+
+async function parseAuthResponse<T>(
+    response: Response,
+    fallbackMessage: string,
+): Promise<T> {
+    let data: T & AuthErrorResponse;
+
+    try {
+        data = (await response.json()) as T & AuthErrorResponse;
+    } catch {
+        if (!response.ok) {
+            throw new Error(fallbackMessage);
+        }
+
+        return null as T;
+    }
+
+    if (!response.ok) {
+        throw new Error(data.message || fallbackMessage);
+    }
+
+    return data;
+}
+
 export async function registerRequest(
     credentials: AuthCredentials,
 ): Promise<RegisterResponse> {
@@ -43,13 +75,10 @@ export async function registerRequest(
         body: JSON.stringify(credentials),
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-    }
-
-    return data;
+    return parseAuthResponse<RegisterResponse>(
+        response,
+        'Registration failed',
+    );
 }
 
 export async function loginRequest(
@@ -63,30 +92,7 @@ export async function loginRequest(
         body: JSON.stringify(credentials),
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-    }
-
-    return data;
-}
-
-interface AuthErrorResponse {
-    message?: string;
-}
-
-async function parseAuthResponse<T>(
-    response: Response,
-    fallbackMessage: string,
-): Promise<T> {
-    const data = (await response.json()) as T & AuthErrorResponse;
-
-    if (!response.ok) {
-        throw new Error(data.message || fallbackMessage);
-    }
-
-    return data;
+    return parseAuthResponse<LoginResponse>(response, 'Login failed');
 }
 
 export async function loginWithGoogleRequest(
@@ -125,7 +131,7 @@ export async function logoutRequest(): Promise<void> {
         let message = 'Logout failed';
 
         try {
-            const data = await response.json();
+            const data = (await response.json()) as AuthErrorResponse;
             message = data.message ?? message;
         } catch {
             // Backend returned non-JSON error response.
@@ -146,11 +152,8 @@ export async function meRequest(
         },
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch user information');
-    }
-
-    return data;
+    return parseAuthResponse<{ user: AuthUser }>(
+        response,
+        'Failed to fetch user information',
+    );
 }
