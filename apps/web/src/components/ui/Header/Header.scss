@@ -7,11 +7,15 @@
     top: 0;
     z-index: 1000;
     width: 100%;
+    height: auto;
+    min-height: 68px;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
+    flex-shrink: 0;
 
     &__inner {
         min-height: 68px;
+        height: auto;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -49,7 +53,8 @@
     &__empty-block {
         display: flex;
         width: 175px;
-        height: stretch;
+        min-height: 68px;
+        height: auto;
     }
 
     &__nav {
@@ -105,7 +110,8 @@
 
     &__right {
         min-width: 170px;
-        height: stretch;
+        min-height: 68px;
+        height: auto;
         display: flex;
         align-items: center;
         justify-content: flex-end;
@@ -144,21 +150,34 @@
 
     &--user,
     &--public {
+        display: block;
         border-bottom: 1px solid rgba(216, 227, 242, 0.78);
         background-color: rgba(255, 255, 255, 0.84);
         backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+
+        .ui-header__container {
+            max-width: 1180px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0;
+        }
     }
 
     &--admin {
-        background-color: $color-primary-hover;
+        min-height: 68px;
         display: grid;
         grid-template-columns: 175px 1fr;
+        background-color: $color-primary-hover;
 
         .ui-header__inner {
             margin: 0;
             padding: 0 24px;
             width: 100%;
+            min-height: 68px;
+            height: auto;
             display: flex;
+            align-items: center;
             justify-content: space-between;
         }
 
@@ -180,33 +199,34 @@
             }
         }
     }
-
-    &--public,
-    &--user {
-        display: flex;
-
-        .ui-header__container {
-            max-width: 1180px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 0;
-        }
-    }
 }
 
 @media (max-width: $breakpoint-header-mobile) {
     .ui-header {
+        min-height: 62px;
+        height: auto;
+
         &__container {
             width: min(100% - 28px, 1180px);
         }
 
         &__inner {
             min-height: 62px;
+            height: auto;
+            width: min(1180px, 100% - 28px);
+        }
+
+        &__empty-block {
+            width: auto;
+            min-height: 62px;
+            height: auto;
         }
 
         &__left,
         &__right {
             min-width: auto;
+            min-height: 62px;
+            height: auto;
         }
 
         &__nav {
@@ -215,6 +235,20 @@
 
         &__brand-text {
             font-size: 15px;
+        }
+
+        &--admin {
+            min-height: 62px;
+            grid-template-columns: 1fr;
+
+            .ui-header__inner {
+                min-height: 62px;
+                padding: 0 18px;
+            }
+
+            .ui-header__empty-block {
+                display: none;
+            }
         }
     }
 }
