@@ -1,6 +1,9 @@
 export type ClusteringDateFilter =
     'ALL' | 'TODAY' | 'YESTERDAY' | 'LAST_7_DAYS' | 'LAST_30_DAYS';
 
+export type ClusteringStatusFilter =
+    'READY_FOR_CLUSTERING' | 'APPROVED' | 'EMBEDDED' | 'CLUSTERED' | 'ALL';
+
 export type ClusteringEmbeddingFilter =
     'ALL' | 'WITH_EMBEDDING' | 'WITHOUT_EMBEDDING';
 
@@ -19,6 +22,7 @@ export interface ClusteringFiltersState {
     search: string;
     fetchedDate: ClusteringDateFilter;
     sourceName: string;
+    status: ClusteringStatusFilter;
     embedding: ClusteringEmbeddingFilter;
     similarity: ClusteringSimilarityFilter;
     sort: ClusteringSortFilter;
