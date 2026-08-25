@@ -44,18 +44,61 @@
     }
 }
 
+@media (max-width: $breakpoint-content-wide) {
+    .user-page {
+        &__hero h1 {
+            font-size: 42px;
+            line-height: 1.06;
+            letter-spacing: -0.05em;
+        }
+    }
+}
+
 @media (max-width: $breakpoint-mobile) {
     .user-page {
         &__hero {
             margin-bottom: 26px;
         }
 
+        &__eyebrow {
+            font-size: 12px;
+            letter-spacing: 0.09em;
+        }
+
         &__hero h1 {
-            font-size: 38px;
+            max-width: 100%;
+            font-size: 34px;
+            line-height: 1.08;
+            letter-spacing: -0.04em;
         }
 
         &__hero p {
+            max-width: 100%;
+            margin-top: 14px;
             font-size: 16px;
+            line-height: 1.55;
+        }
+
+        &__list {
+            gap: 16px;
+        }
+
+        &__pagination {
+            margin-top: 28px;
+        }
+    }
+}
+
+@media (max-width: 420px) {
+    .user-page {
+        &__hero h1 {
+            font-size: 30px;
+            line-height: 1.1;
+            letter-spacing: -0.035em;
+        }
+
+        &__hero p {
+            font-size: 15px;
         }
     }
 }

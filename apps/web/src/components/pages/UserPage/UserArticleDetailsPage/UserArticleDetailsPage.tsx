@@ -7,7 +7,7 @@ import { ClusterBlock } from '../../../ui/ClusterBlock/ClusterBlock';
 import { Link } from '../../../ui/Link/Link';
 import { PageState } from '../../../ui/PageState/PageState';
 
-import '../UserPage.scss';
+import './UserArticleDetailsPage.scss';
 
 const formatDate = (value?: string | null) => {
     if (!value) {
