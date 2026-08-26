@@ -1,5 +1,6 @@
 export const CLUSTER_STATUS = {
     DRAFT: 'DRAFT',
+    UPDATED: 'UPDATED',
     PUBLISHED: 'PUBLISHED',
     ARCHIVED: 'ARCHIVED',
 } as const;

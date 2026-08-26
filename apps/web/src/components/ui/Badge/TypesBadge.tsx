@@ -20,6 +20,7 @@ export type BadgeVariants =
     | 'pending'
     | 'primary'
     | 'draft'
+    | 'updated'
     | 'published'
     | 'archived';
 
@@ -49,6 +50,7 @@ export const LabelMap: Record<BadgeVariants, string> = {
     pending: 'Pending',
     primary: 'Primary',
     draft: 'Draft',
+    updated: 'Updated',
     published: 'Published',
     archived: 'Archived',
 };
