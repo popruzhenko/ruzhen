@@ -113,6 +113,7 @@ export const All = () => (
         <Badge type="primary" />
         <Badge type="published" />
         <Badge type="draft" />
+        <Badge type="updated" />
         <Badge type="archived" />
     </div>
 );

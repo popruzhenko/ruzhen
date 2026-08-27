@@ -77,6 +77,7 @@ export async function updateClusterArticles({
             },
             select: {
                 id: true,
+                status: true,
             },
         });
 
@@ -102,6 +103,13 @@ export async function updateClusterArticles({
         const removedArticleIds = previousArticleIds.filter(
             (articleId) => !nextArticleIds.includes(articleId),
         );
+
+        const addedArticleIds = nextArticleIds.filter(
+            (articleId) => !previousArticleIds.includes(articleId),
+        );
+
+        const articlesChanged =
+            addedArticleIds.length > 0 || removedArticleIds.length > 0;
 
         await tx.clusterArticle.deleteMany({
             where: {
@@ -143,6 +151,17 @@ export async function updateClusterArticles({
                 },
                 data: {
                     status: ArticleStatus.EMBEDDED,
+                },
+            });
+        }
+
+        if (cluster.status === ClusterStatus.PUBLISHED && articlesChanged) {
+            await tx.cluster.update({
+                where: {
+                    id: clusterId,
+                },
+                data: {
+                    status: ClusterStatus.UPDATED,
                 },
             });
         }

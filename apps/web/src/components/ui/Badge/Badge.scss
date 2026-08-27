@@ -113,6 +113,11 @@
         background-color: $color-surface;
         color: $color-text-secondary;
     }
+    &.ui-badge--updated {
+        background-color: #fff7ed;
+        color: #c2410c;
+        border-color: #fed7aa;
+    }
 
     &.ui-badge--published {
         background-color: $color-success-bg;

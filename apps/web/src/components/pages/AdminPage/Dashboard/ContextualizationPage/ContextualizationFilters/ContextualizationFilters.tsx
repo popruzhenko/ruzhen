@@ -8,6 +8,7 @@ import { CLUSTER_STATUS } from '../../../../../../entities/cluster/model/cluster
 const statusOptions = [
     { label: 'All statuses', value: 'ALL' },
     { label: 'Draft', value: CLUSTER_STATUS.DRAFT },
+    { label: 'Updated', value: CLUSTER_STATUS.UPDATED },
     { label: 'Published', value: CLUSTER_STATUS.PUBLISHED },
     { label: 'Archived', value: CLUSTER_STATUS.ARCHIVED },
 ];

@@ -62,6 +62,7 @@ enum ArticleStatus {
 
 enum ClusterStatus {
   DRAFT
+  UPDATED
   PUBLISHED
   ARCHIVED
 }
