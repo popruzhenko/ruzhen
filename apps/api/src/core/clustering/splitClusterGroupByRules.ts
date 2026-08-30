@@ -20,65 +20,54 @@ interface SplitClusterGroupByRulesResult {
     relations: ClusterRelationDraft[];
 }
 
+function getArticleDate(article: ClusteringArticle): Date {
+    return article.publishedAt ?? article.createdAt;
+}
+
 function getArticleTime(article: ClusteringArticle): number {
-    return article.publishedAt ? article.publishedAt.getTime() : 0;
+    return getArticleDate(article).getTime();
 }
 
 function getClusterStartDate(articles: ClusteringArticle[]): Date | null {
-    const datedArticles = articles.filter((article) => article.publishedAt);
-
-    if (datedArticles.length === 0) {
+    if (articles.length === 0) {
         return null;
     }
 
-    return datedArticles.reduce((min, article) => {
-        if (!min || !article.publishedAt) {
-            return min;
-        }
+    return articles.reduce((minDate, article) => {
+        const articleDate = getArticleDate(article);
 
-        return article.publishedAt < min ? article.publishedAt : min;
-    }, datedArticles[0].publishedAt ?? null);
+        return articleDate < minDate ? articleDate : minDate;
+    }, getArticleDate(articles[0]));
 }
 
 function getClusterEndDate(articles: ClusteringArticle[]): Date | null {
-    const datedArticles = articles.filter((article) => article.publishedAt);
-
-    if (datedArticles.length === 0) {
+    if (articles.length === 0) {
         return null;
     }
 
-    return datedArticles.reduce((max, article) => {
-        if (!max || !article.publishedAt) {
-            return max;
-        }
+    return articles.reduce((maxDate, article) => {
+        const articleDate = getArticleDate(article);
 
-        return article.publishedAt > max ? article.publishedAt : max;
-    }, datedArticles[0].publishedAt ?? null);
+        return articleDate > maxDate ? articleDate : maxDate;
+    }, getArticleDate(articles[0]));
 }
 
 function isTimeWindowExceeded(
     currentArticles: ClusteringArticle[],
     nextArticle: ClusteringArticle,
 ): boolean {
-    if (!nextArticle.publishedAt || currentArticles.length === 0) {
+    if (currentArticles.length === 0) {
         return false;
     }
 
-    const currentDatedArticles = currentArticles.filter(
-        (article) => article.publishedAt,
-    );
-
-    if (currentDatedArticles.length === 0) {
-        return false;
-    }
-
-    const earliestDate = getClusterStartDate(currentDatedArticles);
+    const earliestDate = getClusterStartDate(currentArticles);
 
     if (!earliestDate) {
         return false;
     }
 
-    const diffMs = nextArticle.publishedAt.getTime() - earliestDate.getTime();
+    const diffMs =
+        getArticleDate(nextArticle).getTime() - earliestDate.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
 
     return diffHours > CLUSTER_TIME_WINDOW_HOURS;

@@ -13,6 +13,13 @@ export const queryKeys = {
             ['clusters', clusterId, 'blocks'] as const,
     },
 
+    clusterCandidates: {
+        all: ['cluster-candidates'] as const,
+        list: () => ['cluster-candidates', 'list'] as const,
+        detail: (candidateId: string) =>
+            ['cluster-candidates', candidateId] as const,
+    },
+
     publicClusters: {
         all: ['public-clusters'] as const,
         list: (params: object) => ['public-clusters', 'list', params] as const,

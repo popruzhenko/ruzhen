@@ -664,7 +664,17 @@ export const ContextualizationPage = () => {
                                         status: cluster.status,
                                         articlesCount:
                                             cluster._count?.articleLinks ?? 0,
-                                        averageSimilarity: 0,
+                                        averageSimilarity: null,
+                                        badgeLabel: cluster.status,
+                                        badgeType:
+                                            cluster.status === 'PUBLISHED'
+                                                ? 'published'
+                                                : cluster.status === 'UPDATED'
+                                                  ? 'updated'
+                                                  : cluster.status ===
+                                                      'ARCHIVED'
+                                                    ? 'archived'
+                                                    : 'draft',
                                     }}
                                     isActive={cluster.id === selectedClusterId}
                                     onSelect={handleSelectCluster}

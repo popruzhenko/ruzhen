@@ -3,33 +3,32 @@
 .clustering_filters {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding: 14px;
-    border: 1px solid $color-border-soft;
-    border-radius: 12px;
-    background-color: $color-white;
-    box-shadow: 0 8px 24px $shadow-soft;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
 
     &__header {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        gap: 12px;
+        gap: 8px;
 
         h3 {
             margin: 0;
-            color: #020817;
-            font-size: 18px;
+            color: $color-text-strong;
+            font-size: 13px;
             font-weight: 800;
+            line-height: 1.1;
         }
     }
 
     &__counter,
     &__selected {
-        display: block;
-        margin-top: 4px;
-        font-size: 13px;
+        display: inline-block;
+        margin-top: 1px;
+        font-size: 10px;
         font-weight: 700;
+        line-height: 1.1;
     }
 
     &__counter {
@@ -37,34 +36,47 @@
     }
 
     &__selected {
+        margin-left: 7px;
         color: $color-text-muted;
+    }
+
+    &__body {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: end;
+        gap: 5px 8px;
+        min-width: 0;
     }
 
     &__search,
     &__select {
         display: flex;
+        min-width: 0;
         flex-direction: column;
-        gap: 6px;
+        gap: 2px;
 
         > span {
             color: $color-text-secondary;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            line-height: 1;
+            text-transform: uppercase;
         }
     }
 
     &__search {
         input {
             width: 100%;
-            height: 36px;
+            height: 29px;
             border: 1px solid $color-border-strong;
             border-radius: 8px;
-            padding: 0 12px;
+            padding: 0 9px;
             box-sizing: border-box;
             color: $color-text-strong;
             background-color: $color-white;
             font: inherit;
-            font-size: 14px;
+            font-size: 12px;
 
             &::placeholder {
                 color: $color-text-soft;
@@ -78,33 +90,50 @@
         }
     }
 
-    &__body {
-        display: grid;
-        grid-template-columns:
-            minmax(260px, 1.7fr) minmax(130px, 160px) minmax(130px, 160px)
-            minmax(150px, 180px) minmax(150px, 180px) auto auto;
-        align-items: end;
-        gap: 12px;
+    &__search--wide {
+        grid-column: 1 / -1;
     }
 
     &__select {
-        min-width: 0;
-
         .ui-dropdown {
             width: 100%;
+            min-width: 0;
+            height: 29px;
+        }
+
+        .ui-dropdown__trigger {
+            height: 29px;
+            padding: 0 9px;
+            gap: 6px;
+        }
+
+        .ui-dropdown__value {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .ui-dropdown__arrow {
+            width: 16px;
+            height: 16px;
+        }
+
+        .ui-dropdown__options {
+            top: calc(100% + 4px);
+        }
+
+        .ui-dropdown__option {
+            min-height: 32px;
+            font-size: 12px;
+            padding: 0 9px;
         }
     }
 
-    &__select--wide {
-        grid-column: span 1;
-    }
-
     &__checkbox {
-        height: 36px;
+        height: 29px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 0 10px;
+        gap: 7px;
+        padding: 0 9px;
         border: 1px solid $color-border-strong;
         border-radius: 8px;
         background-color: $color-page-bg;
@@ -112,16 +141,16 @@
         cursor: pointer;
 
         input {
-            width: 15px;
-            height: 15px;
+            width: 12px;
+            height: 12px;
             margin: 0;
             cursor: pointer;
         }
 
         span {
-            color: #334155;
-            font-size: 14px;
-            font-weight: 600;
+            color: $color-text-secondary;
+            font-size: 11px;
+            font-weight: 700;
             white-space: nowrap;
         }
     }

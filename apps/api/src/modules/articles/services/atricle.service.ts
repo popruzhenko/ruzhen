@@ -1,21 +1,12 @@
 import 'dotenv/config';
-import {
-    PrismaClient,
-    ArticleStatus,
-    ContentAvailability,
-} from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { ArticleStatus, ContentAvailability } from '@prisma/client';
+import { prisma } from '../../../shared/lib/prismaClient';
 
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
     throw new Error('DATABASE_URL is not defined');
 }
-
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
 
 type ListArticlesInput = {
     page: number;
@@ -83,13 +74,22 @@ export async function getArticleById(id: string) {
                     },
                 },
             },
-            clusterCandidates: {
+            clusterCandidateLinks: {
                 select: {
-                    id: true,
-                    clusterId: true,
-                    score: true,
-                    status: true,
-                    createdAt: true,
+                    candidateId: true,
+                    confidence: true,
+                    isPrimary: true,
+                    position: true,
+                    candidate: {
+                        select: {
+                            id: true,
+                            title: true,
+                            status: true,
+                            averageSimilarity: true,
+                            articlesCount: true,
+                            createdAt: true,
+                        },
+                    },
                 },
             },
         },
@@ -156,7 +156,8 @@ export async function listArticles(input: ListArticlesInput) {
                 _count: {
                     select: {
                         clusterLinks: true,
-                        clusterCandidates: true,
+                        articleClusterCandidates: true,
+                        clusterCandidateLinks: true,
                     },
                 },
             },
@@ -274,7 +275,8 @@ export async function updateArticle(
             _count: {
                 select: {
                     clusterLinks: true,
-                    clusterCandidates: true,
+                    articleClusterCandidates: true,
+                    clusterCandidateLinks: true,
                 },
             },
         },

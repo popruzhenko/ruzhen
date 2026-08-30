@@ -9,7 +9,7 @@ export const AdminPage = () => {
         <>
             <Header
                 variant="admin"
-                userName="Vladimir"
+                userName="Vladimir Ruzhen"
                 navItems={[
                     {
                         label: 'Articles',

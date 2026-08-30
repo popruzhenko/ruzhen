@@ -11,6 +11,7 @@ import publicClusterArticleRouter from './modules/cluster-article/routes/public-
 import publicArticleRouter from './modules/articles/routes/public-article.routes';
 import adminClusterArticleRouter from './modules/cluster-article/routes/admin-cluster-article.routes';
 import adminArticleRouter from './modules/articles/routes/admin-article.routes';
+import adminClusterCandidateRouter from './modules/cluster-candidates/routes/admin-cluster-candidate.routes';
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/admin', adminTestRouter);
 app.use('/api/admin/clusters', adminClusterRouter);
+app.use('/api/admin/cluster-candidates', adminClusterCandidateRouter);
 app.use('/api/admin/clusters', adminClusterBlockRouter);
 app.use('/api/admin/clusters', adminClusterArticleRouter);
 app.use('/api/admin/articles', adminArticleRouter);

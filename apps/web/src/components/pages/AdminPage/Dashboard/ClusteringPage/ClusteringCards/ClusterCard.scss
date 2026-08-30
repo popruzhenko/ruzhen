@@ -2,49 +2,84 @@
 
 .cluster_card {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-
     width: 100%;
-    margin-bottom: 10px;
+    flex-direction: column;
+    gap: 8px;
     padding: 12px;
-
-    border: 1px solid $color-border-muted;
-    border-radius: 8px;
-    background-color: $color-page-bg;
-
+    border: 1px solid $color-border;
+    border-radius: 12px;
+    background-color: $color-white;
+    color: $color-text-main;
     text-align: left;
     cursor: pointer;
-
+    box-shadow: 0 4px 12px $shadow-soft;
     transition:
+        border-color 0.15s ease,
         background-color 0.15s ease,
-        border-color 0.15s ease;
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
 
     &:hover {
-        background-color: $color-surface;
+        transform: translateY(-1px);
+        border-color: $color-primary;
+        box-shadow: 0 8px 18px $shadow-md;
     }
 
     &--active {
-        border-color: #2563eb;
-        background-color: $color-surface-soft;
+        border-color: $color-primary;
+        background-color: $color-primary-subtle-bg;
+        box-shadow: 0 8px 18px $color-primary-glow-bg;
     }
 
-    &__id {
-        font-size: 10px;
-        font-weight: 700;
-        color: #2563eb;
+    &__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
     }
 
-    &__title {
+    &__human-id {
         overflow: hidden;
-        color: $color-text-strong;
-        font-size: 14px;
+        max-width: 120px;
+        color: $color-text-muted;
+        font-size: 11px;
+        line-height: 1.3;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
+    &__title {
+        color: $color-text-strong;
+        font-size: 14px;
+        line-height: 1.35;
+    }
+
+    &__summary {
+        display: -webkit-box;
+        margin: 0;
+        overflow: hidden;
+        color: $color-text-secondary;
+        font-size: 13px;
+        line-height: 1.4;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+    }
+
     &__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 10px;
         color: $color-text-muted;
         font-size: 12px;
+        line-height: 1.4;
+
+        span {
+            min-width: fit-content;
+        }
+
+        &--secondary {
+            color: $color-text-soft;
+            font-size: 11px;
+        }
     }
 }

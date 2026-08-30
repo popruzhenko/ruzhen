@@ -81,7 +81,7 @@ export async function reviewArticleContentById(
             _count: {
                 select: {
                     clusterLinks: true,
-                    clusterCandidates: true,
+                    clusterCandidateLinks: true,
                 },
             },
         },

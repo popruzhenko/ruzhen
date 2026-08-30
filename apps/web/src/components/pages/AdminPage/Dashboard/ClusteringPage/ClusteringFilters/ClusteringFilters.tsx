@@ -1,8 +1,10 @@
 import { DropDown } from '../../../../../ui/DropDown/DropDown';
 import { Button } from '../../../../../ui/Button/Button';
-import type { ClusteringFiltersProps } from './TypesClusteringFilters';
-import './ClusteringFilters.scss';
 import { Icon } from '../../../../../ui/Icon/Icon';
+
+import type { ClusteringFiltersProps } from './TypesClusteringFilters';
+
+import './ClusteringFilters.scss';
 
 const dateOptions = [
     { label: 'All dates', value: 'ALL' },
@@ -13,21 +15,21 @@ const dateOptions = [
 ];
 
 const statusOptions = [
-    { label: 'Ready for clustering', value: 'READY_FOR_CLUSTERING' },
+    { label: 'Ready', value: 'READY_FOR_CLUSTERING' },
     { label: 'Approved', value: 'APPROVED' },
     { label: 'Embedded', value: 'EMBEDDED' },
     { label: 'Clustered', value: 'CLUSTERED' },
-    { label: 'All statuses', value: 'ALL' },
+    { label: 'All', value: 'ALL' },
 ];
 
 const embeddingOptions = [
-    { label: 'All embeddings', value: 'ALL' },
+    { label: 'All', value: 'ALL' },
     { label: 'With embedding', value: 'WITH_EMBEDDING' },
     { label: 'Without embedding', value: 'WITHOUT_EMBEDDING' },
 ];
 
 const similarityOptions = [
-    { label: 'Any similarity', value: 'ALL' },
+    { label: 'Any', value: 'ALL' },
     { label: '> 0.70', value: 'GT_070' },
     { label: '> 0.75', value: 'GT_075' },
     { label: '> 0.80', value: 'GT_080' },
@@ -35,8 +37,8 @@ const similarityOptions = [
 ];
 
 const sortOptions = [
-    { label: 'Newest first', value: 'NEWEST' },
-    { label: 'Oldest first', value: 'OLDEST' },
+    { label: 'Newest', value: 'NEWEST' },
+    { label: 'Oldest', value: 'OLDEST' },
     { label: 'Similarity high', value: 'SIMILARITY_DESC' },
     { label: 'Similarity low', value: 'SIMILARITY_ASC' },
     { label: 'Title A-Z', value: 'TITLE_ASC' },
@@ -56,10 +58,10 @@ export const ClusteringFilters = ({
         <section className="clustering_filters">
             <div className="clustering_filters__header">
                 <div>
-                    <h3>Filters</h3>
+                    <h3>Article filters</h3>
 
                     <span className="clustering_filters__counter">
-                        Showing {filteredCount} of {totalCount} articles
+                        Showing {filteredCount} of {totalCount}
                     </span>
 
                     <span className="clustering_filters__selected">
@@ -72,13 +74,14 @@ export const ClusteringFilters = ({
                     variants="secondary"
                     onClick={onClear}
                     disabled={!hasActiveFilters}
-                    leftIcon={<Icon name="trash"></Icon>}
+                    leftIcon={<Icon name="trash" />}
                 >
                     Clear
                 </Button>
             </div>
+
             <div className="clustering_filters__body">
-                <label className="clustering_filters__search">
+                <label className="clustering_filters__search clustering_filters__search--wide">
                     <span>Search</span>
 
                     <input
@@ -86,9 +89,10 @@ export const ClusteringFilters = ({
                         onChange={(event) =>
                             onChange('search', event.target.value)
                         }
-                        placeholder="Search title, source, ID..."
+                        placeholder="Title, source, ID..."
                     />
                 </label>
+
                 <div className="clustering_filters__select">
                     <span>Date</span>
 
@@ -161,7 +165,7 @@ export const ClusteringFilters = ({
                     />
                 </div>
 
-                <div className="clustering_filters__select clustering_filters__select--wide">
+                <div className="clustering_filters__select">
                     <span>Sort</span>
 
                     <DropDown

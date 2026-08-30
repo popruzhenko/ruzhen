@@ -1,6 +1,7 @@
 export interface ClusteringArticle {
     id: string;
     publishedAt: Date | null;
+    createdAt: Date;
     embedding: number[];
 }
 
