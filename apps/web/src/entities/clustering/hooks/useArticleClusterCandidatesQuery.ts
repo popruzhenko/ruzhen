@@ -1,16 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import { getClusterCandidates } from '../api/getClusterCandidates';
-import { queryKeys } from '../../../shared/lib/queryKeys';
 
-export function useClusterCandidatesQuery(clusterId?: string | null) {
+import { queryKeys } from '../../../shared/lib/queryKeys';
+import { getArticleClusterCandidates } from '../api/getArticleClusterCandidates';
+
+export function useArticleClusterCandidatesQuery(clusterId?: string | null) {
     return useQuery({
-        queryKey: queryKeys.clusters.candidates(clusterId as string),
+        queryKey: queryKeys.clusters.candidates(clusterId ?? null),
         queryFn: () => {
             if (!clusterId) {
                 throw new Error('Cluster id is required');
             }
 
-            return getClusterCandidates(clusterId);
+            return getArticleClusterCandidates(clusterId);
         },
         enabled: Boolean(clusterId),
     });

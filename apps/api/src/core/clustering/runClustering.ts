@@ -44,8 +44,8 @@ export async function main(): Promise<void> {
 
     console.log('articles for clustering:', articles.length);
 
-    const preparedArticles: ClusteringArticle[] = articles
-        .map((article) => {
+    const preparedArticles = articles
+        .map((article): ClusteringArticle | null => {
             const embedding = parseEmbedding(article.embedding);
 
             if (!embedding) {
@@ -55,6 +55,7 @@ export async function main(): Promise<void> {
             return {
                 id: article.id,
                 publishedAt: article.publishedAt,
+                createdAt: article.createdAt,
                 embedding,
             };
         })

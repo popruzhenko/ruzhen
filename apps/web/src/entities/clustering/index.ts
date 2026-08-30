@@ -2,14 +2,14 @@ export type {
     CandidateArticleItem,
     ClusterArticleItem,
     EmbeddedArticleItem,
-    GetClusterCandidatesResponse,
+    GetArticleClusterCandidatesResponse,
     SaveClusterArticlesPayload,
 } from './model/types';
 
-export { getClusterCandidates } from './api/getClusterCandidates';
+export { getArticleClusterCandidates } from './api/getArticleClusterCandidates';
 export { saveClusterArticles } from './api/saveClusterArticles';
 
-export { useClusterCandidatesQuery } from './hooks/useClusterCandidatesQuery';
+export { useArticleClusterCandidatesQuery } from './hooks/useArticleClusterCandidatesQuery';
 export { useSaveClusterArticlesMutation } from './hooks/useSaveClusterArticlesMutation';
 
 export { calculateCentroid } from './lib/calculateCentroid';

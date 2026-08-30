@@ -9,6 +9,13 @@ import {
 } from '../../../../../entities/clustering';
 
 import {
+    useClusterCandidatesQuery,
+    useGenerateClusterCandidatesMutation,
+    useAcceptClusterCandidateMutation,
+    useDeleteClusterCandidateMutation,
+} from '../../../../../entities/cluster-candidate';
+
+import {
     useClusterByIdQuery,
     useClustersQuery,
     useCreateClusterFromArticlesMutation,
@@ -27,6 +34,9 @@ import { ArticleCandidateCard } from './ClusteringCards/ArticleCandidateCard';
 import { ClusterArticleCard } from './ClusteringCards/ClusterArticleCard';
 import { ClusterCard } from './ClusteringCards/ClusterCard';
 import { ClusteringFilters } from './ClusteringFilters/ClusteringFilters';
+import { ClusterListFilters } from './ClusterListFilters/ClusterListFilters';
+
+import type { ClusterListFiltersState } from './ClusterListFilters/TypesClusterListFilters';
 
 import type { ClusteringFiltersState } from './ClusteringFilters/TypesClusteringFilters';
 
@@ -34,12 +44,14 @@ import { isDateInFetchedRange } from '../lib/DateHelper';
 import { getSimilarityThreshold } from '../lib/SimilarityThresholdHelper';
 
 import './ClusteringPage.scss';
+
 import {
     ARTICLE_STATUS,
     isClusteringArticleStatus,
     type ClusteringArticleStatus,
     type ArticleStatus,
 } from '../../../../../entities/raw-news/model/articleConstants';
+
 import { TOAST_TYPE } from '../../../../ui/Toast/ToastConstants';
 
 const hasClusteringArticleStatus = <T extends { status: ArticleStatus }>(
@@ -62,6 +74,12 @@ const initialClusteringFilters: ClusteringFiltersState = {
     similarity: 'ALL',
     sort: 'SIMILARITY_DESC',
     onlySelected: false,
+};
+
+const initialClusterListFilters: ClusterListFiltersState = {
+    search: '',
+    status: 'ALL',
+    sort: 'NEWEST',
 };
 
 const toNumberArray = (value: unknown): number[] | null => {
@@ -102,10 +120,24 @@ const matchesStatusFilter = (
     return articleStatus === statusFilter;
 };
 
+const formatSimilarity = (value: number | null | undefined): string => {
+    if (typeof value !== 'number') {
+        return '—';
+    }
+
+    return value.toFixed(3);
+};
+
 export const ClusteringPage = () => {
     const [selectedClusterId, setSelectedClusterId] = useState<string | null>(
         null,
     );
+
+    const [clusterListFilters, setClusterListFilters] =
+        useState<ClusterListFiltersState>(initialClusterListFilters);
+
+    const [selectedClusterCandidateId, setSelectedClusterCandidateId] =
+        useState<string | null>(null);
 
     const [clusterArticles, setClusterArticles] = useState<
         ClusterArticleItem[]
@@ -130,16 +162,29 @@ export const ClusteringPage = () => {
     const [isDeleteClusterConfirmOpen, setIsDeleteClusterConfirmOpen] =
         useState(false);
 
+    const [
+        isDeleteClusterCandidateConfirmOpen,
+        setIsDeleteClusterCandidateConfirmOpen,
+    ] = useState(false);
+
     const { showToast } = useToast();
 
     const clustersQuery = useClustersQuery({ page: 1, limit: 500 });
     const selectedClusterQuery = useClusterByIdQuery(selectedClusterId);
     const articlesQuery = useArticlesQuery();
+    const clusterCandidatesQuery = useClusterCandidatesQuery();
 
     const deleteClusterMutation = useDeleteClusterMutation();
 
     const generateArticleEmbeddingsMutation =
         useGenerateArticleEmbeddingsMutation();
+
+    const generateClusterCandidatesMutation =
+        useGenerateClusterCandidatesMutation();
+
+    const acceptClusterCandidateMutation = useAcceptClusterCandidateMutation();
+
+    const deleteClusterCandidateMutation = useDeleteClusterCandidateMutation();
 
     const createClusterFromArticlesMutation =
         useCreateClusterFromArticlesMutation();
@@ -149,6 +194,19 @@ export const ClusteringPage = () => {
     const clusters = clustersQuery.data?.clusters ?? [];
     const selectedCluster = selectedClusterQuery.data ?? null;
     const articles = articlesQuery.data?.articles ?? [];
+    const clusterCandidates = clusterCandidatesQuery.data?.candidates ?? [];
+
+    const selectedClusterCandidate = useMemo(() => {
+        if (!selectedClusterCandidateId) {
+            return null;
+        }
+
+        return (
+            clusterCandidates.find(
+                (candidate) => candidate.id === selectedClusterCandidateId,
+            ) ?? null
+        );
+    }, [clusterCandidates, selectedClusterCandidateId]);
 
     const clusterArticleIdsKey = useMemo(() => {
         return clusterArticles
@@ -161,8 +219,11 @@ export const ClusteringPage = () => {
         const cluster = selectedClusterQuery.data;
 
         if (!selectedClusterId || !cluster) {
-            setClusterArticles([]);
-            setSelectedClusterArticleIds([]);
+            if (!selectedClusterCandidateId) {
+                setClusterArticles([]);
+                setSelectedClusterArticleIds([]);
+            }
+
             return;
         }
 
@@ -189,7 +250,41 @@ export const ClusteringPage = () => {
         setClusterArticles(mappedArticles);
         setSelectedClusterArticleIds([]);
         setSelectedCandidateIds([]);
-    }, [selectedClusterId, selectedClusterQuery.dataUpdatedAt]);
+    }, [
+        selectedClusterId,
+        selectedClusterCandidateId,
+        selectedClusterQuery.dataUpdatedAt,
+    ]);
+
+    useEffect(() => {
+        if (!selectedClusterCandidate) {
+            return;
+        }
+
+        const mappedArticles: ClusterArticleItem[] =
+            selectedClusterCandidate.articles.map((candidateArticle) => {
+                const article = candidateArticle.article;
+                const embedding = toNumberArray(article.embedding);
+
+                return {
+                    id: article.id,
+                    title: article.title,
+                    summary: article.summary ?? null,
+                    sourceName: article.source?.name ?? null,
+                    country: null,
+                    publishedAt: article.publishedAt ?? null,
+                    embedding,
+                    similarityToCentroid: candidateArticle.confidence ?? null,
+                    confidence: candidateArticle.confidence ?? null,
+                    isPrimary: candidateArticle.isPrimary,
+                    status: ARTICLE_STATUS.EMBEDDED,
+                };
+            });
+
+        setClusterArticles(mappedArticles);
+        setSelectedClusterArticleIds([]);
+        setSelectedCandidateIds([]);
+    }, [selectedClusterCandidate]);
 
     useEffect(() => {
         const clusterArticleIds = new Set(
@@ -353,6 +448,124 @@ export const ClusteringPage = () => {
         });
     }, [candidatesWithSimilarity, filters, selectedCandidateIds]);
 
+    const filteredClusterCandidates = useMemo(() => {
+        const search = clusterListFilters.search.trim().toLowerCase();
+
+        const filtered = clusterCandidates.filter((candidate) => {
+            const matchesStatus =
+                clusterListFilters.status === 'ALL' ||
+                clusterListFilters.status === 'CANDIDATE';
+
+            const candidateArticlesText = candidate.articles
+                .map((candidateArticle) => {
+                    const article = candidateArticle.article;
+
+                    return [
+                        article.id,
+                        article.title,
+                        article.summary,
+                        article.source?.name,
+                    ]
+                        .filter(Boolean)
+                        .join(' ');
+                })
+                .join(' ')
+                .toLowerCase();
+
+            const matchesSearch =
+                search.length === 0 ||
+                candidate.id.toLowerCase().includes(search) ||
+                candidate.title?.toLowerCase().includes(search) ||
+                candidate.summary?.toLowerCase().includes(search) ||
+                candidateArticlesText.includes(search);
+
+            return matchesStatus && matchesSearch;
+        });
+
+        return [...filtered].sort((a, b) => {
+            if (clusterListFilters.sort === 'OLDEST') {
+                return (
+                    new Date(a.createdAt).getTime() -
+                    new Date(b.createdAt).getTime()
+                );
+            }
+
+            if (clusterListFilters.sort === 'TITLE_ASC') {
+                return (a.title ?? '').localeCompare(b.title ?? '');
+            }
+
+            if (clusterListFilters.sort === 'ARTICLES_DESC') {
+                return b.articlesCount - a.articlesCount;
+            }
+
+            if (clusterListFilters.sort === 'SIMILARITY_DESC') {
+                return (
+                    (b.averageSimilarity ?? -1) - (a.averageSimilarity ?? -1)
+                );
+            }
+
+            return (
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
+            );
+        });
+    }, [clusterCandidates, clusterListFilters]);
+
+    const filteredSavedClusters = useMemo(() => {
+        const search = clusterListFilters.search.trim().toLowerCase();
+
+        const filtered = clusters.filter((cluster) => {
+            const matchesStatus =
+                clusterListFilters.status === 'ALL' ||
+                cluster.status === clusterListFilters.status;
+
+            const matchesSearch =
+                search.length === 0 ||
+                cluster.id.toLowerCase().includes(search) ||
+                cluster.humanId.toLowerCase().includes(search) ||
+                cluster.title.toLowerCase().includes(search) ||
+                cluster.summary?.toLowerCase().includes(search);
+
+            return matchesStatus && matchesSearch;
+        });
+
+        return [...filtered].sort((a, b) => {
+            if (clusterListFilters.sort === 'OLDEST') {
+                return (
+                    new Date(a.createdAt).getTime() -
+                    new Date(b.createdAt).getTime()
+                );
+            }
+
+            if (clusterListFilters.sort === 'TITLE_ASC') {
+                return a.title.localeCompare(b.title);
+            }
+
+            if (clusterListFilters.sort === 'ARTICLES_DESC') {
+                return (
+                    (b._count?.articleLinks ?? 0) -
+                    (a._count?.articleLinks ?? 0)
+                );
+            }
+
+            if (clusterListFilters.sort === 'SIMILARITY_DESC') {
+                return (
+                    (b.averageSimilarity ?? -1) - (a.averageSimilarity ?? -1)
+                );
+            }
+
+            return (
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
+            );
+        });
+    }, [clusters, clusterListFilters]);
+
+    const hasActiveClusterListFilters =
+        clusterListFilters.search.trim() !== '' ||
+        clusterListFilters.status !== 'ALL' ||
+        clusterListFilters.sort !== 'NEWEST';
+
     const hasActiveFilters =
         filters.search.trim() !== '' ||
         filters.fetchedDate !== 'ALL' ||
@@ -377,6 +590,22 @@ export const ClusteringPage = () => {
         setFilters(initialClusteringFilters);
     };
 
+    const handleChangeClusterListFilter = <
+        K extends keyof ClusterListFiltersState,
+    >(
+        key: K,
+        value: ClusterListFiltersState[K],
+    ) => {
+        setClusterListFilters((currentFilters) => ({
+            ...currentFilters,
+            [key]: value,
+        }));
+    };
+
+    const handleClearClusterListFilters = () => {
+        setClusterListFilters(initialClusterListFilters);
+    };
+
     const buildClusterTitle = (articles: ClusterArticleItem[]): string => {
         const firstArticleTitle = articles[0]?.title?.trim();
 
@@ -392,6 +621,7 @@ export const ClusteringPage = () => {
 
         if (isSameCluster) {
             setSelectedClusterId(null);
+            setSelectedClusterCandidateId(null);
             setClusterArticles([]);
             setSelectedClusterArticleIds([]);
             setSelectedCandidateIds([]);
@@ -399,6 +629,25 @@ export const ClusteringPage = () => {
         }
 
         setSelectedClusterId(clusterId);
+        setSelectedClusterCandidateId(null);
+        setClusterArticles([]);
+        setSelectedClusterArticleIds([]);
+        setSelectedCandidateIds([]);
+    };
+
+    const handleSelectClusterCandidate = (candidateId: string) => {
+        const isSameCandidate = candidateId === selectedClusterCandidateId;
+
+        if (isSameCandidate) {
+            setSelectedClusterCandidateId(null);
+            setClusterArticles([]);
+            setSelectedClusterArticleIds([]);
+            setSelectedCandidateIds([]);
+            return;
+        }
+
+        setSelectedClusterId(null);
+        setSelectedClusterCandidateId(candidateId);
         setClusterArticles([]);
         setSelectedClusterArticleIds([]);
         setSelectedCandidateIds([]);
@@ -430,6 +679,17 @@ export const ClusteringPage = () => {
     );
 
     const handleAddToCluster = () => {
+        if (selectedClusterCandidateId) {
+            showToast({
+                type: TOAST_TYPE.WARNING,
+                title: 'Candidate cluster selected',
+                message:
+                    'Accept or delete the cluster candidate. Manual editing will be added later.',
+            });
+
+            return;
+        }
+
         const articlesToAdd = filteredCandidateArticles
             .filter((article) => selectedCandidateIds.includes(article.id))
             .filter(hasEmbedding);
@@ -489,6 +749,17 @@ export const ClusteringPage = () => {
     };
 
     const handleCreateCluster = async () => {
+        if (selectedClusterCandidateId) {
+            showToast({
+                type: TOAST_TYPE.WARNING,
+                title: 'Use Accept candidate',
+                message:
+                    'This draft comes from an algorithmic cluster candidate. Use Accept candidate instead.',
+            });
+
+            return;
+        }
+
         if (clusterArticles.length === 0) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -512,6 +783,7 @@ export const ClusteringPage = () => {
             const createdCluster = response.cluster;
 
             setSelectedClusterId(createdCluster.id);
+            setSelectedClusterCandidateId(null);
             setSelectedClusterArticleIds([]);
             setSelectedCandidateIds([]);
 
@@ -536,6 +808,17 @@ export const ClusteringPage = () => {
     };
 
     const handleSaveCluster = async () => {
+        if (selectedClusterCandidateId) {
+            showToast({
+                type: TOAST_TYPE.WARNING,
+                title: 'Use Accept candidate',
+                message:
+                    'This is an algorithmic cluster candidate. Accept it before saving as a normal cluster.',
+            });
+
+            return;
+        }
+
         if (!selectedClusterId) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -614,7 +897,143 @@ export const ClusteringPage = () => {
         }
     };
 
+    const handleGenerateClusterCandidates = async () => {
+        try {
+            const response =
+                await generateClusterCandidatesMutation.mutateAsync();
+
+            await clusterCandidatesQuery.refetch();
+
+            setSelectedClusterCandidateId(null);
+            setSelectedClusterId(null);
+            setClusterArticles([]);
+            setSelectedClusterArticleIds([]);
+            setSelectedCandidateIds([]);
+
+            showToast({
+                type: TOAST_TYPE.SUCCESS,
+                title: 'Cluster candidates generated',
+                message: `${response.meta.candidatesCreated} candidate cluster(s) created from ${response.meta.articlesChecked} article(s).`,
+            });
+        } catch (error) {
+            showToast({
+                type: TOAST_TYPE.ERROR,
+                title: 'Failed to generate cluster candidates',
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : 'Unknown error occurred.',
+            });
+        }
+    };
+
+    const handleAcceptClusterCandidate = async () => {
+        if (!selectedClusterCandidateId) {
+            showToast({
+                type: TOAST_TYPE.WARNING,
+                title: 'No candidate selected',
+                message: 'Select a cluster candidate before accepting.',
+            });
+
+            return;
+        }
+
+        try {
+            const response = await acceptClusterCandidateMutation.mutateAsync(
+                selectedClusterCandidateId,
+            );
+
+            const createdCluster = response.cluster;
+
+            setSelectedClusterCandidateId(null);
+            setSelectedClusterId(createdCluster.id);
+            setSelectedClusterArticleIds([]);
+            setSelectedCandidateIds([]);
+
+            await Promise.all([
+                clustersQuery.refetch(),
+                clusterCandidatesQuery.refetch(),
+                articlesQuery.refetch(),
+            ]);
+
+            showToast({
+                type: TOAST_TYPE.SUCCESS,
+                title: 'Candidate accepted',
+                message: 'Cluster candidate was saved as a draft cluster.',
+            });
+        } catch (error) {
+            showToast({
+                type: TOAST_TYPE.ERROR,
+                title: 'Failed to accept candidate',
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : 'Unknown error occurred.',
+            });
+        }
+    };
+
+    const handleOpenDeleteClusterCandidateConfirm = () => {
+        if (!selectedClusterCandidateId) {
+            showToast({
+                type: TOAST_TYPE.WARNING,
+                title: 'No candidate selected',
+                message: 'Select a cluster candidate before deleting.',
+            });
+
+            return;
+        }
+
+        setIsDeleteClusterCandidateConfirmOpen(true);
+    };
+
+    const handleConfirmDeleteClusterCandidate = async () => {
+        if (!selectedClusterCandidateId) {
+            return;
+        }
+
+        try {
+            await deleteClusterCandidateMutation.mutateAsync(
+                selectedClusterCandidateId,
+            );
+
+            setSelectedClusterCandidateId(null);
+            setClusterArticles([]);
+            setSelectedClusterArticleIds([]);
+            setSelectedCandidateIds([]);
+            setIsDeleteClusterCandidateConfirmOpen(false);
+
+            await clusterCandidatesQuery.refetch();
+
+            showToast({
+                type: TOAST_TYPE.SUCCESS,
+                title: 'Candidate deleted',
+                message: 'Cluster candidate was deleted successfully.',
+            });
+        } catch (error) {
+            showToast({
+                type: TOAST_TYPE.ERROR,
+                title: 'Failed to delete candidate',
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : 'Unknown error occurred.',
+            });
+        }
+    };
+
     const handleRemoveFromCluster = () => {
+        if (selectedClusterCandidateId) {
+            showToast({
+                type: TOAST_TYPE.WARNING,
+                title: 'Candidate cluster selected',
+                message:
+                    'Manual editing of algorithmic candidates will be added later.',
+            });
+
+            return;
+        }
+
         const articlesToRemove = clusterArticles.filter((article) =>
             selectedClusterArticleIds.includes(article.id),
         );
@@ -679,6 +1098,7 @@ export const ClusteringPage = () => {
             await deleteClusterMutation.mutateAsync(selectedClusterId);
 
             setSelectedClusterId(null);
+            setSelectedClusterCandidateId(null);
             setClusterArticles([]);
             setSelectedClusterArticleIds([]);
             setSelectedCandidateIds([]);
@@ -707,12 +1127,14 @@ export const ClusteringPage = () => {
     const isLoading =
         clustersQuery.isLoading ||
         selectedClusterQuery.isLoading ||
-        articlesQuery.isLoading;
+        articlesQuery.isLoading ||
+        clusterCandidatesQuery.isLoading;
 
     const isError =
         clustersQuery.isError ||
         selectedClusterQuery.isError ||
-        articlesQuery.isError;
+        articlesQuery.isError ||
+        clusterCandidatesQuery.isError;
 
     if (isLoading) {
         return (
@@ -737,6 +1159,7 @@ export const ClusteringPage = () => {
                     onAction={() => {
                         void clustersQuery.refetch();
                         void articlesQuery.refetch();
+                        void clusterCandidatesQuery.refetch();
 
                         if (selectedClusterId) {
                             void selectedClusterQuery.refetch();
@@ -749,51 +1172,277 @@ export const ClusteringPage = () => {
 
     return (
         <div className="clustering">
-            <ClusteringFilters
-                filters={filters}
-                sourceOptions={sourceOptions}
-                totalCount={candidatesWithSimilarity.length}
-                filteredCount={filteredCandidateArticles.length}
-                selectedCount={selectedCandidateIds.length}
-                hasActiveFilters={hasActiveFilters}
-                onChange={handleChangeFilter}
-                onClear={handleClearFilters}
-            />
+            <div className="clustering__controls-grid">
+                <section className="clustering__control-panel">
+                    <div className="clustering__control-panel-header">
+                        <div>
+                            <h2>Cluster actions</h2>
+
+                            <span className="clustering__control-counter">
+                                {filteredClusterCandidates.length} candidate(s),{' '}
+                                {filteredSavedClusters.length} saved cluster(s)
+                            </span>
+                        </div>
+
+                        <div className="clustering__control-panel-actions">
+                            <Button
+                                onClick={handleGenerateClusterCandidates}
+                                disabled={
+                                    generateClusterCandidatesMutation.isPending
+                                }
+                            >
+                                {generateClusterCandidatesMutation.isPending
+                                    ? 'Generating...'
+                                    : 'Generate candidates'}
+                            </Button>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="clustering__control-panel clustering__control-panel--selected">
+                    <div className="clustering__control-panel-header">
+                        <div>
+                            <h2>Selected actions</h2>
+
+                            <span className="clustering__control-counter">
+                                {selectedClusterCandidateId
+                                    ? 'Candidate selected'
+                                    : selectedClusterId
+                                      ? 'Saved cluster selected'
+                                      : 'No cluster selected'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="clustering__control-panel-actions">
+                        {selectedClusterCandidateId ? (
+                            <>
+                                <Button
+                                    onClick={handleAcceptClusterCandidate}
+                                    disabled={
+                                        acceptClusterCandidateMutation.isPending
+                                    }
+                                >
+                                    {acceptClusterCandidateMutation.isPending
+                                        ? 'Accepting...'
+                                        : 'Accept candidate'}
+                                </Button>
+
+                                <Button
+                                    onClick={
+                                        handleOpenDeleteClusterCandidateConfirm
+                                    }
+                                    disabled={
+                                        deleteClusterCandidateMutation.isPending
+                                    }
+                                >
+                                    {deleteClusterCandidateMutation.isPending
+                                        ? 'Deleting...'
+                                        : 'Delete candidate'}
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button
+                                    onClick={handleRemoveFromCluster}
+                                    disabled={
+                                        selectedClusterArticleIds.length === 0
+                                    }
+                                >
+                                    Remove
+                                </Button>
+
+                                <Button
+                                    onClick={handleCreateCluster}
+                                    disabled={
+                                        clusterArticles.length === 0 ||
+                                        createClusterFromArticlesMutation.isPending
+                                    }
+                                >
+                                    {createClusterFromArticlesMutation.isPending
+                                        ? 'Creating...'
+                                        : 'Create'}
+                                </Button>
+
+                                <Button
+                                    onClick={handleSaveCluster}
+                                    disabled={
+                                        !selectedClusterId ||
+                                        clusterArticles.length === 0 ||
+                                        updateClusterArticlesMutation.isPending
+                                    }
+                                >
+                                    {updateClusterArticlesMutation.isPending
+                                        ? 'Saving...'
+                                        : 'Save'}
+                                </Button>
+
+                                <Button
+                                    onClick={handleOpenDeleteClusterConfirm}
+                                    disabled={
+                                        !selectedClusterId ||
+                                        deleteClusterMutation.isPending
+                                    }
+                                >
+                                    {deleteClusterMutation.isPending
+                                        ? 'Deleting...'
+                                        : 'Delete'}
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                </section>
+
+                <section className="clustering__control-panel">
+                    <div className="clustering__control-panel-header">
+                        <div>
+                            <h2>Article actions</h2>
+
+                            <span className="clustering__control-counter">
+                                {filteredCandidateArticles.length} visible
+                            </span>
+
+                            <span className="clustering__control-counter clustering__control-counter--muted">
+                                Selected: {selectedCandidateIds.length}
+                            </span>
+                        </div>
+
+                        <div className="clustering__control-panel-actions">
+                            <Button
+                                onClick={handleAddToCluster}
+                                disabled={
+                                    !hasAddableSelectedCandidates ||
+                                    Boolean(selectedClusterCandidateId)
+                                }
+                            >
+                                Add to cluster
+                            </Button>
+
+                            <Button
+                                onClick={handleGenerateEmbedding}
+                                disabled={
+                                    generateArticleEmbeddingsMutation.isPending
+                                }
+                            >
+                                {generateArticleEmbeddingsMutation.isPending
+                                    ? 'Generating...'
+                                    : 'Generate embeddings'}
+                            </Button>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
             <div className="clustering__workspace">
                 <aside className="clustering__clusters">
                     <div className="clustering__panel-header">
-                        <h2>Clusters</h2>
+                        <div>
+                            <h2>Clusters</h2>
+                            <p>
+                                {filteredClusterCandidates.length} candidate(s),{' '}
+                                {filteredSavedClusters.length} saved cluster(s)
+                            </p>
+                        </div>
+                    </div>
+                    <div className="clustering__column-filter">
+                        <ClusterListFilters
+                            filters={clusterListFilters}
+                            totalCount={
+                                clusterCandidates.length + clusters.length
+                            }
+                            filteredCount={
+                                filteredClusterCandidates.length +
+                                filteredSavedClusters.length
+                            }
+                            hasActiveFilters={hasActiveClusterListFilters}
+                            onChange={handleChangeClusterListFilter}
+                            onClear={handleClearClusterListFilters}
+                        />
                     </div>
 
                     <div className="clustering__article-list">
-                        {clusters.length === 0 ? (
-                            <PageState
-                                variant="empty"
-                                title="No clusters yet"
-                                description="Create a cluster from embedded candidate articles to start grouping related news."
-                                className="clustering__side-state"
-                            />
-                        ) : (
-                            clusters.map((cluster) => (
-                                <ClusterCard
-                                    key={cluster.id}
-                                    cluster={{
-                                        id: cluster.id,
-                                        humanId: cluster.humanId,
-                                        title: cluster.title,
-                                        summary: cluster.summary ?? null,
-                                        status: cluster.status,
-                                        articlesCount:
-                                            cluster._count?.articleLinks ?? 0,
-                                        averageSimilarity:
-                                            clusterMetrics.averageSimilarity,
-                                    }}
-                                    isActive={cluster.id === selectedClusterId}
-                                    onSelect={handleSelectCluster}
-                                />
-                            ))
+                        {filteredClusterCandidates.length > 0 && (
+                            <div className="clustering__candidate-group">
+                                <h3 className="clustering__candidate-group-title">
+                                    Algorithmic candidates
+                                </h3>
+
+                                {filteredClusterCandidates.map((candidate) => (
+                                    <ClusterCard
+                                        key={candidate.id}
+                                        cluster={{
+                                            id: candidate.id,
+                                            title:
+                                                candidate.title ??
+                                                'Untitled candidate',
+                                            summary: candidate.summary ?? null,
+                                            status: 'CANDIDATE',
+                                            articlesCount:
+                                                candidate.articlesCount,
+                                            averageSimilarity:
+                                                candidate.averageSimilarity,
+                                            similarityThreshold:
+                                                candidate.similarityThreshold,
+                                            timeWindowDays:
+                                                candidate.timeWindowDays,
+                                            badgeLabel: 'Candidate',
+                                            badgeType: 'candidate',
+                                        }}
+                                        isActive={
+                                            candidate.id ===
+                                            selectedClusterCandidateId
+                                        }
+                                        onSelect={handleSelectClusterCandidate}
+                                    />
+                                ))}
+                            </div>
                         )}
+
+                        <div className="clustering__candidate-group">
+                            <h3 className="clustering__candidate-group-title">
+                                Saved clusters
+                            </h3>
+
+                            {filteredSavedClusters.length === 0 ? (
+                                <PageState
+                                    variant="empty"
+                                    title={
+                                        hasActiveClusterListFilters
+                                            ? 'No clusters match filters'
+                                            : 'No clusters yet'
+                                    }
+                                    description={
+                                        hasActiveClusterListFilters
+                                            ? 'Try changing cluster search, status or sorting.'
+                                            : 'Create a cluster from embedded candidate articles to start grouping related news.'
+                                    }
+                                    className="clustering__side-state"
+                                />
+                            ) : (
+                                filteredSavedClusters.map((cluster) => (
+                                    <ClusterCard
+                                        key={cluster.id}
+                                        cluster={{
+                                            id: cluster.id,
+                                            humanId: cluster.humanId,
+                                            title: cluster.title,
+                                            summary: cluster.summary ?? null,
+                                            status: cluster.status,
+                                            articlesCount:
+                                                cluster._count?.articleLinks ??
+                                                0,
+                                            averageSimilarity:
+                                                cluster.averageSimilarity ??
+                                                null,
+                                        }}
+                                        isActive={
+                                            cluster.id === selectedClusterId
+                                        }
+                                        onSelect={handleSelectCluster}
+                                    />
+                                ))
+                            )}
+                        </div>
                     </div>
                 </aside>
 
@@ -801,20 +1450,34 @@ export const ClusteringPage = () => {
                     <div className="clustering__panel-header">
                         <div>
                             <h2>
-                                {selectedCluster?.title ??
+                                {selectedClusterCandidate?.title ??
+                                    selectedCluster?.title ??
                                     (clusterArticles.length > 0
                                         ? 'New cluster draft'
                                         : 'Cluster draft')}
                             </h2>
 
-                            <p>
-                                Average similarity:{' '}
-                                <strong>
-                                    {clusterMetrics.averageSimilarity.toFixed(
-                                        3,
-                                    )}
-                                </strong>
-                            </p>
+                            {selectedClusterCandidate ? (
+                                <p>
+                                    Candidate ·{' '}
+                                    {selectedClusterCandidate.articlesCount}{' '}
+                                    article(s) · avg sim{' '}
+                                    <strong>
+                                        {formatSimilarity(
+                                            selectedClusterCandidate.averageSimilarity,
+                                        )}
+                                    </strong>
+                                </p>
+                            ) : (
+                                <p>
+                                    Average similarity:{' '}
+                                    <strong>
+                                        {clusterMetrics.averageSimilarity.toFixed(
+                                            3,
+                                        )}
+                                    </strong>
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -837,60 +1500,21 @@ export const ClusteringPage = () => {
                                 description="Select embedded candidate articles on the right and click Add to cluster."
                                 className="clustering__main-state"
                             />
+                        ) : selectedClusterCandidateId ? (
+                            <PageState
+                                variant="empty"
+                                title="No candidate articles"
+                                description="This cluster candidate has no articles."
+                                className="clustering__main-state"
+                            />
                         ) : (
                             <PageState
                                 variant="empty"
                                 title="No cluster selected"
-                                description="Select a cluster from the left panel to review its articles, or select candidates on the right to build a new cluster draft."
+                                description="Select a cluster from the left panel to review its articles, or generate algorithmic candidates."
                                 className="clustering__main-state"
                             />
                         )}
-                    </div>
-
-                    <div className="clustering__actions">
-                        <Button
-                            onClick={handleRemoveFromCluster}
-                            disabled={selectedClusterArticleIds.length === 0}
-                        >
-                            Remove selected
-                        </Button>
-
-                        <Button
-                            onClick={handleCreateCluster}
-                            disabled={
-                                clusterArticles.length === 0 ||
-                                createClusterFromArticlesMutation.isPending
-                            }
-                        >
-                            {createClusterFromArticlesMutation.isPending
-                                ? 'Creating...'
-                                : 'Create cluster'}
-                        </Button>
-
-                        <Button
-                            onClick={handleSaveCluster}
-                            disabled={
-                                !selectedClusterId ||
-                                clusterArticles.length === 0 ||
-                                updateClusterArticlesMutation.isPending
-                            }
-                        >
-                            {updateClusterArticlesMutation.isPending
-                                ? 'Saving...'
-                                : 'Save cluster'}
-                        </Button>
-
-                        <Button
-                            onClick={handleOpenDeleteClusterConfirm}
-                            disabled={
-                                !selectedClusterId ||
-                                deleteClusterMutation.isPending
-                            }
-                        >
-                            {deleteClusterMutation.isPending
-                                ? 'Deleting...'
-                                : 'Delete cluster'}
-                        </Button>
                     </div>
                 </section>
 
@@ -904,6 +1528,18 @@ export const ClusteringPage = () => {
                                 can be added.
                             </p>
                         </div>
+                    </div>
+                    <div className="clustering__column-filter">
+                        <ClusteringFilters
+                            filters={filters}
+                            sourceOptions={sourceOptions}
+                            totalCount={candidatesWithSimilarity.length}
+                            filteredCount={filteredCandidateArticles.length}
+                            selectedCount={selectedCandidateIds.length}
+                            hasActiveFilters={hasActiveFilters}
+                            onChange={handleChangeFilter}
+                            onClear={handleClearFilters}
+                        />
                     </div>
 
                     <div className="clustering__article-list">
@@ -936,26 +1572,6 @@ export const ClusteringPage = () => {
                             ))
                         )}
                     </div>
-
-                    <div className="clustering__actions">
-                        <Button
-                            onClick={handleAddToCluster}
-                            disabled={!hasAddableSelectedCandidates}
-                        >
-                            Add to cluster
-                        </Button>
-
-                        <Button
-                            onClick={handleGenerateEmbedding}
-                            disabled={
-                                generateArticleEmbeddingsMutation.isPending
-                            }
-                        >
-                            {generateArticleEmbeddingsMutation.isPending
-                                ? 'Generating...'
-                                : 'Generate embeddings'}
-                        </Button>
-                    </div>
                 </section>
             </div>
 
@@ -969,6 +1585,18 @@ export const ClusteringPage = () => {
                 isLoading={deleteClusterMutation.isPending}
                 onConfirm={handleConfirmDeleteCluster}
                 onCancel={() => setIsDeleteClusterConfirmOpen(false)}
+            />
+
+            <ConfirmModal
+                isOpen={isDeleteClusterCandidateConfirmOpen}
+                title="Delete cluster candidate?"
+                description="This action will delete the selected algorithmic cluster candidate. Articles will not be deleted."
+                confirmLabel="Delete candidate"
+                cancelLabel="Cancel"
+                variant="danger"
+                isLoading={deleteClusterCandidateMutation.isPending}
+                onConfirm={handleConfirmDeleteClusterCandidate}
+                onCancel={() => setIsDeleteClusterCandidateConfirmOpen(false)}
             />
         </div>
     );

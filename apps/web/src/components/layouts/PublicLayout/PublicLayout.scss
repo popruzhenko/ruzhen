@@ -2,7 +2,7 @@
 @use '../../../styles/tokens' as *;
 
 .public-layout {
-    min-height: 100vh;
+    min-height: 100dvh;
     background:
         radial-gradient(
             circle at top left,

@@ -1,8 +1,7 @@
 import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
-import { PrismaClient, UserRole, type User } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { UserRole, type User } from '@prisma/client';
+import { prisma } from '../../../shared/lib/prismaClient';
 
 import { signAccesToken } from '../../../shared/lib/jwt';
 import { sha256 } from '../../../shared/lib/hash';
@@ -26,10 +25,6 @@ if (!googleClientId) {
 if (!googleClientSecret) {
     throw new Error('GOOGLE_CLIENT_SECRET is not defined');
 }
-
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
 
 const googleClient = new OAuth2Client({
     clientId: googleClientId,

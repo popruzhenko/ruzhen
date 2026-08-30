@@ -5,22 +5,18 @@ import {
     ArticleStatus,
     ClusterArticleMethod,
 } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { generateClusterHumanId } from '../../../core/clustering/generateClusterHumanId';
 
 import { parseEmbedding } from '../../../shared/lib/parseEmbedding';
 import { calculateCentroid } from '../../../shared/lib/calculateCentroid';
 import { buildClusterTitleFromArticles } from '../../../shared/lib/buildClusterTitleFromArticles';
+import { prisma } from '../../../shared/lib/prismaClient';
 
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
     throw new Error('DATABASE_URL is not defined');
 }
-
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
 
 type CreateClusterInput = {
     title: string;
@@ -30,11 +26,42 @@ type CreateClusterInput = {
     createdByUserId: string;
 };
 
-function generateHumanId() {
-    const year = new Date().getFullYear();
-    const random = Math.floor(100000 + Math.random() * 900000);
+function calculateCosineSimilarity(a: number[], b: number[]): number {
+    if (a.length !== b.length) {
+        return 0;
+    }
 
-    return `RZ-${year}-${random}`;
+    let dot = 0;
+    let normA = 0;
+    let normB = 0;
+
+    for (let index = 0; index < a.length; index += 1) {
+        dot += a[index] * b[index];
+        normA += a[index] * a[index];
+        normB += b[index] * b[index];
+    }
+
+    if (normA === 0 || normB === 0) {
+        return 0;
+    }
+
+    return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+function calculateAverageSimilarityFromLinks(
+    links: { confidence: number | null }[],
+): number | null {
+    const confidenceValues = links
+        .map((link) => link.confidence)
+        .filter((value): value is number => typeof value === 'number');
+
+    if (confidenceValues.length === 0) {
+        return null;
+    }
+
+    const sum = confidenceValues.reduce((total, value) => total + value, 0);
+
+    return sum / confidenceValues.length;
 }
 
 export interface UpdateClusterArticleInput {
@@ -235,7 +262,7 @@ export async function createCluster(input: CreateClusterInput) {
 
     const cluster = await prisma.cluster.create({
         data: {
-            humanId: generateHumanId(),
+            humanId: generateClusterHumanId(),
             title: title.trim(),
             summary: summary?.trim() || null,
             mainCountry: mainCountry?.trim() || null,
@@ -425,6 +452,12 @@ export async function listClusters(input: ListClustersInput) {
                     },
                 },
 
+                articleLinks: {
+                    select: {
+                        confidence: true,
+                    },
+                },
+
                 _count: {
                     select: {
                         blocks: true,
@@ -437,8 +470,18 @@ export async function listClusters(input: ListClustersInput) {
         prisma.cluster.count(),
     ]);
 
+    const clustersWithAverageSimilarity = clusters.map((cluster) => {
+        const { articleLinks, ...clusterData } = cluster;
+
+        return {
+            ...clusterData,
+            averageSimilarity:
+                calculateAverageSimilarityFromLinks(articleLinks),
+        };
+    });
+
     return {
-        clusters,
+        clusters: clustersWithAverageSimilarity,
         pagination: {
             page,
             limit,
@@ -576,15 +619,38 @@ export async function createClusterFromArticles(
         throw new Error('Some selected articles were not found');
     }
 
-    const embeddings = articles
-        .map((article) => parseEmbedding(article.embedding))
-        .filter((embedding): embedding is number[] => embedding !== null);
+    const articlesWithEmbeddings = articles
+        .map((article) => {
+            const embedding = parseEmbedding(article.embedding);
 
-    if (embeddings.length === 0) {
+            if (!embedding) {
+                return null;
+            }
+
+            return {
+                ...article,
+                parsedEmbedding: embedding,
+            };
+        })
+        .filter(
+            (
+                article,
+            ): article is (typeof articles)[number] & {
+                parsedEmbedding: number[];
+            } => article !== null,
+        );
+
+    if (articlesWithEmbeddings.length === 0) {
         throw new Error('Selected articles must have embeddings');
     }
 
-    const clusterEmbedding = calculateCentroid(embeddings);
+    const clusterEmbedding = calculateCentroid(
+        articlesWithEmbeddings.map((article) => article.parsedEmbedding),
+    );
+
+    if (!clusterEmbedding) {
+        throw new Error('Failed to calculate cluster embedding');
+    }
 
     const resolvedTitle =
         title?.trim() || buildClusterTitleFromArticles(articles);
@@ -595,7 +661,7 @@ export async function createClusterFromArticles(
         );
     }
 
-    const resolvedMainCountry = null;
+    const resolvedMainCountry = mainCountry?.trim() || null;
 
     const resolvedStartDate = startDate
         ? new Date(startDate)
@@ -604,10 +670,17 @@ export async function createClusterFromArticles(
               .filter((date): date is Date => date !== null)
               .sort((a, b) => a.getTime() - b.getTime())[0] ?? null);
 
+    const embeddingByArticleId = new Map(
+        articlesWithEmbeddings.map((article) => [
+            article.id,
+            article.parsedEmbedding,
+        ]),
+    );
+
     const cluster = await prisma.$transaction(async (tx) => {
         const createdCluster = await tx.cluster.create({
             data: {
-                humanId: generateHumanId(),
+                humanId: generateClusterHumanId(),
                 title: resolvedTitle.slice(0, 140),
                 summary: summary?.trim() || null,
                 mainCountry: resolvedMainCountry,
@@ -616,13 +689,25 @@ export async function createClusterFromArticles(
                 createdByUserId,
                 embedding: clusterEmbedding as number[],
                 articleLinks: {
-                    create: uniqueArticleIds.map((articleId, index) => ({
-                        articleId,
-                        addedByUserId: createdByUserId,
-                        isPrimary: index === 0,
-                        confidence: null,
-                        method: ClusterArticleMethod.MANUAL,
-                    })),
+                    create: uniqueArticleIds.map((articleId, index) => {
+                        const articleEmbedding =
+                            embeddingByArticleId.get(articleId);
+
+                        const confidence = articleEmbedding
+                            ? calculateCosineSimilarity(
+                                  articleEmbedding,
+                                  clusterEmbedding,
+                              )
+                            : null;
+
+                        return {
+                            articleId,
+                            addedByUserId: createdByUserId,
+                            isPrimary: index === 0,
+                            confidence,
+                            method: ClusterArticleMethod.MANUAL,
+                        };
+                    }),
                 },
             },
             select: {
@@ -664,7 +749,12 @@ export async function createClusterFromArticles(
         return createdCluster;
     });
 
-    return cluster;
+    return {
+        ...cluster,
+        averageSimilarity: calculateAverageSimilarityFromLinks(
+            cluster.articleLinks,
+        ),
+    };
 }
 
 export async function updateClusterStatus(

@@ -53,6 +53,7 @@ export async function saveClusters(input: SaveClustersInput): Promise<void> {
                     articles: clusterArticles.map((article) => ({
                         title: article.title,
                         publishedAt: article.publishedAt,
+                        createdAt: article.createdAt,
                     })),
                 }),
                 summary: buildClusterSummary({

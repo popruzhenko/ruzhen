@@ -22,7 +22,8 @@ export type BadgeVariants =
     | 'draft'
     | 'updated'
     | 'published'
-    | 'archived';
+    | 'archived'
+    | 'candidate';
 
 export interface TypesBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
     type: BadgeVariants;
@@ -53,4 +54,5 @@ export const LabelMap: Record<BadgeVariants, string> = {
     updated: 'Updated',
     published: 'Published',
     archived: 'Archived',
+    candidate: 'Candidate',
 };

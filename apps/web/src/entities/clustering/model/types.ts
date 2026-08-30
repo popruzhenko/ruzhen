@@ -23,7 +23,7 @@ export interface CandidateArticleItem extends EmbeddedArticleItem {
     similarityToCluster: number | null;
 }
 
-export interface GetClusterCandidatesResponse {
+export interface GetArticleClusterCandidatesResponse {
     candidates: EmbeddedArticleItem[];
 }
 

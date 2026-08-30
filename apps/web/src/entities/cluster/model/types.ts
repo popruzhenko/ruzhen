@@ -10,10 +10,13 @@ export interface ClusterApiItem {
     createdAt: string;
     updatedAt: string;
     publishedAt: string | null;
+    averageSimilarity: number | null;
+
     clusterTags: Array<{
         id: string;
         name: string;
     }>;
+
     _count: {
         blocks: number;
         articleLinks: number;
@@ -77,11 +80,13 @@ export interface ClusterDetailsApiItem {
     createdAt: string;
     createdByUserId: string;
     updatedAt: string;
+
     createdBy: {
         id: string;
         email: string;
         role: 'USER' | 'ADMIN';
     };
+
     blocks: Array<{
         id: string;
         type: 'FACT' | 'CONTEXT' | 'OPINION';
@@ -95,9 +100,11 @@ export interface ClusterDetailsApiItem {
         createdAt: string;
         updatedAt: string;
     }>;
+
     tags: Array<{
         id: string;
         name: string;
     }>;
+
     articles: ClusterDetailsArticleApiItem[];
 }
