@@ -1,0 +1,82 @@
+@use '../../../styles/tokens' as *;
+
+.ui-textarea {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    &__label {
+        color: $color-text-main;
+        font-size: 14px;
+        font-weight: 850;
+        line-height: 1.2;
+    }
+
+    &__required-mark {
+        margin-left: 4px;
+        color: $color-danger;
+    }
+
+    &__field {
+        width: 100%;
+        min-height: 160px;
+        padding: 13px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background-color: $color-white;
+        color: $color-text-main;
+        font-family: 'Inter', sans-serif;
+        font-size: 15px;
+        font-weight: 550;
+        line-height: 1.5;
+        resize: none;
+        outline: none;
+        box-sizing: border-box;
+        overflow-y: auto;
+
+        &::placeholder {
+            color: $color-text-soft;
+        }
+
+        &:focus {
+            border-color: $color-primary;
+            box-shadow: 0 0 0 4px $color-primary-soft-bg;
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            background-color: $color-page-bg;
+            color: $color-text-soft;
+        }
+    }
+
+    &__error-box {
+        min-height: 18px;
+    }
+
+    &__error-box-field {
+        min-height: 18px;
+    }
+
+    &__error {
+        color: $color-danger;
+        font-size: 13px;
+        font-weight: 750;
+        line-height: 1.35;
+    }
+
+    &--error {
+        .ui-textarea__field {
+            border-color: $color-danger;
+
+            &:focus {
+                border-color: $color-danger;
+                box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+            }
+        }
+    }
+
+    &--disabled {
+        opacity: 0.75;
+    }
+}

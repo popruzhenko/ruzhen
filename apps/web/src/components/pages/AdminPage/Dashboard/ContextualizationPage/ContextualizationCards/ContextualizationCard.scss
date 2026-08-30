@@ -1,0 +1,99 @@
+@use '../../../../../../styles/tokens' as *;
+
+.contextualization_card {
+    display: flex;
+    flex-direction: column;
+    padding: 14px;
+    border: 1px solid $color-border-panel;
+    border-radius: 12px;
+    background-color: $color-page-bg;
+
+    &__top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: space-between;
+    }
+
+    &__type {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+
+        &--fact {
+            color: $color-info-text;
+            background-color: $color-info-bg;
+        }
+
+        &--context {
+            color: #0f766e;
+            background-color: #ccfbf1;
+        }
+
+        &--opinion {
+            color: $color-warning;
+            background-color: $color-warning-bg;
+        }
+    }
+
+    &__stance {
+        margin-bottom: auto;
+        width: auto;
+        min-width: 80px;
+    }
+
+    &__remove {
+        margin-left: auto;
+        border: 0;
+        background: transparent;
+        color: $color-danger;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        span {
+            color: $color-text-secondary;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid $color-border-strong;
+            border-radius: 10px;
+            padding: 10px 12px;
+            color: $color-text-strong;
+            background-color: $color-white;
+            font: inherit;
+
+            &:focus {
+                outline: none;
+                border-color: $color-primary-soft;
+                box-shadow: 0 0 0 3px $color-primary-muted-bg;
+            }
+        }
+
+        textarea {
+            min-height: 140px;
+        }
+
+        &:last-child {
+            margin-top: 9px;
+        }
+    }
+}

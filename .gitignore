@@ -1,0 +1,17 @@
+node_modules
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+dist
+build
+coverage
+.vscode
+.DS_Store
+apps/*/node_modules
+packages/*/node_modules
+apps/*/dist
+apps/*/build
+packages/*/dist
+packages/*/build

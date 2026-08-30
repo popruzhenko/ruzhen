@@ -1,0 +1,288 @@
+@use '../../../../../styles/tokens' as *;
+
+.publication {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+
+    &__workspace {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 16px;
+        height: calc(100vh - 90px);
+        min-height: 0;
+    }
+
+    &__clusters,
+    &__preview {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        border: 1px solid #d8e0ec;
+        border-radius: 18px;
+        background-color: $color-white;
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    &__clusters {
+        padding: 18px;
+    }
+
+    &__preview {
+        position: relative;
+        overflow-y: auto;
+        background: linear-gradient(180deg, $color-white 0%, #fbfdff 100%);
+    }
+
+    &__panel-header {
+        padding-bottom: 14px;
+        border-bottom: 1px solid #e6ebf2;
+        flex-shrink: 0;
+
+        h2 {
+            margin: 0;
+            color: $color-text-strong;
+            font-size: 19px;
+            font-weight: 750;
+            letter-spacing: -0.02em;
+        }
+    }
+
+    &__cluster-list {
+        flex: 1;
+        min-height: 0;
+        margin-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        overflow-y: auto;
+    }
+
+    &__empty-state {
+        flex: 1;
+        min-height: 0;
+        padding: 56px 24px 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        h2 {
+            margin: 0 0 10px;
+            color: $color-text-strong;
+            font-size: 28px;
+            font-weight: 760;
+            letter-spacing: -0.03em;
+        }
+
+        p {
+            max-width: 420px;
+            margin: 0;
+            color: $color-text-muted;
+            text-align: center;
+            font-size: 16px;
+            line-height: 1.55;
+        }
+    }
+
+    &__preview-header {
+        padding: 34px 40px 26px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 24px;
+        border-bottom: 1px solid #e6ebf2;
+        background-color: $color-white;
+
+        h1 {
+            max-width: 920px;
+            margin: 12px 0 0;
+            color: $color-text-main;
+            font-size: 38px;
+            font-weight: 760;
+            line-height: 1.15;
+            letter-spacing: -0.045em;
+        }
+    }
+
+    &__id {
+        display: inline-flex;
+        align-items: center;
+        color: $color-text-muted;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    &__summary {
+        max-width: 860px;
+        margin: 16px 0 0;
+        color: #334155;
+        font-size: 18px;
+        line-height: 1.65;
+        font-weight: 400;
+    }
+
+    &__meta {
+        margin: 22px 40px 0;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+
+        div {
+            padding: 14px 16px;
+            border: 1px solid #edf1f7;
+            border-radius: 14px;
+            background-color: $color-page-bg;
+        }
+
+        span {
+            display: block;
+            margin-bottom: 7px;
+            color: $color-text-muted;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        strong {
+            color: $color-text-strong;
+            font-size: 14px;
+            font-weight: 750;
+        }
+    }
+
+    &__article {
+        padding: 32px 40px 116px;
+        display: flex;
+        flex-direction: column;
+        gap: 36px;
+    }
+
+    &__block-group {
+        position: relative;
+
+        h2 {
+            margin: 0 0 16px;
+            color: $color-primary;
+            font-size: 24px;
+            font-weight: 760;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+        }
+
+        &:nth-child(2) h2 {
+            color: $color-purple-dark;
+        }
+
+        &:nth-child(3) h2 {
+            color: $color-purple;
+        }
+    }
+
+    &__stance {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 5px 9px;
+        background-color: $color-surface;
+        color: #334155;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        flex-shrink: 0;
+    }
+
+    &__actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 20;
+        margin-top: auto;
+        padding: 14px 40px;
+        border-top: 1px solid rgba(226, 232, 240, 0.95);
+        background-color: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 -12px 28px rgba(15, 23, 42, 0.08);
+        backdrop-filter: blur(12px);
+        flex-shrink: 0;
+    }
+
+    &__block-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+    }
+
+    &__hint {
+        margin: 14px 0 0;
+        color: $color-text-muted;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    &__control-panel {
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+.ui-page-state {
+    width: 100%;
+    min-height: 320px;
+    height: 100%;
+    padding: 44px 32px;
+    border: none;
+    border-radius: none;
+    background: none;
+    box-shadow: none;
+}
+.publication {
+    &__side-state {
+        min-height: 220px;
+        padding: 24px 18px;
+        border-radius: 18px;
+
+        .ui-page-state__icon {
+            min-width: 36px;
+            height: 36px;
+            font-size: 12px;
+        }
+
+        .ui-page-state__title {
+            font-size: 20px;
+        }
+
+        .ui-page-state__description {
+            font-size: 14px;
+        }
+    }
+
+    &__main-state {
+        min-height: 420px;
+    }
+
+    &__block-state {
+        min-height: 170px;
+        padding: 24px 18px;
+        border-radius: 18px;
+
+        .ui-page-state__icon {
+            min-width: 36px;
+            height: 36px;
+            font-size: 12px;
+        }
+
+        .ui-page-state__title {
+            font-size: 20px;
+        }
+
+        .ui-page-state__description {
+            font-size: 14px;
+        }
+    }
+}

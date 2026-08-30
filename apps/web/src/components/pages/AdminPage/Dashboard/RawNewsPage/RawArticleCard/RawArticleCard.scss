@@ -1,0 +1,177 @@
+@use '../../../../../../styles/tokens' as *;
+
+.raw_article_card {
+    padding: 20px;
+    border: 1px solid $color-border-strong;
+    border-radius: 8px;
+    background-color: $color-white;
+    box-shadow: 0 6px 18px $shadow-lg;
+    margin-bottom: 25px;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    &__meta {
+        margin-bottom: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: $color-text-muted;
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 22px;
+        line-height: 1.25;
+        color: $color-text-strong;
+    }
+
+    &__status {
+        flex-shrink: 0;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background-color: $color-border-muted;
+        color: #334155;
+
+        &--new {
+            background-color: $color-warning-bg;
+            color: $color-warning;
+        }
+
+        &--embedded {
+            background-color: $color-success-bg;
+            color: $color-success;
+        }
+
+        &--clustered {
+            background-color: $color-info-bg;
+            color: $color-info-text;
+        }
+
+        &--rejected {
+            background-color: $color-danger-bg;
+            color: #991b1b;
+        }
+    }
+
+    &__id {
+        margin-bottom: 12px;
+        font-size: 13px;
+        color: $color-text-muted;
+
+        span {
+            font-family: monospace;
+            color: #334155;
+        }
+    }
+
+    &__preview {
+        margin: 0 0 16px;
+        font-size: 15px;
+        line-height: 1.55;
+        color: #334155;
+    }
+
+    &__details {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    &__detail {
+        padding: 10px;
+        border-radius: 8px;
+        background-color: $color-page-bg;
+
+        span {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            color: $color-text-muted;
+        }
+
+        strong {
+            display: block;
+            overflow: hidden;
+            font-size: 13px;
+            color: $color-text-strong;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    &__pipeline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    &__step {
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+
+        &--done {
+            background-color: #ecfdf5;
+            color: #047857;
+        }
+
+        &--pending {
+            background-color: $color-surface;
+            color: $color-text-muted;
+        }
+    }
+
+    &__bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: row;
+    }
+
+    &__link {
+        display: flex;
+        margin-top: auto;
+    }
+    &__interactive-block {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+    }
+}
+
+.review_modal__fields {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+
+    input,
+    textarea {
+        font-weight: normal;
+    }
+}
+
+.review_modal__actions {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 16px;
+    width: 100%;
+    justify-content: end;
+}
+.review_modal__link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}

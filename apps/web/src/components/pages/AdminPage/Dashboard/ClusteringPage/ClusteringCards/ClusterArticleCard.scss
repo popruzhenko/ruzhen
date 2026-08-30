@@ -1,0 +1,47 @@
+@use '../../../../../../styles/tokens' as *;
+
+.cluster_article_card {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) 64px;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px;
+    border-radius: 8px;
+    background-color: $color-page-bg;
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        box-shadow 0.15s ease;
+
+    &:hover {
+        background-color: $color-surface;
+    }
+
+    &:has(.cluster_article_card__checkbox:checked) {
+        background-color: $color-surface-soft;
+        box-shadow: inset 0 0 0 1px #2563eb;
+    }
+
+    &__checkbox {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+    }
+
+    &__title-row {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        gap: 8px;
+        min-width: 0;
+    }
+}

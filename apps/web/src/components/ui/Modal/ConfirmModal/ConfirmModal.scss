@@ -1,0 +1,24 @@
+@use '../../../../styles/tokens' as *;
+
+.confirm_modal {
+    width: min(460px, 100%);
+
+    .ui-modal__title {
+        font-size: 22px;
+        font-weight: 800;
+        color: #020817;
+    }
+
+    &__description {
+        margin: 0;
+        color: $color-text-secondary;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+}

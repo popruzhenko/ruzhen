@@ -1,0 +1,321 @@
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/tokens' as *;
+
+.static-page {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+    width: 100%;
+
+    &__hero {
+        display: grid;
+        gap: 22px;
+        max-width: 880px;
+    }
+
+    &__eyebrow {
+        display: block;
+        margin: 0;
+        color: $color-primary;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+    }
+
+    &__hero h1 {
+        margin: 0;
+        color: $color-text-main;
+        font-size: 54px;
+        font-weight: 900;
+        line-height: 1.02;
+        letter-spacing: -0.065em;
+    }
+
+    &__hero p {
+        max-width: 760px;
+        margin: 0;
+        color: #334155;
+        font-size: 20px;
+        font-weight: 450;
+        line-height: 1.58;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    &__card,
+    &__section {
+        border: 1px solid $color-border;
+        border-radius: 22px;
+        background-color: rgba(255, 255, 255, 0.86);
+        box-shadow: 0 14px 38px $shadow-md;
+    }
+
+    &__card {
+        padding: 24px;
+    }
+
+    &__section {
+        display: grid;
+        gap: 16px;
+        max-width: 860px;
+        padding: 30px;
+    }
+
+    h2 {
+        margin: 0;
+        color: $color-text-main;
+        font-size: 22px;
+        font-weight: 850;
+        line-height: 1.2;
+        letter-spacing: -0.035em;
+    }
+
+    p {
+        margin: 0;
+        color: $color-text-secondary;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1.6;
+    }
+
+}
+
+@media (max-width: $breakpoint-tablet) {
+    .static-page {
+        &__grid {
+            grid-template-columns: 1fr;
+        }
+
+        &__hero h1 {
+            font-size: 42px;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-mobile) {
+    .static-page {
+        gap: 26px;
+
+        &__hero {
+            gap: 18px;
+        }
+
+        &__hero h1 {
+            font-size: 36px;
+        }
+
+        &__hero p {
+            font-size: 16px;
+        }
+
+        &__card,
+        &__section {
+            border-radius: 20px;
+            padding: 22px;
+        }
+    }
+}
+
+.static-page {
+     &__numbered-sections {
+        display: grid;
+        gap: 34px;
+        counter-reset: static-section;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__numbered-section {
+        counter-increment: static-section;
+        margin: 0;
+        padding: 0;
+
+        h2 {
+            display: flex;
+            gap: 0.45rem;
+            align-items: baseline;
+            margin: 0;
+
+            &::before {
+                content: counter(static-section) '.';
+                flex: 0 0 auto;
+            }
+        }
+    }
+    
+    &__contact-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 24px;
+        align-items: start;
+    }
+
+    &__contact-form,
+    &__contact-card {
+        border: 1px solid $color-border;
+        border-radius: 22px;
+        background-color: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 14px 38px $shadow-md;
+    }
+
+    &__contact-form {
+        display: flex;
+        flex-direction: column;
+        padding: 26px;
+    }
+
+    &__form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        align-items: center;
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .ui-dropdown {
+            max-width: 100%;
+        }
+    }
+
+    &__field-hint {
+        min-height: 19px;
+        margin: 0;
+        color: $color-text-muted;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.45;
+    }
+
+    &__form-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 4px;
+    }
+
+    &__contact-card {
+        padding: 22px;
+
+        > span {
+            display: block;
+            margin: 0 0 10px;
+            color: $color-primary;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+        }
+    }
+
+    &__contact-list {
+        display: grid;
+        gap: 0;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__contact-item {
+        padding: 10px 0;
+        border-top: 1px dashed $color-border;
+
+        &:first-child {
+            border-top: 0;
+            padding-top: 0;
+        }
+
+        strong {
+            display: block;
+            color: $color-text-main;
+            font-size: 15px;
+            font-weight: 850;
+        }
+
+        p {
+            margin: 5px 0 0;
+            color: $color-text-muted;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-tablet) {
+    .static-page {
+        &__contact-layout {
+            grid-template-columns: 1fr;
+        }
+
+        &__contact-card {
+            order: -1;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-mobile) {
+    .static-page {
+        &__contact-form,
+        &__contact-card {
+            border-radius: 20px;
+        }
+
+        &__contact-form {
+            padding: 22px;
+        }
+
+        &__form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        &__form-actions {
+            justify-content: stretch;
+
+            button {
+                width: 100%;
+            }
+        }
+    }
+}
+
+.static-page {
+    &__meta {
+        margin: 14px 0 0;
+        color: $color-text-muted;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    &__list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding-left: 24px;
+        color: $color-text-secondary;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1.65;
+        list-style: disc;
+
+        li {
+            padding-left: 4px;
+        }
+
+        li::marker {
+            color: $color-primary;
+        }
+
+        strong {
+            color: $color-text-main;
+            font-weight: 850;
+        }
+    }
+}

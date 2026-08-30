@@ -1,0 +1,126 @@
+@use '../../../styles/tokens' as *;
+
+.ui-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    font-size: 12px;
+    height: fit-content;
+    padding: 4px 8px;
+    border-radius: 3px;
+
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.5px;
+
+    border: 1px solid transparent;
+    &.ui-badge--fact {
+        background-color: #e8f1ff;
+        color: $color-primary-soft;
+    }
+    &.ui-badge--context {
+        background-color: $color-warning-bg;
+        color: $color-purple-dark;
+    }
+    &.ui-badge--opinion {
+        background-color: #ede9fe;
+        color: $color-purple;
+    }
+    &.ui-badge--pro {
+        background-color: $color-success-bg;
+        color: $color-success;
+    }
+    &.ui-badge--contra {
+        background-color: $color-danger-bg;
+        color: #991b1b;
+    }
+    &.ui-badge--neutral {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
+    &.ui-badge--other {
+        background-color: #d8c623;
+        color: #23407e;
+    }
+    &.ui-badge--new {
+        background-color: $color-warning-bg;
+        color: $color-warning;
+    }
+
+    &.ui-badge--raw {
+        background-color: #e9eef5;
+        color: #334155;
+    }
+
+    &.ui-badge--needs-review {
+        background-color: #fff3c4;
+        color: #8a5a00;
+    }
+
+    &.ui-badge--reviewed {
+        background-color: #e0f2fe;
+        color: #0369a1;
+    }
+
+    &.ui-badge--approved {
+        background-color: #d8f5df;
+        color: $color-success;
+    }
+
+    &.ui-badge--rejected {
+        background-color: #ffdada;
+        color: #9f1239;
+    }
+
+    &.ui-badge--embedded {
+        background-color: $color-info-bg;
+        color: $color-info-text;
+    }
+
+    &.ui-badge--clustered {
+        background-color: #eadcff;
+        color: $color-purple;
+    }
+
+    &.ui-badge--processing {
+        background-color: #e0f2fe;
+        color: #0369a1;
+    }
+
+    &.ui-badge--error {
+        background-color: $color-danger-bg;
+        color: $color-danger-strong;
+    }
+
+    &.ui-badge--done {
+        background-color: #ecfdf5;
+        color: #047857;
+    }
+
+    &.ui-badge--pending {
+        background-color: $color-surface;
+        color: $color-text-muted;
+    }
+
+    &.ui-badge--primary {
+        background-color: cornflowerblue;
+        color: white;
+    }
+    &.ui-badge--draft {
+        background-color: $color-surface;
+        color: $color-text-secondary;
+    }
+
+    &.ui-badge--published {
+        background-color: $color-success-bg;
+        color: $color-success;
+    }
+
+    &.ui-badge--archived {
+        background-color: #ede9fe;
+        color: #5b21b6;
+    }
+}

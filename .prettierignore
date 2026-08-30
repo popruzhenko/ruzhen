@@ -1,0 +1,13 @@
+node_modules
+dist
+build
+coverage
+.next
+.vercel
+.env
+.env.*
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+apps/api/prisma/migrations

@@ -1,0 +1,45 @@
+@use '../../../styles/tokens' as *;
+
+.ui-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    &__pages {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    &__page {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 10px;
+        border: 1px solid #d8e0ec;
+        border-radius: 10px;
+        background-color: $color-white;
+        color: #334155;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $color-page-bg;
+            border-color: #b7c5d8;
+        }
+
+        &--active {
+            background-color: $color-primary;
+            border-color: $color-primary;
+            color: $color-white;
+
+            &:hover {
+                background-color: $color-primary;
+                border-color: $color-primary;
+                color: $color-white;
+            }
+        }
+    }
+}
