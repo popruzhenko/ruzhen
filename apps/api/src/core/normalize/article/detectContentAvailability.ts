@@ -1,4 +1,9 @@
 import { ContentAvailability } from '@prisma/client';
+import {
+    MIN_FULL_TEXT_CONTENT_LENGTH,
+    MIN_SUMMARY_ONLY_LENGTH,
+    MIN_PARTIAL_TEXT_CLEANED_LENGTH,
+} from './contentAvailability.constants';
 
 interface DetectContentAvailabilityInput {
     title?: string | null;
@@ -15,15 +20,15 @@ export function detectContentAvailability(
     const content = input.content?.trim() ?? '';
     const cleanedAccessibleText = input.cleanedAccessibleText?.trim() ?? '';
 
-    if (content.length >= 1200) {
+    if (content.length >= MIN_FULL_TEXT_CONTENT_LENGTH) {
         return ContentAvailability.FULL_TEXT;
     }
 
-    if (cleanedAccessibleText.length >= 300) {
+    if (cleanedAccessibleText.length >= MIN_PARTIAL_TEXT_CLEANED_LENGTH) {
         return ContentAvailability.PARTIAL_TEXT;
     }
 
-    if (summary.length >= 40) {
+    if (summary.length >= MIN_SUMMARY_ONLY_LENGTH) {
         return ContentAvailability.SUMMARY_ONLY;
     }
     if (title.length > 0) {

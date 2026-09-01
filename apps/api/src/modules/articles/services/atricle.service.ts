@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { ArticleStatus, ContentAvailability } from '@prisma/client';
 import { prisma } from '../../../shared/lib/prismaClient';
+import { MIN_FULL_TEXT_CONTENT_LENGTH } from '../../../core/normalize/article/contentAvailability.constants';
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -249,10 +250,10 @@ export async function updateArticle(
 
         if (
             currentArticle.contentAvailability !== ContentAvailability.FULL_TEXT
-        ) {
-            errors.push('Article must have FULL_TEXT content before approval.');
-        }
-
+        )
+            errors.push(
+                `Article must have FULL_TEXT content before approval. Current content availability: ${currentArticle.contentAvailability}. Minimum required content length for FULL_TEXT: ${MIN_FULL_TEXT_CONTENT_LENGTH} characters.`,
+            );
         if (errors.length > 0) {
             throw new Error(errors.join(' '));
         }
