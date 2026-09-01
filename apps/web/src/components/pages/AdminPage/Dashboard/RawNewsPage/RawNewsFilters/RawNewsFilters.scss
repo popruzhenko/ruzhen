@@ -1,4 +1,5 @@
 @use '../../../../../../styles/tokens' as *;
+@use '../../../../../../styles/breakpoints' as *;
 
 .raw_news_filters {
     display: flex;
@@ -122,6 +123,49 @@
             font-size: 14px;
             font-weight: 600;
             white-space: nowrap;
+        }
+    }
+}
+
+@media (max-width: 1200px) {
+    .raw_news_filters {
+        &__body {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        &__search {
+            grid-column: 1 / -1;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-footer-mobile) {
+    .raw_news_filters {
+        gap: 12px;
+        padding: 14px;
+
+        &__header {
+            flex-direction: column;
+            gap: 10px;
+
+            h2 {
+                font-size: 18px;
+            }
+        }
+
+        &__body {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        &__search,
+        &__select {
+            width: 100%;
+        }
+
+        &__checkbox {
+            width: 100%;
+            justify-content: flex-start;
         }
     }
 }

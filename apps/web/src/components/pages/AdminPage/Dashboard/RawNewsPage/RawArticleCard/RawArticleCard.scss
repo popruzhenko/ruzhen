@@ -1,4 +1,5 @@
 @use '../../../../../../styles/tokens' as *;
+@use '../../../../../../styles/breakpoints' as *;
 
 .raw_article_card {
     padding: 20px;
@@ -174,4 +175,62 @@
     flex-direction: row;
     align-items: center;
     gap: 4px;
+}
+
+@media (max-width: $breakpoint-tablet) {
+    .raw_article_card {
+        padding: 16px;
+        margin-bottom: 16px;
+
+        &__header {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        &__title {
+            font-size: 19px;
+        }
+
+        &__details {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        &__bottom {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        &__interactive-block {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+    }
+
+    .review_modal__actions {
+        flex-wrap: wrap;
+        justify-content: stretch;
+
+        button {
+            flex: 1;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-mobile-small) {
+    .raw_article_card {
+        padding: 14px;
+
+        &__title {
+            font-size: 17px;
+        }
+
+        &__details {
+            grid-template-columns: 1fr;
+        }
+
+        &__preview {
+            font-size: 14px;
+        }
+    }
 }

@@ -1,3 +1,5 @@
+@use '../../../styles/breakpoints' as *;
+
 .admin-page {
     display: flex;
     width: 100%;
@@ -19,5 +21,31 @@
         z-index: 0;
         padding: 24px;
         background-color: #f4f5f7;
+    }
+}
+
+@media (max-width: 900px) {
+    .admin-page {
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 68px);
+
+        &__content {
+            left: 0;
+            width: 100%;
+            min-height: calc(100vh - 68px);
+            padding: 14px;
+            padding-top: 76px;
+            box-sizing: border-box;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-mobile) {
+    .admin-page {
+        &__content {
+            padding: 10px;
+            padding-top: 72px;
+        }
     }
 }
