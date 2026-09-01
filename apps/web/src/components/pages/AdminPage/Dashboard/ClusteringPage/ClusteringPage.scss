@@ -1,4 +1,5 @@
 @use '../../../../../styles/tokens' as *;
+@use '../../../../../styles/breakpoints' as *;
 
 .clustering {
     display: flex;
@@ -264,4 +265,95 @@
     border-radius: 0;
     background: none;
     box-shadow: none;
+}
+
+@media (max-width: 1200px) {
+    .clustering {
+        &__controls-grid {
+            grid-template-columns: 1fr;
+        }
+
+        &__control-panel {
+            min-height: auto;
+        }
+
+        &__control-panel-header {
+            align-items: flex-start;
+        }
+
+        &__control-panel-actions {
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        &__workspace {
+            grid-template-columns: 1fr;
+            height: auto;
+            min-height: calc(100vh - 160px);
+        }
+
+        &__clusters,
+        &__selected-cluster,
+        &__candidates {
+            min-height: 520px;
+        }
+
+        &__article-list {
+            max-height: 520px;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-mobile) {
+    .clustering {
+        gap: 10px;
+
+        &__controls-grid,
+        &__workspace {
+            gap: 10px;
+        }
+
+        &__control-panel {
+            padding: 10px;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        &__control-panel-header {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        &__control-panel-actions {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            button {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+
+        &__clusters,
+        &__selected-cluster,
+        &__candidates {
+            padding: 12px;
+            min-height: 480px;
+        }
+
+        &__panel-header {
+            h2 {
+                font-size: 18px;
+            }
+
+            p {
+                font-size: 12px;
+            }
+        }
+
+        &__article-list {
+            max-height: 480px;
+        }
+    }
 }

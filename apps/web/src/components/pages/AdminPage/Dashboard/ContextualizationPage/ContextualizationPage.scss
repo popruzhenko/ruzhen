@@ -1,4 +1,5 @@
 @use '../../../../../styles/tokens' as *;
+@use '../../../../../styles/breakpoints' as *;
 
 .contextualization {
     display: flex;
@@ -328,6 +329,71 @@
 
         .ui-page-state__description {
             font-size: 14px;
+        }
+    }
+}
+
+@media (max-width: 1200px) {
+    .contextualization {
+        &__workspace {
+            grid-template-columns: 1fr;
+            height: auto;
+            min-height: calc(100vh - 160px);
+        }
+
+        &__clusters,
+        &__draft {
+            min-height: 420px;
+        }
+
+        &__cluster-list {
+            max-height: 420px;
+        }
+
+        &__draft-header {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        &__draft-actions,
+        &__block-actions {
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        &__content {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-mobile) {
+    .contextualization {
+        gap: 12px;
+
+        &__workspace {
+            gap: 12px;
+        }
+
+        &__clusters,
+        &__draft {
+            padding: 14px;
+        }
+
+        &__draft-actions,
+        &__block-actions {
+            button {
+                flex: 1;
+            }
+        }
+
+        &__field {
+            input,
+            textarea {
+                padding: 9px 10px;
+                font-size: 14px;
+            }
         }
     }
 }

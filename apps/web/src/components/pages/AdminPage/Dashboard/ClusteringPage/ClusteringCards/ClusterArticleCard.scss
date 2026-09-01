@@ -1,4 +1,5 @@
 @use '../../../../../../styles/tokens' as *;
+@use '../../../../../../styles/breakpoints' as *;
 
 .cluster_article_card {
     display: grid;
@@ -43,5 +44,18 @@
         flex-direction: row;
         gap: 8px;
         min-width: 0;
+    }
+}
+
+@media (max-width: $breakpoint-mobile) {
+    .cluster_article_card {
+        grid-template-columns: 22px minmax(0, 1fr) 44px;
+        gap: 8px;
+        padding: 9px;
+
+        &__checkbox {
+            width: 14px;
+            height: 14px;
+        }
     }
 }
