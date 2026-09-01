@@ -104,7 +104,7 @@ const getSaveReviewWarnings = ({
 
     return warnings;
 };
-
+const MIN_FULL_TEXT_CONTENT_LENGTH = 1200;
 const getApproveValidationErrors = ({
     title,
     summary,
@@ -143,7 +143,9 @@ const getApproveValidationErrors = ({
         contentAvailability &&
         contentAvailability !== CONTENT_AVAILABILITY.FULL_TEXT
     ) {
-        errors.push('Article must have FULL_TEXT content before approval.');
+        errors.push(
+            `Article must have FULL_TEXT content before approval. Current content availability: ${contentAvailability}. Minimum required content length for FULL_TEXT: ${MIN_FULL_TEXT_CONTENT_LENGTH} characters.`,
+        );
     }
 
     return errors;
