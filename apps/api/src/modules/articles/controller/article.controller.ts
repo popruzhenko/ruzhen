@@ -13,6 +13,7 @@ import { OpenAiEmbeddingProvider } from '../../../core/embedding/openAiEmbedding
 import { embedApprovedArticlesWithoutEmbedding } from '../../../core/embedding/embedArticle.services';
 import { requireEnv } from '../../../shared/lib/requireEnv';
 import { runPoliticsIngestionJob } from '../../../core/ingestionNews/runPoliticsIngestionJob';
+import { ArticleMutationError } from '../../../core/articles/articleMutationError';
 
 const openAiApiKey = requireEnv('OPENAI_API_KEY');
 
@@ -110,14 +111,19 @@ export async function updateArticleHandler(
 
         const articleData = req.body;
 
-        const article = await updateArticle(id, articleData);
+        const article = await updateArticle(id, articleData, req.user?.userId);
 
         res.status(200).json(article);
     } catch (error) {
         console.error('Update article error:', error);
 
-        res.status(400).json({
-            message: 'Failed to update article',
+        res.status(
+            error instanceof ArticleMutationError ? error.statusCode : 500,
+        ).json({
+            message:
+                error instanceof ArticleMutationError
+                    ? error.message
+                    : 'Failed to update article',
         });
     }
 }
@@ -135,15 +141,21 @@ export async function reviewArticleContentHandler(
             });
         }
 
-        const result = await reviewArticleContentById(prisma, id);
+        const result = await reviewArticleContentById(
+            prisma,
+            id,
+            req.body?.expectedUpdatedAt,
+        );
 
         res.status(200).json(result);
     } catch (error) {
         console.error('Review article content error:', error);
 
-        res.status(400).json({
+        res.status(
+            error instanceof ArticleMutationError ? error.statusCode : 500,
+        ).json({
             message:
-                error instanceof Error
+                error instanceof ArticleMutationError
                     ? error.message
                     : 'Failed to review article content',
         });
@@ -200,6 +212,7 @@ export async function fetchNewArticlesHandler(
     req: AuthenticatedRequest,
     res: Response,
 ) {
+    let acquiredIngestion = false;
     try {
         if (!req.user) {
             return res.status(401).json({
@@ -214,8 +227,11 @@ export async function fetchNewArticlesHandler(
         }
 
         isIngestionRunning = true;
+        acquiredIngestion = true;
 
-        const result = await runPoliticsIngestionJob(prisma);
+        const result = await runPoliticsIngestionJob(prisma, {
+            createdByUserId: req.user.userId,
+        });
 
         return res.status(200).json({
             message: 'New articles fetched successfully',
@@ -231,6 +247,6 @@ export async function fetchNewArticlesHandler(
                     : 'Failed to fetch new articles',
         });
     } finally {
-        isIngestionRunning = false;
+        if (acquiredIngestion) isIngestionRunning = false;
     }
 }

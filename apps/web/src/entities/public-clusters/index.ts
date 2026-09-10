@@ -6,6 +6,7 @@ export { usePublicClusterByHumanIdQuery } from './hooks/usePublicClusterByHumanI
 
 export type {
     GetPublicClusterByHumanIdResponse,
+    GetPublicClustersParams,
     GetPublicClustersResponse,
     PublicClusterBlock,
     PublicClusterBlockType,

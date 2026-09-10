@@ -1,0 +1,41 @@
+@use '../../../../../../styles/tokens' as *;
+@use '../../../../../../styles/breakpoints' as *;
+
+.raw_enrichment {
+    &__job_picker {
+        margin-top: 12px;
+        max-width: 640px;
+    }
+    &__pagination {
+        margin-top: 12px;
+        align-items: center;
+    }
+    &__modal {
+        width: min(1120px, 100%);
+    }
+    &__versions {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    &__versions li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid $color-border-soft;
+        padding: 10px 0;
+    }
+    td button {
+        margin: 0 4px 6px 0;
+    }
+}
+
+@media (max-width: $breakpoint-footer-mobile) {
+    .raw_enrichment {
+        &__versions li {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+}

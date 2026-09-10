@@ -1,7 +1,10 @@
 import 'dotenv/config';
-import { ArticleStatus, ContentAvailability } from '@prisma/client';
+import { ArticleStatus } from '@prisma/client';
 import { prisma } from '../../../shared/lib/prismaClient';
-import { MIN_FULL_TEXT_CONTENT_LENGTH } from '../../../core/normalize/article/contentAvailability.constants';
+import {
+    updateArticleSafely,
+    type UpdateArticleInput,
+} from '../../../core/articles/updateArticle';
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -35,6 +38,8 @@ export async function getArticleById(id: string) {
             createdAt: true,
             updatedAt: true,
             contentAvailability: true,
+            contentAssessment: true,
+            contentProvenance: true,
             cleanedAccessibleText: true,
             cleaningMethod: true,
             embeddingBasis: true,
@@ -135,6 +140,8 @@ export async function listArticles(input: ListArticlesInput) {
                 createdAt: true,
                 updatedAt: true,
                 contentAvailability: true,
+                contentAssessment: true,
+                contentProvenance: true,
                 cleanedAccessibleText: true,
                 cleaningMethod: true,
                 embeddingBasis: true,
@@ -181,105 +188,10 @@ export async function deleteAllArticles() {
     await prisma.article.deleteMany({});
 }
 
-interface UpdateArticleInput {
-    title?: string;
-    summary?: string;
-    content?: string;
-    cleanedAccessibleText?: string;
-    status?: ArticleStatus;
-}
-
 export async function updateArticle(
     articleId: string,
     data: UpdateArticleInput,
+    actorUserId?: string,
 ) {
-    const currentArticle = await prisma.article.findUnique({
-        where: {
-            id: articleId,
-        },
-        select: {
-            id: true,
-            title: true,
-            summary: true,
-            content: true,
-            cleanedAccessibleText: true,
-            url: true,
-            sourceId: true,
-            contentAvailability: true,
-        },
-    });
-
-    if (!currentArticle) {
-        throw new Error('Article not found');
-    }
-
-    const nextTitle = data.title ?? currentArticle.title;
-    const nextSummary = data.summary ?? currentArticle.summary;
-    const nextContent = data.content ?? currentArticle.content;
-    const nextCleanedAccessibleText =
-        data.cleanedAccessibleText ?? currentArticle.cleanedAccessibleText;
-
-    if (data.status === ArticleStatus.APPROVED) {
-        const errors: string[] = [];
-
-        if (!nextTitle?.trim()) {
-            errors.push('Title is required before approval.');
-        }
-
-        if (!currentArticle.url?.trim()) {
-            errors.push('Original article URL is required before approval.');
-        }
-
-        if (!currentArticle.sourceId) {
-            errors.push('Source is required before approval.');
-        }
-
-        if (!nextSummary?.trim()) {
-            errors.push('Summary is required before approval.');
-        }
-
-        const hasTextForEmbedding =
-            Boolean(nextContent?.trim()) ||
-            Boolean(nextCleanedAccessibleText?.trim());
-
-        if (!hasTextForEmbedding) {
-            errors.push(
-                'Content or cleaned accessible text is required before approval.',
-            );
-        }
-
-        if (
-            currentArticle.contentAvailability !== ContentAvailability.FULL_TEXT
-        )
-            errors.push(
-                `Article must have FULL_TEXT content before approval. Current content availability: ${currentArticle.contentAvailability}. Minimum required content length for FULL_TEXT: ${MIN_FULL_TEXT_CONTENT_LENGTH} characters.`,
-            );
-        if (errors.length > 0) {
-            throw new Error(errors.join(' '));
-        }
-    }
-
-    return prisma.article.update({
-        where: {
-            id: articleId,
-        },
-        data: {
-            title: data.title,
-            summary: data.summary,
-            content: data.content,
-            cleanedAccessibleText: data.cleanedAccessibleText,
-            status: data.status,
-        },
-        include: {
-            source: true,
-            raw: true,
-            _count: {
-                select: {
-                    clusterLinks: true,
-                    articleClusterCandidates: true,
-                    clusterCandidateLinks: true,
-                },
-            },
-        },
-    });
+    return updateArticleSafely(prisma, articleId, data, actorUserId);
 }

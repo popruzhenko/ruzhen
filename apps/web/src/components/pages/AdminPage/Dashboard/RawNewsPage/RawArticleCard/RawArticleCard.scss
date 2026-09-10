@@ -234,3 +234,25 @@
         }
     }
 }
+.raw_article_card__selection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.raw_article_card__full_text_confirmation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    color: $color-text-secondary;
+    font-size: 14px;
+}
+
+fieldset.review_modal__fields {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+}

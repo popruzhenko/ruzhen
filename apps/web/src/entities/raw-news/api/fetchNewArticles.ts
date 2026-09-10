@@ -1,4 +1,5 @@
 import { apiClient } from '../../../shared/api/client';
+import type { EnrichmentJobStatus } from '../../article-enrichment/model/types';
 
 export interface FetchNewArticlesResponse {
     message: string;
@@ -14,7 +15,11 @@ export interface FetchNewArticlesResponse {
             skippedInvalid: number;
             error?: string;
         }[];
-        enrichResults: unknown;
+        enrichment: {
+            jobId: string | null;
+            total: number;
+            status: EnrichmentJobStatus | null;
+        };
     };
 }
 

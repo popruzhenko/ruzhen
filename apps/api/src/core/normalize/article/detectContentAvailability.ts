@@ -1,15 +1,12 @@
 import { ContentAvailability } from '@prisma/client';
-import {
-    MIN_FULL_TEXT_CONTENT_LENGTH,
-    MIN_SUMMARY_ONLY_LENGTH,
-    MIN_PARTIAL_TEXT_CLEANED_LENGTH,
-} from './contentAvailability.constants';
+import { isCurrentFullTextAssessment } from '../../ingestionNews/enrich/articleContentQuality';
 
 interface DetectContentAvailabilityInput {
     title?: string | null;
     summary?: string | null;
     content?: string | null;
     cleanedAccessibleText?: string | null;
+    contentAssessment?: unknown;
 }
 
 export function detectContentAvailability(
@@ -20,15 +17,23 @@ export function detectContentAvailability(
     const content = input.content?.trim() ?? '';
     const cleanedAccessibleText = input.cleanedAccessibleText?.trim() ?? '';
 
-    if (content.length >= MIN_FULL_TEXT_CONTENT_LENGTH) {
+    if (
+        isCurrentFullTextAssessment(
+            input.content ?? '',
+            input.contentAssessment,
+        )
+    ) {
         return ContentAvailability.FULL_TEXT;
     }
 
-    if (cleanedAccessibleText.length >= MIN_PARTIAL_TEXT_CLEANED_LENGTH) {
+    if (
+        (content && content !== summary) ||
+        (cleanedAccessibleText && cleanedAccessibleText !== summary)
+    ) {
         return ContentAvailability.PARTIAL_TEXT;
     }
 
-    if (summary.length >= MIN_SUMMARY_ONLY_LENGTH) {
+    if (summary || content || cleanedAccessibleText) {
         return ContentAvailability.SUMMARY_ONLY;
     }
     if (title.length > 0) {

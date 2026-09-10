@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { queryKeys } from '../../../shared/lib/queryKeys';
+import { refreshEnrichmentQueries } from '../../article-enrichment/hooks/useArticleEnrichment';
 
 import {
     fetchNewArticles,
@@ -12,10 +12,6 @@ export function useFetchNewArticlesMutation() {
 
     return useMutation<FetchNewArticlesResponse, Error>({
         mutationFn: fetchNewArticles,
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.articles.all,
-            });
-        },
+        onSettled: () => refreshEnrichmentQueries(queryClient, true),
     });
 }

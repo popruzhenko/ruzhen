@@ -20,8 +20,8 @@ export interface PublicArticlesFiltersState {
 
 export interface PublicArticlesFiltersProps {
     filters: PublicArticlesFiltersState;
-    totalCount: number;
-    filteredCount: number;
+    totalCount?: number;
+    filteredCount?: number;
     hasActiveFilters: boolean;
     onChange: <K extends keyof PublicArticlesFiltersState>(
         key: K,

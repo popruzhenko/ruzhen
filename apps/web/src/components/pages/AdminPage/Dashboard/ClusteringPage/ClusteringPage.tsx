@@ -35,6 +35,7 @@ import { ClusterArticleCard } from './ClusteringCards/ClusterArticleCard';
 import { ClusterCard } from './ClusteringCards/ClusterCard';
 import { ClusteringFilters } from './ClusteringFilters/ClusteringFilters';
 import { ClusterListFilters } from './ClusterListFilters/ClusterListFilters';
+import { ExistingClusterSuggestions } from './ExistingClusterSuggestions/ExistingClusterSuggestions';
 
 import type { ClusterListFiltersState } from './ClusterListFilters/TypesClusterListFilters';
 
@@ -64,6 +65,33 @@ type FilterableCandidateArticle = EmbeddedArticleItem & {
     createdAt: string | null;
     similarityToCluster: number | null;
 };
+
+interface ClusterDraft {
+    articles: ClusterArticleItem[];
+    initialArticleIds: string;
+    savedAtDataUpdatedAt?: number;
+}
+
+interface ClusterSelection {
+    clusterId: string | null;
+    candidateId: string | null;
+}
+
+const getArticleIdsKey = (articles: ClusterArticleItem[]): string =>
+    articles
+        .map((article) => article.id)
+        .sort()
+        .join('|');
+
+const getActiveClusterDraft = (
+    draft: ClusterDraft | null,
+    dataUpdatedAt: number,
+): ClusterDraft | null =>
+    draft &&
+    (getArticleIdsKey(draft.articles) !== draft.initialArticleIds ||
+        draft.savedAtDataUpdatedAt === dataUpdatedAt)
+        ? draft
+        : null;
 
 const initialClusteringFilters: ClusteringFiltersState = {
     search: '',
@@ -139,9 +167,10 @@ export const ClusteringPage = () => {
     const [selectedClusterCandidateId, setSelectedClusterCandidateId] =
         useState<string | null>(null);
 
-    const [clusterArticles, setClusterArticles] = useState<
-        ClusterArticleItem[]
-    >([]);
+    const [clusterDraft, setClusterDraft] = useState<ClusterDraft | null>(null);
+    const [pendingClusterSelection, setPendingClusterSelection] =
+        useState<ClusterSelection | null>(null);
+    const [isClusterActionPending, setIsClusterActionPending] = useState(false);
 
     const [candidateArticles, setCandidateArticles] = useState<
         FilterableCandidateArticle[]
@@ -208,61 +237,25 @@ export const ClusteringPage = () => {
         );
     }, [clusterCandidates, selectedClusterCandidateId]);
 
-    const clusterArticleIdsKey = useMemo(() => {
-        return clusterArticles
-            .map((article) => article.id)
-            .sort()
-            .join('|');
-    }, [clusterArticles]);
-
-    useEffect(() => {
-        const cluster = selectedClusterQuery.data;
-
-        if (!selectedClusterId || !cluster) {
-            if (!selectedClusterCandidateId) {
-                setClusterArticles([]);
-                setSelectedClusterArticleIds([]);
-            }
-
-            return;
+    const sourceClusterArticles = useMemo<ClusterArticleItem[]>(() => {
+        if (selectedClusterId && selectedCluster) {
+            return selectedCluster.articles.map((article) => ({
+                id: article.id,
+                title: article.title,
+                summary: article.summary ?? null,
+                sourceName: article.source?.name ?? null,
+                country: article.country ?? null,
+                publishedAt: article.publishedAt ?? null,
+                embedding: toNumberArray(article.embedding),
+                similarityToCentroid: article.confidence ?? null,
+                confidence: article.confidence ?? null,
+                isPrimary: article.isPrimary,
+                status: ARTICLE_STATUS.CLUSTERED,
+            }));
         }
 
-        const mappedArticles: ClusterArticleItem[] = cluster.articles.map(
-            (article) => {
-                const embedding = toNumberArray(article.embedding);
-
-                return {
-                    id: article.id,
-                    title: article.title,
-                    summary: article.summary ?? null,
-                    sourceName: article.source?.name ?? null,
-                    country: article.country ?? null,
-                    publishedAt: article.publishedAt ?? null,
-                    embedding,
-                    similarityToCentroid: article.confidence ?? null,
-                    confidence: article.confidence ?? null,
-                    isPrimary: article.isPrimary,
-                    status: ARTICLE_STATUS.CLUSTERED,
-                };
-            },
-        );
-
-        setClusterArticles(mappedArticles);
-        setSelectedClusterArticleIds([]);
-        setSelectedCandidateIds([]);
-    }, [
-        selectedClusterId,
-        selectedClusterCandidateId,
-        selectedClusterQuery.dataUpdatedAt,
-    ]);
-
-    useEffect(() => {
-        if (!selectedClusterCandidate) {
-            return;
-        }
-
-        const mappedArticles: ClusterArticleItem[] =
-            selectedClusterCandidate.articles.map((candidateArticle) => {
+        if (selectedClusterCandidate) {
+            return selectedClusterCandidate.articles.map((candidateArticle) => {
                 const article = candidateArticle.article;
                 const embedding = toNumberArray(article.embedding);
 
@@ -280,11 +273,67 @@ export const ClusteringPage = () => {
                     status: ARTICLE_STATUS.EMBEDDED,
                 };
             });
+        }
 
-        setClusterArticles(mappedArticles);
-        setSelectedClusterArticleIds([]);
-        setSelectedCandidateIds([]);
-    }, [selectedClusterCandidate]);
+        return [];
+    }, [selectedClusterId, selectedCluster, selectedClusterCandidate]);
+
+    // Keep edits separate from query data so a background refetch cannot reset them.
+    // A saved snapshot is used only until the next successful detail refresh.
+    const activeClusterDraft = getActiveClusterDraft(
+        clusterDraft,
+        selectedClusterQuery.dataUpdatedAt,
+    );
+    const clusterArticles =
+        activeClusterDraft?.articles ?? sourceClusterArticles;
+    const clusterArticleIdsKey = getArticleIdsKey(clusterArticles);
+    const hasUnsavedChanges =
+        activeClusterDraft !== null &&
+        clusterArticleIdsKey !== activeClusterDraft.initialArticleIds;
+    const isDraftLocked =
+        isClusterActionPending ||
+        Boolean(selectedClusterId && !selectedCluster);
+
+    const updateClusterDraft = (
+        update: (articles: ClusterArticleItem[]) => ClusterArticleItem[],
+    ) => {
+        setClusterDraft((currentDraft) => {
+            const activeDraft = getActiveClusterDraft(
+                currentDraft,
+                selectedClusterQuery.dataUpdatedAt,
+            );
+            const initialArticleIds =
+                activeDraft?.initialArticleIds ??
+                getArticleIdsKey(sourceClusterArticles);
+            const nextArticles = update(
+                activeDraft?.articles ?? sourceClusterArticles,
+            );
+
+            return getActiveClusterDraft(
+                {
+                    ...activeDraft,
+                    articles: nextArticles,
+                    initialArticleIds,
+                },
+                selectedClusterQuery.dataUpdatedAt,
+            );
+        });
+    };
+
+    useEffect(() => {
+        if (!hasUnsavedChanges) {
+            return;
+        }
+
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            event.preventDefault();
+            event.returnValue = '';
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () =>
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [hasUnsavedChanges]);
 
     useEffect(() => {
         const clusterArticleIds = new Set(
@@ -616,44 +665,51 @@ export const ClusteringPage = () => {
         return `Cluster ${new Date().toISOString().slice(0, 10)}`;
     };
 
-    const handleSelectCluster = (clusterId: string) => {
-        const isSameCluster = clusterId === selectedClusterId;
+    const applyClusterSelection = ({
+        clusterId,
+        candidateId,
+    }: ClusterSelection) => {
+        setSelectedClusterId(clusterId);
+        setSelectedClusterCandidateId(candidateId);
+        setClusterDraft(null);
+        setSelectedClusterArticleIds([]);
+        setSelectedCandidateIds([]);
+        setPendingClusterSelection(null);
+    };
 
-        if (isSameCluster) {
-            setSelectedClusterId(null);
-            setSelectedClusterCandidateId(null);
-            setClusterArticles([]);
-            setSelectedClusterArticleIds([]);
-            setSelectedCandidateIds([]);
+    const requestClusterSelection = (selection: ClusterSelection) => {
+        if (isClusterActionPending) {
             return;
         }
 
-        setSelectedClusterId(clusterId);
-        setSelectedClusterCandidateId(null);
-        setClusterArticles([]);
-        setSelectedClusterArticleIds([]);
-        setSelectedCandidateIds([]);
+        if (hasUnsavedChanges) {
+            setPendingClusterSelection(selection);
+            return;
+        }
+
+        applyClusterSelection(selection);
+    };
+
+    const handleSelectCluster = (clusterId: string) => {
+        requestClusterSelection({
+            clusterId: clusterId === selectedClusterId ? null : clusterId,
+            candidateId: null,
+        });
     };
 
     const handleSelectClusterCandidate = (candidateId: string) => {
-        const isSameCandidate = candidateId === selectedClusterCandidateId;
-
-        if (isSameCandidate) {
-            setSelectedClusterCandidateId(null);
-            setClusterArticles([]);
-            setSelectedClusterArticleIds([]);
-            setSelectedCandidateIds([]);
-            return;
-        }
-
-        setSelectedClusterId(null);
-        setSelectedClusterCandidateId(candidateId);
-        setClusterArticles([]);
-        setSelectedClusterArticleIds([]);
-        setSelectedCandidateIds([]);
+        requestClusterSelection({
+            clusterId: null,
+            candidateId:
+                candidateId === selectedClusterCandidateId ? null : candidateId,
+        });
     };
 
     const handleToggleClusterArticle = (articleId: string) => {
+        if (isDraftLocked) {
+            return;
+        }
+
         setSelectedClusterArticleIds((currentIds) =>
             currentIds.includes(articleId)
                 ? currentIds.filter((id) => id !== articleId)
@@ -662,6 +718,10 @@ export const ClusteringPage = () => {
     };
 
     const handleToggleCandidate = (articleId: string) => {
+        if (isDraftLocked) {
+            return;
+        }
+
         setSelectedCandidateIds((currentIds) =>
             currentIds.includes(articleId)
                 ? currentIds.filter((id) => id !== articleId)
@@ -679,6 +739,10 @@ export const ClusteringPage = () => {
     );
 
     const handleAddToCluster = () => {
+        if (isDraftLocked) {
+            return;
+        }
+
         if (selectedClusterCandidateId) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -734,7 +798,7 @@ export const ClusteringPage = () => {
                 status: ARTICLE_STATUS.EMBEDDED,
             }));
 
-        setClusterArticles((currentArticles) => [
+        updateClusterDraft((currentArticles) => [
             ...currentArticles,
             ...clusterArticlesToAdd,
         ]);
@@ -749,6 +813,10 @@ export const ClusteringPage = () => {
     };
 
     const handleCreateCluster = async () => {
+        if (isDraftLocked) {
+            return;
+        }
+
         if (selectedClusterCandidateId) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -770,6 +838,8 @@ export const ClusteringPage = () => {
             return;
         }
 
+        setIsClusterActionPending(true);
+
         try {
             const response =
                 await createClusterFromArticlesMutation.mutateAsync({
@@ -782,10 +852,10 @@ export const ClusteringPage = () => {
 
             const createdCluster = response.cluster;
 
-            setSelectedClusterId(createdCluster.id);
-            setSelectedClusterCandidateId(null);
-            setSelectedClusterArticleIds([]);
-            setSelectedCandidateIds([]);
+            applyClusterSelection({
+                clusterId: createdCluster.id,
+                candidateId: null,
+            });
 
             await clustersQuery.refetch();
             await articlesQuery.refetch();
@@ -804,10 +874,16 @@ export const ClusteringPage = () => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            setIsClusterActionPending(false);
         }
     };
 
     const handleSaveCluster = async () => {
+        if (isDraftLocked) {
+            return;
+        }
+
         if (selectedClusterCandidateId) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -839,6 +915,8 @@ export const ClusteringPage = () => {
             return;
         }
 
+        setIsClusterActionPending(true);
+
         try {
             await updateClusterArticlesMutation.mutateAsync({
                 clusterId: selectedClusterId,
@@ -860,7 +938,19 @@ export const ClusteringPage = () => {
                 message: 'Cluster articles were saved successfully.',
             });
 
-            await selectedClusterQuery.refetch();
+            const refreshedCluster = await selectedClusterQuery.refetch();
+
+            // The PATCH response has no article list. Keep the submitted snapshot
+            // if reloading details fails, and accept future successful refreshes.
+            setClusterDraft(
+                refreshedCluster.isSuccess
+                    ? null
+                    : {
+                          articles: clusterArticles,
+                          initialArticleIds: getArticleIdsKey(clusterArticles),
+                          savedAtDataUpdatedAt: refreshedCluster.dataUpdatedAt,
+                      },
+            );
             await clustersQuery.refetch();
             await articlesQuery.refetch();
         } catch (error) {
@@ -872,6 +962,8 @@ export const ClusteringPage = () => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            setIsClusterActionPending(false);
         }
     };
 
@@ -898,17 +990,21 @@ export const ClusteringPage = () => {
     };
 
     const handleGenerateClusterCandidates = async () => {
+        if (isClusterActionPending) {
+            return;
+        }
+
+        setIsClusterActionPending(true);
+
         try {
             const response =
                 await generateClusterCandidatesMutation.mutateAsync();
 
             await clusterCandidatesQuery.refetch();
 
-            setSelectedClusterCandidateId(null);
-            setSelectedClusterId(null);
-            setClusterArticles([]);
-            setSelectedClusterArticleIds([]);
-            setSelectedCandidateIds([]);
+            if (selectedClusterCandidateId) {
+                applyClusterSelection({ clusterId: null, candidateId: null });
+            }
 
             showToast({
                 type: TOAST_TYPE.SUCCESS,
@@ -924,10 +1020,16 @@ export const ClusteringPage = () => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            setIsClusterActionPending(false);
         }
     };
 
     const handleAcceptClusterCandidate = async () => {
+        if (isClusterActionPending) {
+            return;
+        }
+
         if (!selectedClusterCandidateId) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -938,6 +1040,8 @@ export const ClusteringPage = () => {
             return;
         }
 
+        setIsClusterActionPending(true);
+
         try {
             const response = await acceptClusterCandidateMutation.mutateAsync(
                 selectedClusterCandidateId,
@@ -945,10 +1049,10 @@ export const ClusteringPage = () => {
 
             const createdCluster = response.cluster;
 
-            setSelectedClusterCandidateId(null);
-            setSelectedClusterId(createdCluster.id);
-            setSelectedClusterArticleIds([]);
-            setSelectedCandidateIds([]);
+            applyClusterSelection({
+                clusterId: createdCluster.id,
+                candidateId: null,
+            });
 
             await Promise.all([
                 clustersQuery.refetch(),
@@ -970,6 +1074,8 @@ export const ClusteringPage = () => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            setIsClusterActionPending(false);
         }
     };
 
@@ -988,19 +1094,18 @@ export const ClusteringPage = () => {
     };
 
     const handleConfirmDeleteClusterCandidate = async () => {
-        if (!selectedClusterCandidateId) {
+        if (isClusterActionPending || !selectedClusterCandidateId) {
             return;
         }
+
+        setIsClusterActionPending(true);
 
         try {
             await deleteClusterCandidateMutation.mutateAsync(
                 selectedClusterCandidateId,
             );
 
-            setSelectedClusterCandidateId(null);
-            setClusterArticles([]);
-            setSelectedClusterArticleIds([]);
-            setSelectedCandidateIds([]);
+            applyClusterSelection({ clusterId: null, candidateId: null });
             setIsDeleteClusterCandidateConfirmOpen(false);
 
             await clusterCandidatesQuery.refetch();
@@ -1019,10 +1124,16 @@ export const ClusteringPage = () => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            setIsClusterActionPending(false);
         }
     };
 
     const handleRemoveFromCluster = () => {
+        if (isDraftLocked) {
+            return;
+        }
+
         if (selectedClusterCandidateId) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -1038,7 +1149,7 @@ export const ClusteringPage = () => {
             selectedClusterArticleIds.includes(article.id),
         );
 
-        setClusterArticles((currentArticles) =>
+        updateClusterDraft((currentArticles) =>
             currentArticles.filter(
                 (article) => !selectedClusterArticleIds.includes(article.id),
             ),
@@ -1090,18 +1201,16 @@ export const ClusteringPage = () => {
     };
 
     const handleConfirmDeleteCluster = async () => {
-        if (!selectedClusterId) {
+        if (isClusterActionPending || !selectedClusterId) {
             return;
         }
+
+        setIsClusterActionPending(true);
 
         try {
             await deleteClusterMutation.mutateAsync(selectedClusterId);
 
-            setSelectedClusterId(null);
-            setSelectedClusterCandidateId(null);
-            setClusterArticles([]);
-            setSelectedClusterArticleIds([]);
-            setSelectedCandidateIds([]);
+            applyClusterSelection({ clusterId: null, candidateId: null });
             setIsDeleteClusterConfirmOpen(false);
 
             await clustersQuery.refetch();
@@ -1121,6 +1230,8 @@ export const ClusteringPage = () => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            setIsClusterActionPending(false);
         }
     };
 
@@ -1130,11 +1241,28 @@ export const ClusteringPage = () => {
         articlesQuery.isLoading ||
         clusterCandidatesQuery.isLoading;
 
-    const isError =
-        clustersQuery.isError ||
-        selectedClusterQuery.isError ||
-        articlesQuery.isError ||
-        clusterCandidatesQuery.isError;
+    const clusteringQueries = [
+        clustersQuery,
+        selectedClusterQuery,
+        articlesQuery,
+        clusterCandidatesQuery,
+    ];
+    const isError = clusteringQueries.some(
+        (query) => query.isError && !query.data,
+    );
+    const hasRefreshError = clusteringQueries.some(
+        (query) => query.isError && query.data,
+    );
+
+    const handleRetryQueries = () => {
+        void clustersQuery.refetch();
+        void articlesQuery.refetch();
+        void clusterCandidatesQuery.refetch();
+
+        if (selectedClusterId) {
+            void selectedClusterQuery.refetch();
+        }
+    };
 
     if (isLoading) {
         return (
@@ -1156,15 +1284,7 @@ export const ClusteringPage = () => {
                     title="Failed to load clustering data"
                     description="Please refresh the page or try again later."
                     actionLabel="Retry"
-                    onAction={() => {
-                        void clustersQuery.refetch();
-                        void articlesQuery.refetch();
-                        void clusterCandidatesQuery.refetch();
-
-                        if (selectedClusterId) {
-                            void selectedClusterQuery.refetch();
-                        }
-                    }}
+                    onAction={handleRetryQueries}
                 />
             </div>
         );
@@ -1172,6 +1292,16 @@ export const ClusteringPage = () => {
 
     return (
         <div className="clustering">
+            {hasRefreshError && (
+                <PageState
+                    variant="error"
+                    title="Could not refresh clustering data"
+                    description="Your cluster draft is still available. Retry to load the latest data."
+                    actionLabel="Retry"
+                    onAction={handleRetryQueries}
+                />
+            )}
+
             <div className="clustering__controls-grid">
                 <section className="clustering__control-panel">
                     <div className="clustering__control-panel-header">
@@ -1187,9 +1317,7 @@ export const ClusteringPage = () => {
                         <div className="clustering__control-panel-actions">
                             <Button
                                 onClick={handleGenerateClusterCandidates}
-                                disabled={
-                                    generateClusterCandidatesMutation.isPending
-                                }
+                                disabled={isClusterActionPending}
                             >
                                 {generateClusterCandidatesMutation.isPending
                                     ? 'Generating...'
@@ -1211,6 +1339,15 @@ export const ClusteringPage = () => {
                                       ? 'Saved cluster selected'
                                       : 'No cluster selected'}
                             </span>
+
+                            {hasUnsavedChanges && (
+                                <span
+                                    className="clustering__control-counter"
+                                    role="status"
+                                >
+                                    Unsaved changes
+                                </span>
+                            )}
                         </div>
                     </div>
 
@@ -1219,9 +1356,7 @@ export const ClusteringPage = () => {
                             <>
                                 <Button
                                     onClick={handleAcceptClusterCandidate}
-                                    disabled={
-                                        acceptClusterCandidateMutation.isPending
-                                    }
+                                    disabled={isClusterActionPending}
                                 >
                                     {acceptClusterCandidateMutation.isPending
                                         ? 'Accepting...'
@@ -1232,9 +1367,7 @@ export const ClusteringPage = () => {
                                     onClick={
                                         handleOpenDeleteClusterCandidateConfirm
                                     }
-                                    disabled={
-                                        deleteClusterCandidateMutation.isPending
-                                    }
+                                    disabled={isClusterActionPending}
                                 >
                                     {deleteClusterCandidateMutation.isPending
                                         ? 'Deleting...'
@@ -1246,6 +1379,7 @@ export const ClusteringPage = () => {
                                 <Button
                                     onClick={handleRemoveFromCluster}
                                     disabled={
+                                        isDraftLocked ||
                                         selectedClusterArticleIds.length === 0
                                     }
                                 >
@@ -1255,6 +1389,7 @@ export const ClusteringPage = () => {
                                 <Button
                                     onClick={handleCreateCluster}
                                     disabled={
+                                        isDraftLocked ||
                                         clusterArticles.length === 0 ||
                                         createClusterFromArticlesMutation.isPending
                                     }
@@ -1267,6 +1402,7 @@ export const ClusteringPage = () => {
                                 <Button
                                     onClick={handleSaveCluster}
                                     disabled={
+                                        isDraftLocked ||
                                         !selectedClusterId ||
                                         clusterArticles.length === 0 ||
                                         updateClusterArticlesMutation.isPending
@@ -1280,6 +1416,7 @@ export const ClusteringPage = () => {
                                 <Button
                                     onClick={handleOpenDeleteClusterConfirm}
                                     disabled={
+                                        isClusterActionPending ||
                                         !selectedClusterId ||
                                         deleteClusterMutation.isPending
                                     }
@@ -1311,6 +1448,7 @@ export const ClusteringPage = () => {
                             <Button
                                 onClick={handleAddToCluster}
                                 disabled={
+                                    isDraftLocked ||
                                     !hasAddableSelectedCandidates ||
                                     Boolean(selectedClusterCandidateId)
                                 }
@@ -1333,7 +1471,20 @@ export const ClusteringPage = () => {
                 </section>
             </div>
 
-            <div className="clustering__workspace">
+            <ExistingClusterSuggestions
+                disabled={isDraftLocked}
+                hasUnsavedChanges={hasUnsavedChanges}
+                dataRevision={`${articlesQuery.dataUpdatedAt}:${clustersQuery.dataUpdatedAt}:${selectedClusterQuery.dataUpdatedAt}`}
+                onBusyChange={setIsClusterActionPending}
+                onOpenCluster={(clusterId) =>
+                    requestClusterSelection({ clusterId, candidateId: null })
+                }
+            />
+
+            <div
+                className="clustering__workspace"
+                aria-busy={isClusterActionPending}
+            >
                 <aside className="clustering__clusters">
                     <div className="clustering__panel-header">
                         <div>
@@ -1574,6 +1725,21 @@ export const ClusteringPage = () => {
                     </div>
                 </section>
             </div>
+
+            <ConfirmModal
+                isOpen={pendingClusterSelection !== null}
+                title="Discard unsaved changes?"
+                description="The cluster draft has unsaved changes. Discard them to change the selected cluster, or keep editing to save your work."
+                confirmLabel="Discard changes"
+                cancelLabel="Keep editing"
+                variant="warning"
+                onConfirm={() => {
+                    if (pendingClusterSelection && !isClusterActionPending) {
+                        applyClusterSelection(pendingClusterSelection);
+                    }
+                }}
+                onCancel={() => setPendingClusterSelection(null)}
+            />
 
             <ConfirmModal
                 isOpen={isDeleteClusterConfirmOpen}

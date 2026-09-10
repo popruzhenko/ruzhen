@@ -1,22 +1,24 @@
 import { apiClient } from '../../../shared/api/client';
 
-import type { GetPublicClustersResponse } from '../model/types';
+import type {
+    GetPublicClustersParams,
+    GetPublicClustersResponse,
+} from '../model/types';
 
-interface GetPublicClustersParams {
-    page: number;
-    limit: number;
-}
+export async function getPublicClusters(
+    params: GetPublicClustersParams,
+    signal?: AbortSignal,
+): Promise<GetPublicClustersResponse> {
+    const searchParams = new URLSearchParams();
 
-export async function getPublicClusters({
-    page,
-    limit,
-}: GetPublicClustersParams): Promise<GetPublicClustersResponse> {
-    const searchParams = new URLSearchParams({
-        page: String(page),
-        limit: String(limit),
-    });
+    for (const [key, value] of Object.entries(params)) {
+        if (value !== undefined) {
+            searchParams.set(key, String(value));
+        }
+    }
 
     return apiClient<GetPublicClustersResponse>(
         `/public/clusters?${searchParams.toString()}`,
+        { signal },
     );
 }

@@ -1,3 +1,5 @@
+import type { ArticleContentAssessment } from '../enrich/articleContentQuality';
+
 export type SourceFetchMode = 'RSS' | 'SECTION_HTML';
 export type SourceAccessMode = 'FULL_OPEN' | 'METADATA_ONLY';
 
@@ -39,6 +41,7 @@ export interface ArticleCreateCandidate {
     title: string;
     summary: string | null;
     content: string | null;
+    contentAssessment?: ArticleContentAssessment | null;
     cleanedAccessibleText?: string | null;
     imageUrl: string | null;
     publishedAt: Date | null;

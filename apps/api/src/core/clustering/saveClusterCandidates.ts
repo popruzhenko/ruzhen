@@ -1,4 +1,4 @@
-import { CandidateStatus, Prisma, PrismaClient } from '@prisma/client';
+import { CandidateStatus, Prisma } from '@prisma/client';
 import type { Article } from '@prisma/client';
 
 import type { BuildClustersResult } from './clustering.types';
@@ -7,7 +7,7 @@ import { buildClusterSummary } from './buildClusterSummary';
 import { cosineSimilarity } from './calculateArticleSimilarity';
 
 interface SaveClusterCandidatesInput {
-    prisma: PrismaClient | Prisma.TransactionClient;
+    prisma: Prisma.TransactionClient;
     buildResult: BuildClustersResult;
     articles: Article[];
     similarityThreshold: number;

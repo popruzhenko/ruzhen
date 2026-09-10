@@ -14,7 +14,8 @@ export const Input: React.FC<InputProps> = ({
     id,
     ...rest
 }) => {
-    const inputId = id ?? useId();
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
     const hasValue =
         typeof rest.value === 'string'
             ? rest.value.length > 0

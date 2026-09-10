@@ -5,4 +5,5 @@ export interface PaginationProps {
     hasPreviousPage: boolean;
     onPageChange: (page: number) => void;
     className?: string;
+    compact?: boolean;
 }

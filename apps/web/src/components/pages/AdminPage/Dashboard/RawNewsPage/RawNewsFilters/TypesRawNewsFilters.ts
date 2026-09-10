@@ -27,8 +27,8 @@ export interface RawNewsFiltersState {
 export interface RawNewsFiltersProps {
     filters: RawNewsFiltersState;
     sourceOptions: RawNewsSourceOption[];
-    totalCount: number;
-    filteredCount: number;
+    totalCount?: number;
+    filteredCount?: number;
     hasActiveFilters: boolean;
     onChange: <K extends keyof RawNewsFiltersState>(
         key: K,
@@ -37,4 +37,5 @@ export interface RawNewsFiltersProps {
     onClear: () => void;
     onFetchNewArticles: () => void;
     isFetchingNewArticles?: boolean;
+    isFetchDisabled?: boolean;
 }

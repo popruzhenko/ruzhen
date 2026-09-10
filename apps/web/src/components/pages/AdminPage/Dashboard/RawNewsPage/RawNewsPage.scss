@@ -1,0 +1,11 @@
+.raw_news {
+    &__filters_lock {
+        border: 0;
+        padding: 0;
+        margin: 0;
+        min-width: 0;
+    }
+    &__lock_message {
+        padding: 12px 0;
+    }
+}

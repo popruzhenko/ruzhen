@@ -73,6 +73,31 @@ enum CandidateStatus {
   REJECTED
 }
 
+enum EnrichmentJobStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  CANCELED
+}
+
+enum EnrichmentItemStatus {
+  PENDING
+  RUNNING
+  FULL_TEXT
+  PARTIAL_TEXT
+  PROPOSED
+  UNCHANGED
+  SKIPPED
+  ERROR
+  CANCELED
+}
+
+enum EnrichmentProposalStatus {
+  PENDING
+  APPLIED
+  DISMISSED
+}
+
 enum ClusterRelationType {
   CONTINUES
   FOLLOW_UP
@@ -125,6 +150,7 @@ model User {
   createdBlocks                    ClusterBlock[]            @relation("ClusterBlockCreatedBy")
   sessions                         Session[]
   bookmarks                        Bookmark[]
+  enrichmentJobs                   EnrichmentJob[]
 }
 
 model Session {
@@ -176,6 +202,8 @@ model Article {
   cleaningMethod        CleaningMethod?
   embeddingModel        String?
   embedding             Json?
+  contentProvenance     Json?
+  contentAssessment     Json?
   createdAt             DateTime             @default(now())
   updatedAt             DateTime             @updatedAt
 
@@ -184,11 +212,69 @@ model Article {
   clusterLinks             ClusterArticle[]
   articleClusterCandidates ArticleClusterCandidate[]
   clusterCandidateLinks    ClusterCandidateArticle[]
+  contentVersions          ArticleContentVersion[]
 
   @@index([sourceId])
   @@index([status])
   @@index([publishedAt])
   @@index([contentAvailability])
+}
+
+model ArticleContentVersion {
+  id                    String   @id @default(uuid())
+  articleId             String
+  actorUserId           String?
+  reason                String
+  before                Json
+  after                 Json
+  afterArticleUpdatedAt DateTime
+  jobItemId             String?
+  restoredFromVersionId String?
+  createdAt             DateTime @default(now())
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId, createdAt])
+  @@index([jobItemId])
+}
+
+model EnrichmentJob {
+  id              String              @id @default(uuid())
+  requestId       String?             @unique
+  createdByUserId String
+  scope           Json
+  status          EnrichmentJobStatus @default(QUEUED)
+  total           Int                 @default(0)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  createdBy User                @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  items     EnrichmentJobItem[]
+
+  @@index([status, createdAt])
+}
+
+model EnrichmentJobItem {
+  id                       String                    @id @default(uuid())
+  jobId                    String
+  articleId                String
+  title                    String
+  expectedArticleUpdatedAt DateTime?
+  status                   EnrichmentItemStatus      @default(PENDING)
+  attempts                 Int                       @default(0)
+  leaseToken               String?
+  leaseExpiresAt           DateTime?
+  reason                   String?
+  proposal                 Json?
+  proposalStatus           EnrichmentProposalStatus?
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
+
+  job EnrichmentJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, articleId])
+  @@index([jobId, status, leaseExpiresAt])
+  @@index([articleId, createdAt])
 }
 
 model ArticleRaw {

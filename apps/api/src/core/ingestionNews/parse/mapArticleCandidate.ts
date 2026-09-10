@@ -4,6 +4,8 @@ import type {
     ParsedFeedItem,
     SectionArticleCandidate,
 } from './types';
+import { assessArticleText } from '../enrich/articleContentQuality';
+import { normalizeRetrievedText } from '../enrich/extractReadableContent';
 
 function stripHtml(html: string): string {
     return html
@@ -62,15 +64,21 @@ export function mapFeedItemToArticleInput(
         ? normalizeText(stripHtml(summaryRaw))
         : null;
     const strippedContent = contentRaw
-        ? normalizeText(stripHtml(contentRaw))
+        ? normalizeRetrievedText(contentRaw) || null
         : null;
 
-    const content = source.accessMode === 'FULL_OPEN' ? strippedContent : null;
-
-    const cleanedAccessibleText =
-        source.accessMode === 'METADATA_ONLY'
-            ? (strippedContent ?? strippedSummary)
-            : null;
+    // An access hint must never discard text already supplied by the feed.
+    const content = strippedContent;
+    const publishedAt = parseDate(item.isoDate ?? item.pubDate);
+    const contentAssessment = content
+        ? assessArticleText({
+              text: content,
+              title,
+              summary: strippedSummary,
+              url,
+              publishedAt,
+          })
+        : null;
 
     return {
         sourceId: source.id,
@@ -78,9 +86,10 @@ export function mapFeedItemToArticleInput(
         title,
         summary: strippedSummary,
         content,
-        cleanedAccessibleText,
+        contentAssessment,
+        cleanedAccessibleText: null,
         imageUrl: item.imageUrl ?? null,
-        publishedAt: parseDate(item.isoDate ?? item.pubDate),
+        publishedAt,
         language: source.language ?? null,
         country: source.country ?? null,
         rawPayload: item.raw,
@@ -106,8 +115,7 @@ export function mapSectionItemToArticleInput(
         title,
         summary,
         content: null,
-        cleanedAccessibleText:
-            source.accessMode === 'METADATA_ONLY' ? summary : null,
+        cleanedAccessibleText: null,
         imageUrl: item.imageUrl ?? null,
         publishedAt: item.publishedAt ?? null,
         language: source.language ?? null,

@@ -42,6 +42,8 @@ export async function embedArticleById(
             cleanedAccessibleText: true,
             embedding: true,
             status: true,
+            updatedAt: true,
+            _count: { select: { clusterLinks: true } },
             source: {
                 select: {
                     isActive: true,
@@ -60,6 +62,24 @@ export async function embedArticleById(
     const hasCleanedAccessibleText = Boolean(
         article.cleanedAccessibleText?.trim(),
     );
+
+    if (
+        article.status !== ArticleStatus.APPROVED ||
+        article._count.clusterLinks > 0 ||
+        article.embedding !== null
+    ) {
+        return {
+            articleId,
+            embedded: false,
+            reason: 'Article is no longer awaiting embedding',
+            textLength: 0,
+            hasTitle,
+            hasSummary,
+            hasContent,
+            hasCleanedAccessibleText,
+            embeddingBasis: null,
+        };
+    }
 
     if (!article.source.isActive) {
         return {
@@ -98,15 +118,39 @@ export async function embedArticleById(
 
     const vector = await provider.createEmbedding(buildResult.text);
 
-    await prisma.article.update({
-        where: { id: article.id },
+    const saved = await prisma.article.updateMany({
+        where: {
+            id: article.id,
+            updatedAt: article.updatedAt,
+            status: ArticleStatus.APPROVED,
+            embedding: { equals: Prisma.AnyNull },
+            clusterLinks: { none: {} },
+            source: { isActive: true },
+        },
         data: {
             embedding: vector,
             embeddingBasis: buildResult.embeddingBasis,
             embeddingModel: 'text-embedding-3-small',
             status: ArticleStatus.EMBEDDED,
+            updatedAt: new Date(
+                Math.max(Date.now(), article.updatedAt.getTime() + 1),
+            ),
         },
     });
+
+    if (saved.count !== 1) {
+        return {
+            articleId,
+            embedded: false,
+            reason: 'Article changed while its embedding was being generated',
+            textLength: buildResult.text.length,
+            hasTitle,
+            hasSummary,
+            hasContent,
+            hasCleanedAccessibleText,
+            embeddingBasis: null,
+        };
+    }
 
     return {
         articleId,
