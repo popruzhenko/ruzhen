@@ -69,7 +69,8 @@ export const PublicArticlesFilters = ({
                     <h3>Filters</h3>
 
                     <span className="public_articles_filters__counter">
-                        Showing {filteredCount} of {totalCount} articles
+                        Found {filteredCount ?? '—'} of {totalCount ?? '—'}{' '}
+                        articles
                     </span>
                 </div>
 

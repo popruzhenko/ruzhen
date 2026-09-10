@@ -17,7 +17,8 @@ export const Textarea: React.FC<TextareaProps> = ({
     maxHeight,
     ...rest
 }) => {
-    const textareaId = id ?? useId();
+    const generatedId = useId();
+    const textareaId = id ?? generatedId;
     const ref = useRef<HTMLTextAreaElement>(null);
 
     const rootClasses = classesJoined([

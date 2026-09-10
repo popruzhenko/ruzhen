@@ -12,6 +12,11 @@
         gap: 6px;
     }
 
+    &__ellipsis {
+        color: $color-text-muted;
+        padding: 0 2px;
+    }
+
     &__page {
         min-width: 34px;
         height: 34px;

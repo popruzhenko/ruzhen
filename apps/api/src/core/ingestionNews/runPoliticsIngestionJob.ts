@@ -1,7 +1,8 @@
-import type { PrismaClient } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
+import type { EnrichmentJobStatus, PrismaClient } from '@prisma/client';
 import { syncPoliticsSources } from './parse/syncSources';
 import { runParseForSource } from './parse/runParseForSource';
-import { enrichLatestArticles } from './enrich/enrichArticle.services';
+import type { AutomaticEnrichmentContext } from '../enrichmentJobs/automaticEnrichment';
 
 export interface PoliticsIngestionSourceResult {
     success: boolean;
@@ -17,13 +18,41 @@ export interface PoliticsIngestionSourceResult {
 
 export interface PoliticsIngestionResult {
     parseResults: PoliticsIngestionSourceResult[];
-    enrichResults: unknown;
+    enrichment: {
+        jobId: string | null;
+        total: number;
+        status: EnrichmentJobStatus | null;
+    };
+}
+
+interface IngestionDependencies {
+    syncSources?: typeof syncPoliticsSources;
+    parseSource?: typeof runParseForSource;
 }
 
 export async function runPoliticsIngestionJob(
     prisma: PrismaClient,
+    options: { createdByUserId: string },
+    dependencies: IngestionDependencies = {},
 ): Promise<PoliticsIngestionResult> {
-    await syncPoliticsSources(prisma);
+    const actorId = options.createdByUserId.trim();
+    if (!actorId)
+        throw new Error(
+            'An administrator is required to start article ingestion.',
+        );
+    const actor = await prisma.user.findUnique({
+        where: { id: actorId },
+        select: { role: true },
+    });
+    if (actor?.role !== 'ADMIN')
+        throw new Error(
+            'Article ingestion requires an existing administrator.',
+        );
+    const automaticEnrichment: AutomaticEnrichmentContext = {
+        jobId: randomUUID(),
+        createdByUserId: actorId,
+    };
+    await (dependencies.syncSources ?? syncPoliticsSources)(prisma);
 
     const sources = await prisma.source.findMany({
         where: {
@@ -40,19 +69,25 @@ export async function runPoliticsIngestionJob(
         const fetchMode = dbSource.type === 'RSS' ? 'RSS' : 'SECTION_HTML';
 
         try {
-            const result = await runParseForSource(prisma, {
-                id: dbSource.id,
-                name: dbSource.name,
-                baseUrl: dbSource.baseUrl,
-                language: dbSource.language,
-                country: dbSource.country,
-                fetchMode,
-                accessMode:
-                    dbSource.accessMode === 'FULL_OPEN'
-                        ? 'FULL_OPEN'
-                        : 'METADATA_ONLY',
-                politicsOnly: true,
-            });
+            const result = await (
+                dependencies.parseSource ?? runParseForSource
+            )(
+                prisma,
+                {
+                    id: dbSource.id,
+                    name: dbSource.name,
+                    baseUrl: dbSource.baseUrl,
+                    language: dbSource.language,
+                    country: dbSource.country,
+                    fetchMode,
+                    accessMode:
+                        dbSource.accessMode === 'FULL_OPEN'
+                            ? 'FULL_OPEN'
+                            : 'METADATA_ONLY',
+                    politicsOnly: true,
+                },
+                automaticEnrichment,
+            );
 
             parseResults.push({
                 success: true,
@@ -73,10 +108,19 @@ export async function runPoliticsIngestionJob(
         }
     }
 
-    const enrichResults = await enrichLatestArticles(prisma, 50);
+    // Articles enter the durable queue in their own save transactions. Fetch
+    // waits only for source parsing; the API worker owns all article retrieval.
+    const job = await prisma.enrichmentJob.findUnique({
+        where: { id: automaticEnrichment.jobId },
+        select: { id: true, total: true, status: true },
+    });
 
     return {
         parseResults,
-        enrichResults,
+        enrichment: {
+            jobId: job?.id ?? null,
+            total: job?.total ?? 0,
+            status: job?.status ?? null,
+        },
     };
 }

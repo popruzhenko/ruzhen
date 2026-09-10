@@ -11,7 +11,7 @@ import {
 } from './clustering.constants';
 
 interface GenerateClusterCandidatesInput {
-    prisma: PrismaClient | Prisma.TransactionClient;
+    prisma: PrismaClient;
 }
 
 function parseEmbedding(value: Prisma.JsonValue): number[] | null {
@@ -88,15 +88,18 @@ export async function generateClusterCandidates(
         };
     }
 
-    const candidates = await saveClusterCandidates({
-        prisma,
-        buildResult,
-        articles,
-        similarityThreshold: MIN_SIMILARITY_TO_LINK,
-        timeWindowDays: CLUSTER_TIME_WINDOW_HOURS / 24,
-        minClusterSize: MIN_CLUSTER_SIZE,
-        maxClusterSize: MAX_CLUSTER_ARTICLES,
-    });
+    // Replace pending candidates only when the entire new list is saved.
+    const candidates = await prisma.$transaction((tx) =>
+        saveClusterCandidates({
+            prisma: tx,
+            buildResult,
+            articles,
+            similarityThreshold: MIN_SIMILARITY_TO_LINK,
+            timeWindowDays: CLUSTER_TIME_WINDOW_HOURS / 24,
+            minClusterSize: MIN_CLUSTER_SIZE,
+            maxClusterSize: MAX_CLUSTER_ARTICLES,
+        }),
+    );
 
     return {
         candidates,

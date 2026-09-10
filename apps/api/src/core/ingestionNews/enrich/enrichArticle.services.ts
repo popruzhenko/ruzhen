@@ -1,239 +1,190 @@
-import type { PrismaClient } from '@prisma/client';
-import { fetchText } from '../shared/fetchText';
-import { extractReadableContent } from './extractReadableContent';
-import { normalizeEnrichedFields } from '../../normalize/article/normalizeEnrichedFields';
-import { detectContentAvailability } from '../../normalize/article/detectContentAvailability';
-import { cleanAccessibleText } from '../../normalize/article/clean/cleanAccessibleText';
-import { OpenAiAccessibleTextCleaner } from '../../normalize/article/clean/openAiAccessibleTextCleaner';
+import { ArticleStatus, Prisma, type PrismaClient } from '@prisma/client';
+import { retrieveCompleteArticleContent } from './retrieveCompleteArticleContent';
+import {
+    candidateDecision,
+    persistEnrichmentCandidate,
+    enrichmentArticleSelect,
+    getEnrichmentEligibility,
+    type EnrichmentRetriever,
+} from '../../enrichmentJobs';
 
-const openAiApiKey = process.env.OPENAI_API_KEY;
-
-const accessibleTextCleaner = openAiApiKey
-    ? new OpenAiAccessibleTextCleaner({
-          apiKey: openAiApiKey,
-          model: process.env.OPENAI_CLEAN_MODEL ?? 'gpt-4o-mini',
-      })
-    : undefined;
-
-function pickBetterText(
-    current: string | null | undefined,
-    next: string | null | undefined,
-) {
-    const currentText = current?.trim() ?? '';
-    const nextText = next?.trim() ?? '';
-
-    if (!nextText) {
-        return {
-            text: currentText || null,
-            picked: 'current' as const,
-        };
-    }
-
-    if (!currentText) {
-        return {
-            text: nextText,
-            picked: 'next' as const,
-        };
-    }
-
-    if (nextText.length > currentText.length) {
-        return {
-            text: nextText,
-            picked: 'next' as const,
-        };
-    }
-
-    return {
-        text: currentText,
-        picked: 'current' as const,
-    };
+interface DirectEnrichmentOptions {
+    expectedUpdatedAt?: Date;
+    actorUserId?: string;
+    retrieve?: EnrichmentRetriever;
 }
 
 export async function enrichArticleById(
     prisma: PrismaClient,
     articleId: string,
+    options: DirectEnrichmentOptions = {},
 ) {
     const article = await prisma.article.findUnique({
         where: { id: articleId },
-        select: {
-            id: true,
-            url: true,
-            title: true,
-            summary: true,
-            content: true,
-            cleanedAccessibleText: true,
-            imageUrl: true,
-            cleaningMethod: true,
-            contentAvailability: true,
-            source: {
-                select: {
-                    id: true,
-                    name: true,
-                    accessMode: true,
-                    isActive: true,
-                },
-            },
-        },
+        select: enrichmentArticleSelect,
     });
-
-    if (!article) {
-        throw new Error('Article not found');
-    }
-
-    if (!article.source.isActive) {
+    if (!article)
+        return { articleId, outcome: 'SKIPPED', reason: 'Article not found.' };
+    if (
+        options.expectedUpdatedAt &&
+        article.updatedAt.getTime() !== options.expectedUpdatedAt.getTime()
+    ) {
         return {
             articleId,
-            skipped: true,
-            reason: 'Source is inactive',
+            outcome: 'SKIPPED',
+            reason: 'Article changed after selection.',
         };
     }
-
-    const html = await fetchText(article.url);
-    const extracted = extractReadableContent(html, article.url);
-
-    const normalized = normalizeEnrichedFields({
-        title: article.title,
-        summary: article.summary ?? extracted.excerpt,
-        content: extracted.textContent,
-        imageUrl: article.imageUrl ?? extracted.imageUrl,
+    const eligibility = getEnrichmentEligibility(article);
+    if (!eligibility.eligible)
+        return { articleId, outcome: 'SKIPPED', reason: eligibility.reason };
+    const retrieve =
+        options.retrieve ??
+        ((input, signal) => retrieveCompleteArticleContent(input, { signal }));
+    const result = await retrieve({
         url: article.url,
-    });
-
-    const isMetadataOnly = article.source.accessMode === 'METADATA_ONLY';
-
-    const nextSummary = article.summary ?? normalized.summary ?? null;
-    const nextImageUrl = article.imageUrl ?? normalized.imageUrl ?? null;
-
-    let nextContent = article.content ?? null;
-    let nextCleanedAccessibleText = article.cleanedAccessibleText ?? null;
-    let nextCleaningMethod = article.cleaningMethod ?? null;
-
-    if (isMetadataOnly) {
-        const cleanResult = await cleanAccessibleText(
-            {
-                title: article.title,
-                summary: nextSummary,
-                rawAccessibleText:
-                    normalized.content ??
-                    normalized.summary ??
-                    extracted.excerpt ??
-                    null,
-                sourceName: article.source.name,
-                url: article.url,
-            },
-            accessibleTextCleaner,
-        );
-
-        const pickedCleanedText = pickBetterText(
-            article.cleanedAccessibleText,
-            cleanResult.cleanedText,
-        );
-
-        nextCleanedAccessibleText = pickedCleanedText.text;
-
-        nextCleaningMethod =
-            pickedCleanedText.picked === 'next'
-                ? (cleanResult.cleaningMethod ?? article.cleaningMethod ?? null)
-                : (article.cleaningMethod ??
-                  cleanResult.cleaningMethod ??
-                  null);
-
-        nextContent = article.content ?? null;
-    } else {
-        nextContent = article.content ?? normalized.content ?? null;
-        nextCleanedAccessibleText = article.cleanedAccessibleText ?? null;
-        nextCleaningMethod = article.cleaningMethod ?? null;
-    }
-    const contentAvailability = detectContentAvailability({
         title: article.title,
-        summary: nextSummary,
-        content: nextContent,
-        cleanedAccessibleText: nextCleanedAccessibleText,
+        summary: article.summary,
+        publishedAt: article.publishedAt,
+        content: article.content,
     });
-
-    const updatedArticle = await prisma.article.update({
-        where: { id: article.id },
-        data: {
-            summary: nextSummary,
-            content: nextContent,
-            cleanedAccessibleText: nextCleanedAccessibleText,
-            cleaningMethod: nextCleaningMethod,
-            imageUrl: nextImageUrl,
-            contentAvailability,
-        },
-        select: {
-            id: true,
-            url: true,
-            title: true,
-            summary: true,
-            content: true,
-            cleanedAccessibleText: true,
-            cleaningMethod: true,
-            imageUrl: true,
-            contentAvailability: true,
-            updatedAt: true,
-            source: {
-                select: {
-                    name: true,
-                    accessMode: true,
-                },
-            },
-        },
+    return prisma.$transaction(async (tx) => {
+        const current = await tx.article.findUnique({
+            where: { id: articleId },
+            select: enrichmentArticleSelect,
+        });
+        if (
+            !current ||
+            current.updatedAt.getTime() !== article.updatedAt.getTime() ||
+            !getEnrichmentEligibility(current).eligible
+        ) {
+            return {
+                articleId,
+                outcome: 'SKIPPED',
+                reason: 'Article changed while text was being retrieved.',
+            };
+        }
+        if (!result.candidate)
+            return {
+                articleId,
+                outcome: 'UNCHANGED',
+                reason: result.reasons.join(', '),
+            };
+        const decision = candidateDecision(current, result.candidate);
+        if (decision.type === 'UNCHANGED')
+            return { articleId, outcome: 'UNCHANGED', reason: decision.reason };
+        if (decision.type === 'PROPOSE') {
+            return {
+                articleId,
+                outcome: 'PROPOSED',
+                reason: 'Existing text was preserved. Use Enrich articles to review a replacement proposal.',
+            };
+        }
+        const saved = await persistEnrichmentCandidate(tx, {
+            article: current,
+            candidate: decision.candidate,
+            metadataOnly: decision.metadataOnly,
+            actorUserId: options.actorUserId,
+            now: new Date(),
+        });
+        return {
+            articleId,
+            outcome: saved.article.contentAvailability,
+            article: saved.article,
+        };
     });
-
-    return {
-        article: updatedArticle,
-        extracted: {
-            title: extracted.title,
-            excerpt: extracted.excerpt,
-            textContentLength: extracted.textContent?.length ?? 0,
-            imageUrl: extracted.imageUrl,
-        },
-        mode: isMetadataOnly ? 'METADATA_ONLY' : 'FULL_OPEN',
-    };
 }
 
-export async function enrichLatestArticles(prisma: PrismaClient, limit = 500) {
-    const articles = await prisma.article.findMany({
-        where: {
-            source: {
-                isActive: true,
-            },
-            OR: [
-                { content: null },
-                { summary: null },
-                { imageUrl: null },
-                { cleanedAccessibleText: null },
-            ],
+// The CLI processes the complete starting selection by default. The existing
+// Fetch workflow's explicit limit remains until its separate automation step.
+export async function enrichLatestArticles(
+    prisma: PrismaClient,
+    limit?: number,
+    options: Pick<DirectEnrichmentOptions, 'retrieve' | 'actorUserId'> = {},
+) {
+    if (limit !== undefined && (!Number.isSafeInteger(limit) || limit < 0)) {
+        throw new Error('Enrichment limit must be a non-negative integer.');
+    }
+    if (limit === 0) return [];
+    const articles = await prisma.$transaction(
+        async (tx) => {
+            const selected: Array<{ id: string; updatedAt: Date }> = [];
+            let after: { id: string; createdAt: Date } | undefined;
+            const batchSize = 250;
+            while (limit === undefined || selected.length < limit) {
+                const where: Prisma.ArticleWhereInput = {
+                    status: {
+                        notIn: [
+                            ArticleStatus.REJECTED,
+                            ArticleStatus.CLUSTERED,
+                        ],
+                    },
+                    clusterLinks: { none: {} },
+                    ...(after
+                        ? {
+                              OR: [
+                                  { createdAt: { gt: after.createdAt } },
+                                  {
+                                      createdAt: after.createdAt,
+                                      id: { gt: after.id },
+                                  },
+                              ],
+                          }
+                        : {}),
+                };
+                const batch = await tx.article.findMany({
+                    where,
+                    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+                    take: batchSize,
+                    select: {
+                        id: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        status: true,
+                        content: true,
+                        contentAssessment: true,
+                        _count: { select: { clusterLinks: true } },
+                    },
+                });
+                for (const article of batch) {
+                    if (getEnrichmentEligibility(article).eligible) {
+                        selected.push({
+                            id: article.id,
+                            updatedAt: article.updatedAt,
+                        });
+                        if (selected.length === limit) break;
+                    }
+                }
+                if (batch.length < batchSize) break;
+                const last = batch[batch.length - 1];
+                after = { id: last.id, createdAt: last.createdAt };
+            }
+            return selected;
         },
-        orderBy: {
-            createdAt: 'desc',
+        {
+            isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
+            timeout: 30000,
         },
-        take: limit,
-        select: {
-            id: true,
-        },
-    });
-
+    );
+    // Retrieval starts only after the entire ID/version selection is fixed.
     const results = [];
-
     for (const article of articles) {
         try {
-            const result = await enrichArticleById(prisma, article.id);
-
-            results.push({
-                articleId: article.id,
-                success: true,
-                result,
+            const result = await enrichArticleById(prisma, article.id, {
+                ...options,
+                expectedUpdatedAt: article.updatedAt,
             });
+            results.push({ articleId: article.id, success: true, result });
         } catch (error) {
             results.push({
                 articleId: article.id,
                 success: false,
-                error: error instanceof Error ? error.message : 'Unknown error',
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : 'Unknown enrichment error',
             });
         }
     }
-
     return results;
 }

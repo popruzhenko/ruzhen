@@ -1,99 +1,86 @@
-import { ArticleStatus, PrismaClient } from '@prisma/client';
+import { Prisma, type PrismaClient } from '@prisma/client';
 import { detectContentAvailability } from '../../normalize/article/detectContentAvailability';
-
-function normalizeText(value?: string | null): string {
-    return value?.trim() ?? '';
-}
-
-function getNextReviewStatus(input: {
-    title: string | null;
-    summary: string | null;
-    content: string | null;
-    cleanedAccessibleText: string | null;
-}): ArticleStatus {
-    const title = normalizeText(input.title);
-    const summary = normalizeText(input.summary);
-    const content = normalizeText(input.content);
-    const cleanedAccessibleText = normalizeText(input.cleanedAccessibleText);
-
-    const hasValidTitle = title.length >= 10;
-    const hasValidSummary = summary.length >= 40;
-    const hasUsableText =
-        cleanedAccessibleText.length >= 80 ||
-        content.length >= 120 ||
-        summary.length >= 80;
-
-    if (hasValidTitle && hasValidSummary && hasUsableText) {
-        return ArticleStatus.REVIEWED;
-    }
-
-    return ArticleStatus.NEEDS_REVIEW;
-}
+import {
+    getNextReviewStatus,
+    getRawArticleActionEligibility,
+} from '../../rawArticles/policy';
+import {
+    ArticleMutationError,
+    parseExpectedUpdatedAt,
+} from '../../articles/articleMutationError';
 
 export async function reviewArticleContentById(
     prisma: PrismaClient,
     articleId: string,
+    expectedVersion?: unknown,
 ) {
-    const article = await prisma.article.findUnique({
-        where: {
-            id: articleId,
-        },
-        select: {
-            id: true,
-            title: true,
-            summary: true,
-            content: true,
-            cleanedAccessibleText: true,
-            contentAvailability: true,
-            status: true,
-        },
-    });
-
-    if (!article) {
-        throw new Error('Article not found');
-    }
-
-    const nextContentAvailability = detectContentAvailability({
-        title: article.title,
-        summary: article.summary,
-        content: article.content,
-        cleanedAccessibleText: article.cleanedAccessibleText,
-    });
-
-    const nextStatus = getNextReviewStatus({
-        title: article.title,
-        summary: article.summary,
-        content: article.content,
-        cleanedAccessibleText: article.cleanedAccessibleText,
-    });
-
-    const updatedArticle = await prisma.article.update({
-        where: {
-            id: article.id,
-        },
-        data: {
-            contentAvailability: nextContentAvailability,
-            status: nextStatus,
-        },
-        include: {
-            source: true,
-            raw: true,
-            _count: {
-                select: {
-                    clusterLinks: true,
-                    clusterCandidateLinks: true,
+    const expectedUpdatedAt = parseExpectedUpdatedAt(expectedVersion);
+    return prisma.$transaction(async (tx) => {
+        const article = await tx.article.findUnique({
+            where: { id: articleId },
+            include: { _count: { select: { clusterLinks: true } } },
+        });
+        if (!article) throw new ArticleMutationError('Article not found.', 404);
+        if (
+            expectedUpdatedAt &&
+            article.updatedAt.getTime() !== expectedUpdatedAt.getTime()
+        ) {
+            throw new ArticleMutationError(
+                'Article changed. Reload it before reviewing.',
+                409,
+            );
+        }
+        const eligibility = getRawArticleActionEligibility(article, 'RECHECK');
+        if (!eligibility.eligible) {
+            throw new ArticleMutationError(
+                eligibility.reason ?? 'Article cannot be rechecked.',
+                409,
+            );
+        }
+        const nextContentAvailability = detectContentAvailability(article);
+        const nextStatus = getNextReviewStatus(article);
+        const updated = await tx.article.updateMany({
+            where: {
+                id: article.id,
+                updatedAt: article.updatedAt,
+                status: article.status,
+                clusterLinks: { none: {} },
+            },
+            data: {
+                contentAvailability: nextContentAvailability,
+                status: nextStatus,
+                updatedAt: new Date(
+                    Math.max(Date.now(), article.updatedAt.getTime() + 1),
+                ),
+                embedding: Prisma.DbNull,
+                embeddingBasis: null,
+                embeddingModel: null,
+            },
+        });
+        if (updated.count !== 1) {
+            throw new ArticleMutationError(
+                'Article changed. Reload it before reviewing.',
+                409,
+            );
+        }
+        const updatedArticle = await tx.article.findUniqueOrThrow({
+            where: { id: article.id },
+            include: {
+                source: true,
+                raw: true,
+                _count: {
+                    select: { clusterLinks: true, clusterCandidateLinks: true },
                 },
             },
-        },
+        });
+        return {
+            article: updatedArticle,
+            review: {
+                previousStatus: article.status,
+                nextStatus,
+                previousContentAvailability: article.contentAvailability,
+                nextContentAvailability,
+            },
+        };
     });
-
-    return {
-        article: updatedArticle,
-        review: {
-            previousStatus: article.status,
-            nextStatus,
-            previousContentAvailability: article.contentAvailability,
-            nextContentAvailability,
-        },
-    };
 }

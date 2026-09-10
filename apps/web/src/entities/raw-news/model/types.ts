@@ -33,6 +33,9 @@ export interface ArticleApiItem {
     contentAvailability: ContentAvailability | null;
     cleanedAccessibleText: string | null;
     cleaningMethod: string | null;
+    contentAssessment?: unknown;
+    contentProvenance?: unknown;
+    fullTextVerified?: boolean;
     embeddingBasis: string | null;
     embeddingModel: string | null;
     embedding: number[] | null;
@@ -75,6 +78,7 @@ export interface RawNewsFeedItem {
     cleaningMethod: string;
     embeddingModel: string;
     parserVersion: string;
+    fullTextVerified?: boolean;
 
     clusterLinksCount: number;
     clusterCandidatesCount: number;

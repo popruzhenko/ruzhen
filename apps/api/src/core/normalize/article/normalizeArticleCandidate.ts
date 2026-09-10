@@ -4,6 +4,7 @@ import { normalizeImageUrl } from './normalizeImageUrl';
 import { normalizeSummary } from './normalizeSummary';
 import { normalizeTitle } from './normalizeTitle';
 import { normalizeUrl } from './normalizeUrl';
+import { assessArticleText } from '../../ingestionNews/enrich/articleContentQuality';
 
 export function normalizeArticleCandidate(
     candidate: ArticleCreateCandidate | null,
@@ -28,6 +29,15 @@ export function normalizeArticleCandidate(
         title,
         summary,
         content,
+        contentAssessment: content
+            ? assessArticleText({
+                  text: content,
+                  title,
+                  summary,
+                  url,
+                  publishedAt: candidate.publishedAt,
+              })
+            : null,
         imageUrl,
     };
 }

@@ -14,10 +14,12 @@ import type { ParseSourceInput, RunParseResult } from './types';
 import { normalizeArticleCandidate } from '../../normalize/article/normalizeArticleCandidate';
 import { isBlockedArticleUrl } from './isBlockedArticleUrl';
 import { isAllowedSourceArticleUrl } from './isAllowedSourceArticleUrl';
+import type { AutomaticEnrichmentContext } from '../../enrichmentJobs/automaticEnrichment';
 
 export async function runParseForSource(
     prisma: PrismaClient,
     source: ParseSourceInput,
+    automaticEnrichment?: AutomaticEnrichmentContext,
 ): Promise<RunParseResult> {
     if (source.fetchMode === 'RSS') {
         const xml = await fetchRssFeed(source.baseUrl);
@@ -48,7 +50,11 @@ export async function runParseForSource(
             .map((item) => mapFeedItemToArticleInput(source, item))
             .map((candidate) => normalizeArticleCandidate(candidate));
 
-        const result = await saveParsedArticles(prisma, candidates);
+        const result = await saveParsedArticles(
+            prisma,
+            candidates,
+            automaticEnrichment,
+        );
 
         await prisma.source.update({
             where: { id: source.id },
@@ -90,7 +96,11 @@ export async function runParseForSource(
         .map((item) => mapSectionItemToArticleInput(source, item))
         .map((candidate) => normalizeArticleCandidate(candidate));
 
-    const result = await saveParsedArticles(prisma, candidates);
+    const result = await saveParsedArticles(
+        prisma,
+        candidates,
+        automaticEnrichment,
+    );
 
     await prisma.source.update({
         where: { id: source.id },

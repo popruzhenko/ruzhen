@@ -11,12 +11,19 @@ if (!connectionString) {
 }
 
 async function main() {
+    const actorId = process.env.INGESTION_ACTOR_USER_ID?.trim();
+    if (!actorId)
+        throw new Error(
+            'Set INGESTION_ACTOR_USER_ID to an existing administrator ID before running parse:politics.',
+        );
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
     const prisma = new PrismaClient({ adapter });
 
     try {
-        const result = await runPoliticsIngestionJob(prisma);
+        const result = await runPoliticsIngestionJob(prisma, {
+            createdByUserId: actorId,
+        });
 
         console.log(JSON.stringify(result, null, 2));
     } finally {

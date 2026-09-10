@@ -12,12 +12,17 @@ interface ReviewArticleContentResponse {
 }
 
 export async function reviewArticleContent(
-    articleId: string,
+    input: string | { id: string; expectedUpdatedAt?: string },
 ): Promise<ReviewArticleContentResponse> {
+    const { id, expectedUpdatedAt } =
+        typeof input === 'string'
+            ? { id: input, expectedUpdatedAt: undefined }
+            : input;
     return apiClient<ReviewArticleContentResponse>(
-        `/articles/${articleId}/review-content`,
+        `/articles/${encodeURIComponent(id)}/review-content`,
         {
             method: 'POST',
+            json: { expectedUpdatedAt },
         },
     );
 }

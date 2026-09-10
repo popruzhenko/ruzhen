@@ -1,105 +1,42 @@
-import { useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-
-import {
-    usePublicClustersQuery,
-    type PublicClusterListItem,
-} from '../../../../../entities/public-clusters';
-
 import { Pagination } from '../../../../ui/Pagination/Pagination';
 import { PageState } from '../../../../ui/PageState/PageState';
 
 import { PublicArticleCard } from '../../../PublicArticlesPage/PublicArticleCard/PublicArticleCard';
 import { PublicArticlesFilters } from '../../../PublicArticlesPage/PublicArticlesFilters/PublicArticlesFilters';
-
-import type { PublicArticlesFiltersState } from '../../../PublicArticlesPage/PublicArticlesFilters/TypesPublicArticlesFilters';
-
-import { filterPublicArticles } from '../../../PublicArticlesPage/PublicArticlesFilters/filterPublicArticles';
-
-import {
-    hasActivePublicArticlesFilters,
-    initialPublicArticlesFilters,
-} from '../../../PublicArticlesPage/PublicArticlesFilters/publicArticlesFiltersConfig';
+import { usePublicArticlesFeed } from '../../../PublicArticlesPage/usePublicArticlesFeed';
 
 import './PublicArticlesPreviewPage.scss';
 
-const DEFAULT_LIMIT = 10;
-
-const getPageFromSearchParams = (value: string | null) => {
-    const page = Number(value);
-
-    if (!Number.isFinite(page) || page < 1) {
-        return 1;
-    }
-
-    return page;
-};
-
 export const PublicArticlesPreviewPage = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const {
+        publicClustersQuery,
+        articles,
+        pagination,
+        filters,
+        hasActiveFilters,
+        handlePageChange,
+        handleChangeFilter,
+        handleClearFilters,
+    } = usePublicArticlesFeed();
 
-    const [filters, setFilters] = useState<PublicArticlesFiltersState>(
-        initialPublicArticlesFilters,
-    );
+    return (
+        <div className="admin-public-articles">
+            <PublicArticlesFilters
+                filters={filters}
+                totalCount={pagination?.totalPublished}
+                filteredCount={pagination?.total}
+                hasActiveFilters={hasActiveFilters}
+                onChange={handleChangeFilter}
+                onClear={handleClearFilters}
+            />
 
-    const page = getPageFromSearchParams(searchParams.get('page'));
-
-    const publicClustersQuery = usePublicClustersQuery({
-        page,
-        limit: DEFAULT_LIMIT,
-    });
-
-    const data = publicClustersQuery.data;
-    const EMPTY_ARTICLES: PublicClusterListItem[] = [];
-    const articles = data?.items ?? EMPTY_ARTICLES;
-    const pagination = data?.pagination;
-
-    const filteredArticles = useMemo(() => {
-        return filterPublicArticles(articles, filters);
-    }, [articles, filters]);
-
-    const hasActiveFilters = hasActivePublicArticlesFilters(filters);
-
-    const handlePageChange = (nextPage: number) => {
-        setSearchParams({
-            page: String(nextPage),
-        });
-
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-        });
-    };
-
-    const handleChangeFilter = <K extends keyof PublicArticlesFiltersState>(
-        key: K,
-        value: PublicArticlesFiltersState[K],
-    ) => {
-        setFilters((currentFilters) => ({
-            ...currentFilters,
-            [key]: value,
-        }));
-    };
-
-    const handleClearFilters = () => {
-        setFilters(initialPublicArticlesFilters);
-    };
-
-    if (publicClustersQuery.isLoading) {
-        return (
-            <div className="admin-public-articles">
+            {publicClustersQuery.isLoading ? (
                 <PageState
                     variant="loading"
                     title="Loading published articles"
                     description="Please wait while Ruzhen loads public article previews."
                 />
-            </div>
-        );
-    }
-
-    if (publicClustersQuery.isError) {
-        return (
-            <div className="admin-public-articles">
+            ) : publicClustersQuery.isError ? (
                 <PageState
                     variant="error"
                     title="Failed to load published articles"
@@ -109,13 +46,7 @@ export const PublicArticlesPreviewPage = () => {
                         void publicClustersQuery.refetch();
                     }}
                 />
-            </div>
-        );
-    }
-
-    return (
-        <div className="admin-public-articles">
-            {articles.length === 0 ? (
+            ) : pagination?.totalPublished === 0 ? (
                 <PageState
                     variant="empty"
                     title="No published articles yet"
@@ -123,48 +54,35 @@ export const PublicArticlesPreviewPage = () => {
                     actionLabel="Go to publication"
                     actionTo="/admin/publication"
                 />
+            ) : articles.length === 0 ? (
+                <PageState
+                    variant="empty"
+                    title="No articles match filters"
+                    description="Try changing search, date, source count or block filters."
+                    actionLabel="Clear filters"
+                    onAction={handleClearFilters}
+                />
             ) : (
                 <>
-                    <PublicArticlesFilters
-                        filters={filters}
-                        totalCount={articles.length}
-                        filteredCount={filteredArticles.length}
-                        hasActiveFilters={hasActiveFilters}
-                        onChange={handleChangeFilter}
-                        onClear={handleClearFilters}
-                    />
+                    <div className="admin-public-articles__list">
+                        {articles.map((article) => (
+                            <PublicArticleCard
+                                key={article.id}
+                                article={article}
+                                detailsBasePath="/admin/public-articles"
+                            />
+                        ))}
+                    </div>
 
-                    {filteredArticles.length === 0 ? (
-                        <PageState
-                            variant="empty"
-                            title="No articles match filters"
-                            description="Try changing search, date, source count or block filters."
-                            actionLabel="Clear filters"
-                            onAction={handleClearFilters}
+                    {pagination && pagination.totalPages > 1 && (
+                        <Pagination
+                            className="admin-public-articles__pagination"
+                            page={pagination.page}
+                            totalPages={pagination.totalPages}
+                            hasNextPage={pagination.hasNextPage}
+                            hasPreviousPage={pagination.hasPreviousPage}
+                            onPageChange={handlePageChange}
                         />
-                    ) : (
-                        <>
-                            <div className="admin-public-articles__list">
-                                {filteredArticles.map((article) => (
-                                    <PublicArticleCard
-                                        key={article.id}
-                                        article={article}
-                                        detailsBasePath="/admin/public-articles"
-                                    />
-                                ))}
-                            </div>
-
-                            {pagination && pagination.totalPages > 1 && (
-                                <Pagination
-                                    className="admin-public-articles__pagination"
-                                    page={pagination.page}
-                                    totalPages={pagination.totalPages}
-                                    hasNextPage={pagination.hasNextPage}
-                                    hasPreviousPage={pagination.hasPreviousPage}
-                                    onPageChange={handlePageChange}
-                                />
-                            )}
-                        </>
                     )}
                 </>
             )}

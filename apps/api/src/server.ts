@@ -12,9 +12,36 @@ import publicArticleRouter from './modules/articles/routes/public-article.routes
 import adminClusterArticleRouter from './modules/cluster-article/routes/admin-cluster-article.routes';
 import adminArticleRouter from './modules/articles/routes/admin-article.routes';
 import adminClusterCandidateRouter from './modules/cluster-candidates/routes/admin-cluster-candidate.routes';
+import articleClusterCandidateRouter from './modules/article-cluster-candidates/routes/article-cluster-candidate.routes';
+import { requireAuth } from './shared/middleware/require-auth';
+import { requireAdmin } from './shared/middleware/require-admin';
+import { prisma } from './shared/lib/prismaClient';
+import { startEnrichmentWorker } from './core/enrichmentJobs';
+import { retrieveCompleteArticleContent } from './core/ingestionNews/enrich/retrieveCompleteArticleContent';
 
 const app = express();
 app.use(cors());
+// A selected-article preview may contain many IDs; retain the normal body
+// limit for other requests and authenticate before parsing this larger body.
+app.use(
+    '/api/admin/articles/bulk/preview',
+    requireAuth,
+    requireAdmin,
+    express.json({ limit: '5mb' }),
+);
+app.use(
+    '/api/admin/articles/enrichment/jobs',
+    requireAuth,
+    requireAdmin,
+    express.json({ limit: '5mb' }),
+);
+const articleTextJson = express.json({ limit: '5mb' });
+app.use(['/api/articles', '/api/public/articles'], (req, res, next) => {
+    if (req.method !== 'PATCH') return next();
+    return requireAuth(req, res, () =>
+        requireAdmin(req, res, () => articleTextJson(req, res, next)),
+    );
+});
 app.use(express.json());
 
 app.get('/health', (req, res) => {
@@ -25,6 +52,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/admin', adminTestRouter);
 app.use('/api/admin/clusters', adminClusterRouter);
 app.use('/api/admin/cluster-candidates', adminClusterCandidateRouter);
+app.use('/api/admin/article-cluster-candidates', articleClusterCandidateRouter);
 app.use('/api/admin/clusters', adminClusterBlockRouter);
 app.use('/api/admin/clusters', adminClusterArticleRouter);
 app.use('/api/admin/articles', adminArticleRouter);
@@ -44,4 +72,9 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
 app.listen(PORT, () => {
     console.log(`API is running on http://localhost:${PORT}/health`);
+    startEnrichmentWorker({
+        prisma,
+        retrieve: (input, signal) =>
+            retrieveCompleteArticleContent(input, { signal }),
+    });
 });

@@ -1,6 +1,17 @@
 export type PublicClusterBlockType = 'FACT' | 'CONTEXT' | 'OPINION';
 export type PublicOpinionStance = 'PRO' | 'CONTRA' | 'NEUTRAL';
 
+export interface GetPublicClustersParams {
+    page: number;
+    limit: number;
+    search?: string;
+    publishedFrom?: string;
+    publishedTo?: string;
+    minSources?: number;
+    blockType?: PublicClusterBlockType;
+    sort?: 'NEWEST' | 'OLDEST' | 'MOST_SOURCES' | 'TITLE_ASC';
+}
+
 export interface PublicClusterBlock {
     id: string;
     type: PublicClusterBlockType;
@@ -62,6 +73,7 @@ export interface PublicClustersPagination {
     page: number;
     limit: number;
     total: number;
+    totalPublished: number;
     totalPages: number;
     hasNextPage: boolean;
     hasPreviousPage: boolean;

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { queryKeys } from '../../../shared/lib/queryKeys';
+import { invalidateRawArticleQueries } from './invalidateRawArticleQueries';
 
 import { updateArticle } from '../api/updateArticle';
 
@@ -9,10 +9,6 @@ export function useUpdateArticleMutation() {
 
     return useMutation({
         mutationFn: updateArticle,
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.articles.all,
-            });
-        },
+        onSettled: () => invalidateRawArticleQueries(queryClient),
     });
 }

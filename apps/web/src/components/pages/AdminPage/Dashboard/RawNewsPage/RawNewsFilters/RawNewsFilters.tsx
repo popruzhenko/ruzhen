@@ -46,6 +46,7 @@ export const RawNewsFilters = ({
     onClear,
     onFetchNewArticles,
     isFetchingNewArticles = false,
+    isFetchDisabled = false,
 }: RawNewsFiltersProps) => {
     return (
         <section className="raw_news_filters">
@@ -56,14 +57,15 @@ export const RawNewsFilters = ({
                     <p>Find, review and prepare raw articles for clustering.</p>
 
                     <span className="raw_news_filters__counter">
-                        Showing {filteredCount} of {totalCount} articles
+                        Found {filteredCount ?? '—'} of {totalCount ?? '—'}{' '}
+                        articles
                     </span>
                 </div>
 
                 <Button
                     type="button"
                     onClick={onFetchNewArticles}
-                    disabled={isFetchingNewArticles}
+                    disabled={isFetchingNewArticles || isFetchDisabled}
                 >
                     {isFetchingNewArticles
                         ? 'Fetching...'

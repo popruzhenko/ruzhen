@@ -1,0 +1,45 @@
+@use '../../../../../../../styles/tokens' as *;
+@use '../../../../../../../styles/breakpoints' as *;
+
+.raw_enrichment {
+    &__comparison {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+    &__comparison section {
+        min-width: 0;
+        border: 1px solid $color-border-soft;
+        border-radius: 12px;
+        padding: 14px;
+        background-color: $color-white;
+    }
+    &__comparison h3 {
+        color: $color-text-strong;
+        font-size: 18px;
+        margin: 0 0 12px;
+    }
+    &__comparison h4 {
+        font-size: 14px;
+        margin: 12px 0 6px;
+    }
+    &__text {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        max-height: 400px;
+        overflow-y: auto;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    &__text--summary {
+        max-height: 160px;
+    }
+}
+
+@media (max-width: $breakpoint-footer-mobile) {
+    .raw_enrichment {
+        &__comparison {
+            grid-template-columns: 1fr;
+        }
+    }
+}

@@ -1,0 +1,133 @@
+@use '../../../../../../styles/tokens' as *;
+@use '../../../../../../styles/breakpoints' as *;
+
+.existing-cluster-suggestions {
+    padding: 12px;
+    border: 1px solid $color-border-soft;
+    border-radius: 12px;
+    background: $color-white;
+    color: $color-text-main;
+
+    h2,
+    h3,
+    p {
+        margin: 0;
+    }
+    h2 {
+        color: $color-text-strong;
+        font-size: 16px;
+    }
+    h3 {
+        color: $color-text-strong;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+    p {
+        font-size: 12px;
+        line-height: 1.5;
+        color: $color-text-secondary;
+    }
+
+    &__header,
+    &__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    &__header > div:first-child {
+        flex: 1;
+        min-width: 220px;
+    }
+    &__count,
+    &__label {
+        color: $color-text-muted;
+        font-size: 11px;
+    }
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 12px;
+    }
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 360px;
+        overflow-y: auto;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    &__card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+        border: 1px solid $color-border;
+        border-radius: 10px;
+    }
+    &__pair {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: center;
+        gap: 12px;
+    }
+    &__pair h3 {
+        overflow-wrap: anywhere;
+    }
+    &__arrow {
+        color: $color-primary;
+        font-size: 20px;
+    }
+    &__score {
+        color: $color-primary-hover;
+        font-size: 12px;
+    }
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    &__actions button {
+        min-height: 30px;
+        padding: 6px 10px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+    &__notice {
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: $color-primary-subtle-bg;
+    }
+    &__empty {
+        padding: 8px 0;
+    }
+    &__pagination {
+        border: 0;
+        padding: 0;
+        margin: 0;
+        min-width: 0;
+    }
+    .ui-pagination {
+        margin: 0;
+    }
+}
+
+@media (max-width: $breakpoint-mobile) {
+    .existing-cluster-suggestions {
+        &__pair {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 6px;
+        }
+        &__arrow {
+            display: none;
+        }
+        &__footer {
+            align-items: flex-start;
+        }
+    }
+}

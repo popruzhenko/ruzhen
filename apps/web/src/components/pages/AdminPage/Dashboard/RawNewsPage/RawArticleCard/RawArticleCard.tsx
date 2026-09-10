@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import type { RawNewsFeedItem } from '../../../../../../entities/raw-news/model/types';
+import type { RawArticleEligibility } from '../../../../../../entities/raw-news/model/rawArticles';
 
 import { Badge } from '../../../../../ui/Badge/Badge';
 import { Button } from '../../../../../ui/Button/Button';
@@ -16,13 +17,20 @@ import { useReviewArticleContentMutation } from '../../../../../../entities/raw-
 import './RawArticleCard.scss';
 import {
     ARTICLE_STATUS,
-    CONTENT_AVAILABILITY,
     type ContentAvailability,
 } from '../../../../../../entities/raw-news/model/articleConstants';
 import { TOAST_TYPE } from '../../../../../ui/Toast/ToastConstants';
 
 interface RawArticleCardProps {
     article: RawNewsFeedItem;
+    eligibility: RawArticleEligibility;
+    selected: boolean;
+    selectionDisabled: boolean;
+    onSelectionChange: (selected: boolean) => void;
+    disabled: boolean;
+    onAcquireInteraction: () => boolean;
+    onReleaseInteraction: () => void;
+    onOpenHistory?: () => void;
 }
 
 interface RawArticleValidationInput {
@@ -104,54 +112,18 @@ const getSaveReviewWarnings = ({
 
     return warnings;
 };
-const MIN_FULL_TEXT_CONTENT_LENGTH = 1200;
-const getApproveValidationErrors = ({
-    title,
-    summary,
-    content,
-    url,
-    sourceName,
-    contentAvailability,
-}: RawArticleValidationInput) => {
-    const errors: string[] = [];
 
-    if (!title?.trim()) {
-        errors.push('Title is required.');
-    }
-
-    if (!url?.trim()) {
-        errors.push('Original article URL is required.');
-    }
-
-    if (url?.trim() && !isValidHttpUrl(url.trim())) {
-        errors.push('Original article URL must be a valid http or https URL.');
-    }
-
-    if (!sourceName?.trim()) {
-        errors.push('Source is required.');
-    }
-
-    if (!summary?.trim()) {
-        errors.push('Summary is required before approval.');
-    }
-
-    if (!content?.trim()) {
-        errors.push('Content is required before approval.');
-    }
-
-    if (
-        contentAvailability &&
-        contentAvailability !== CONTENT_AVAILABILITY.FULL_TEXT
-    ) {
-        errors.push(
-            `Article must have FULL_TEXT content before approval. Current content availability: ${contentAvailability}. Minimum required content length for FULL_TEXT: ${MIN_FULL_TEXT_CONTENT_LENGTH} characters.`,
-        );
-    }
-
-    return errors;
-};
-
-export const RawArticleCard = ({ article }: RawArticleCardProps) => {
+export const RawArticleCard = ({
+    article,
+    eligibility,
+    selected,
+    selectionDisabled,
+    onSelectionChange,
+    disabled,
+    onAcquireInteraction,
+    onReleaseInteraction,
+    onOpenHistory,
+}: RawArticleCardProps) => {
     const updateArticleMutation = useUpdateArticleMutation();
     const reviewArticleContentMutation = useReviewArticleContentMutation();
 
@@ -163,6 +135,14 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
     const [summary, setSummary] = useState(article.summary ?? '');
     const [content, setContent] = useState(article.content ?? '');
     const [preview, setPreview] = useState(article.preview ?? '');
+    const [confirmFullText, setConfirmFullText] = useState(false);
+    const [expectedUpdatedAt, setExpectedUpdatedAt] = useState(
+        article.updatedAt,
+    );
+    const busy = useRef(false);
+    const isReadOnly =
+        article.clusterLinksCount > 0 ||
+        article.status === ARTICLE_STATUS.CLUSTERED;
 
     const isSavingReview =
         updateArticleMutation.isPending ||
@@ -179,13 +159,29 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
     };
 
     const handleReviewClick = () => {
+        if (disabled || busy.current || !onAcquireInteraction()) return;
+        setTitle(article.title ?? '');
+        setSummary(article.summary ?? '');
+        setContent(article.content ?? '');
+        setPreview(article.preview ?? '');
+        setConfirmFullText(false);
+        setExpectedUpdatedAt(article.updatedAt);
         setIsReviewModalOpen(true);
     };
 
     const handleRejectClick = async () => {
+        if (
+            disabled ||
+            busy.current ||
+            !eligibility.REJECT ||
+            !onAcquireInteraction()
+        )
+            return;
+        busy.current = true;
         try {
             await updateArticleMutation.mutateAsync({
                 id: article.id,
+                expectedUpdatedAt: article.updatedAt,
                 status: ARTICLE_STATUS.REJECTED,
             });
 
@@ -203,31 +199,20 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            busy.current = false;
+            onReleaseInteraction();
         }
     };
 
     const handleApproveClick = async () => {
-        const errors = getApproveValidationErrors(validationInput);
-
-        if (errors.length > 0) {
-            showToast({
-                type: TOAST_TYPE.ERROR,
-                title: 'Article is not ready for approval',
-                message: errors.join(' '),
-                autoCloseMs: 7000,
-            });
-
-            return;
-        }
-
+        if (disabled || busy.current || !eligibility.APPROVE) return;
+        if (!onAcquireInteraction()) return;
+        busy.current = true;
         try {
             await updateArticleMutation.mutateAsync({
                 id: article.id,
-                title: title.trim(),
-                summary: summary.trim(),
-                content: content.trim(),
-                preview: preview.trim(),
-                cleanedAccessibleText: content.trim(),
+                expectedUpdatedAt: article.updatedAt,
                 status: ARTICLE_STATUS.APPROVED,
             });
 
@@ -245,18 +230,23 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            busy.current = false;
+            onReleaseInteraction();
         }
     };
 
     const handleCloseReviewModal = () => {
-        if (isSavingReview) {
+        if (isSavingReview || busy.current) {
             return;
         }
 
         setIsReviewModalOpen(false);
+        onReleaseInteraction();
     };
 
     const handleSaveReview = async () => {
+        if (busy.current || disabled || isReadOnly) return;
         const errors = getSaveReviewValidationErrors(validationInput);
 
         if (errors.length > 0) {
@@ -281,9 +271,13 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
             });
         }
 
+        busy.current = true;
+        let wasSaved = false;
         try {
-            await updateArticleMutation.mutateAsync({
+            const savedArticle = await updateArticleMutation.mutateAsync({
                 id: article.id,
+                expectedUpdatedAt,
+                confirmFullText: confirmFullText || undefined,
                 title: title.trim(),
                 summary: summary.trim(),
                 content: content.trim(),
@@ -292,9 +286,15 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                 status: ARTICLE_STATUS.REVIEWED,
             });
 
-            await reviewArticleContentMutation.mutateAsync(article.id);
+            wasSaved = true;
+            setExpectedUpdatedAt(savedArticle.updatedAt);
+            await reviewArticleContentMutation.mutateAsync({
+                id: article.id,
+                expectedUpdatedAt: savedArticle.updatedAt,
+            });
 
             setIsReviewModalOpen(false);
+            onReleaseInteraction();
 
             showToast({
                 type: TOAST_TYPE.SUCCESS,
@@ -304,12 +304,16 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
         } catch (error) {
             showToast({
                 type: TOAST_TYPE.ERROR,
-                title: 'Failed to save article',
+                title: wasSaved
+                    ? 'Article saved; recheck failed'
+                    : 'Failed to save article',
                 message:
                     error instanceof Error
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            busy.current = false;
         }
     };
 
@@ -327,7 +331,7 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                 <Button
                     variants="primary"
                     onClick={handleSaveReview}
-                    disabled={isSavingReview}
+                    disabled={isSavingReview || isReadOnly}
                 >
                     {isSavingReview ? 'Saving...' : 'Save'}
                 </Button>
@@ -338,6 +342,18 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
     return (
         <>
             <article className="raw_article_card">
+                <label className="raw_article_card__selection">
+                    <input
+                        type="checkbox"
+                        checked={selected}
+                        disabled={selectionDisabled}
+                        onChange={(event) =>
+                            onSelectionChange(event.target.checked)
+                        }
+                        aria-label={`Select article ${article.id}`}
+                    />
+                    Select article
+                </label>
                 <div className="raw_article_card__header">
                     <div>
                         <div className="raw_article_card__meta">
@@ -453,9 +469,25 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                     </Link>
 
                     <div className="raw_article_card__interactive-block">
+                        {onOpenHistory && (
+                            <Button
+                                variants="secondary"
+                                disabled={
+                                    disabled ||
+                                    selectionDisabled ||
+                                    isSavingReview ||
+                                    isReviewModalOpen
+                                }
+                                onClick={onOpenHistory}
+                            >
+                                Content history
+                            </Button>
+                        )}
                         <Button
                             variants="primary"
-                            disabled={false}
+                            disabled={
+                                disabled || isSavingReview || isReviewModalOpen
+                            }
                             onClick={handleReviewClick}
                         >
                             Review
@@ -464,10 +496,10 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                         <Button
                             variants="secondary"
                             disabled={
-                                article.status ===
-                                    ARTICLE_STATUS.NEEDS_REVIEW ||
-                                article.status === ARTICLE_STATUS.NEW ||
-                                updateArticleMutation.isPending
+                                disabled ||
+                                !eligibility.REJECT ||
+                                isSavingReview ||
+                                isReviewModalOpen
                             }
                             onClick={handleRejectClick}
                         >
@@ -477,10 +509,10 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                         <Button
                             variants="secondary"
                             disabled={
-                                article.status ===
-                                    ARTICLE_STATUS.NEEDS_REVIEW ||
-                                article.status === ARTICLE_STATUS.NEW ||
-                                updateArticleMutation.isPending
+                                disabled ||
+                                !eligibility.APPROVE ||
+                                isSavingReview ||
+                                isReviewModalOpen
                             }
                             onClick={handleApproveClick}
                         >
@@ -537,32 +569,77 @@ export const RawArticleCard = ({ article }: RawArticleCardProps) => {
                     <div>Parser: {article.parserVersion}</div>
                 </div>
 
-                <div className="review_modal__fields">
+                {isReadOnly && (
+                    <p>
+                        This article belongs to a cluster. Its text is read-only
+                        here.
+                    </p>
+                )}
+                <fieldset
+                    className="review_modal__fields"
+                    disabled={isSavingReview || isReadOnly}
+                >
                     <Input
                         label="Title"
                         value={title}
-                        onChange={(event) => setTitle(event.target.value)}
+                        onChange={(event) => {
+                            if (!busy.current && !isReadOnly)
+                                setTitle(event.target.value);
+                        }}
                     />
 
                     <Textarea
                         label="Summary"
                         value={summary}
-                        onChange={(value) => setSummary(value.toString())}
+                        onChange={(value) => {
+                            if (!busy.current && !isReadOnly)
+                                setSummary(value.toString());
+                        }}
                     />
 
                     <Textarea
                         label="Preview"
                         value={preview}
-                        onChange={(value) => setPreview(value.toString())}
+                        onChange={(value) => {
+                            if (!busy.current && !isReadOnly)
+                                setPreview(value.toString());
+                        }}
                     />
 
                     <Textarea
                         label="Content"
                         value={content}
                         maxHeight={400}
-                        onChange={(value) => setContent(value.toString())}
+                        onChange={(value) => {
+                            if (!busy.current && !isReadOnly) {
+                                setContent(value.toString());
+                                setConfirmFullText(false);
+                            }
+                        }}
                     />
-                </div>
+                    {article.fullTextVerified && (
+                        <p>The saved article has a full-text verification.</p>
+                    )}
+                    {article.contentAvailability === 'FULL_TEXT' &&
+                        !article.fullTextVerified && (
+                            <p>
+                                Full text has not been verified yet. Use Enrich
+                                or confirm completeness after checking the
+                                article.
+                            </p>
+                        )}
+                    <label className="raw_article_card__full_text_confirmation">
+                        <input
+                            type="checkbox"
+                            checked={confirmFullText}
+                            onChange={(event) => {
+                                if (!busy.current && !isReadOnly)
+                                    setConfirmFullText(event.target.checked);
+                            }}
+                        />
+                        I verified this is the complete article
+                    </label>
+                </fieldset>
             </Modal>
         </>
     );

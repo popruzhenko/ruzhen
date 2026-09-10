@@ -36,6 +36,7 @@ export function mapArticleToRawNewsItem(
         embeddingModel: article.embeddingModel ?? '—',
 
         parserVersion: article.raw?.parserVersion ?? '—',
+        fullTextVerified: article.fullTextVerified ?? false,
 
         clusterLinksCount: article._count.clusterLinks,
         clusterCandidatesCount: article._count.clusterCandidates,

@@ -3,58 +3,32 @@ import type {
     PublicArticlesSourceCountFilter,
 } from './TypesPublicArticlesFilters';
 
-export const isDateInPublishedRange = (
-    value: string | null | undefined,
+export const getPublishedDateRange = (
     filter: PublicArticlesPublishedDateFilter,
-): boolean => {
+    now = new Date(),
+): { publishedFrom?: string; publishedTo?: string } => {
     if (filter === 'ALL') {
-        return true;
+        return {};
     }
 
-    if (!value) {
-        return false;
-    }
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-        return false;
-    }
-
-    const now = new Date();
-
-    const startOfToday = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-    );
-
-    const startOfTargetDate = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-    );
-
-    const diffMs = startOfToday.getTime() - startOfTargetDate.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (filter === 'TODAY') {
-        return diffDays === 0;
-    }
+    // Send the reader's local calendar boundaries, independent of server timezone.
+    const from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const to = new Date(from);
+    to.setDate(to.getDate() + 1);
 
     if (filter === 'YESTERDAY') {
-        return diffDays === 1;
+        to.setDate(to.getDate() - 1);
+        from.setDate(from.getDate() - 1);
+    } else if (filter === 'LAST_7_DAYS') {
+        from.setDate(from.getDate() - 7);
+    } else if (filter === 'LAST_30_DAYS') {
+        from.setDate(from.getDate() - 30);
     }
 
-    if (filter === 'LAST_7_DAYS') {
-        return diffDays >= 0 && diffDays <= 7;
-    }
-
-    if (filter === 'LAST_30_DAYS') {
-        return diffDays >= 0 && diffDays <= 30;
-    }
-
-    return true;
+    return {
+        publishedFrom: from.toISOString(),
+        publishedTo: to.toISOString(),
+    };
 };
 
 export const getPublicSourceCountThreshold = (

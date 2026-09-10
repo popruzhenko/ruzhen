@@ -6,6 +6,10 @@ import {
     ClusterArticleMethod,
 } from '@prisma/client';
 import { generateClusterHumanId } from '../../../core/clustering/generateClusterHumanId';
+import {
+    listPublishedClusters as listPublishedClustersQuery,
+    type ListPublishedClustersInput,
+} from '../../../core/publication/listPublishedClusters';
 
 import { parseEmbedding } from '../../../shared/lib/parseEmbedding';
 import { calculateCentroid } from '../../../shared/lib/calculateCentroid';
@@ -855,94 +859,8 @@ export async function updateClusterStatus(
         },
     });
 }
-interface ListPublishedClustersInput {
-    page: number;
-    limit: number;
-}
-
-const normalizePagination = (page: number, limit: number) => {
-    const normalizedPage = Number.isFinite(page) && page > 0 ? page : 1;
-    const normalizedLimit =
-        Number.isFinite(limit) && limit > 0 ? Math.min(limit, 50) : 10;
-
-    return {
-        page: normalizedPage,
-        limit: normalizedLimit,
-        skip: (normalizedPage - 1) * normalizedLimit,
-    };
-};
-
 export async function listPublishedClusters(input: ListPublishedClustersInput) {
-    const { page, limit, skip } = normalizePagination(input.page, input.limit);
-
-    const where = {
-        status: ClusterStatus.PUBLISHED,
-    };
-
-    const [clusters, total] = await Promise.all([
-        prisma.cluster.findMany({
-            where,
-            orderBy: [
-                {
-                    publishedAt: 'desc',
-                },
-                {
-                    updatedAt: 'desc',
-                },
-            ],
-            skip,
-            take: limit,
-            select: {
-                id: true,
-                humanId: true,
-                title: true,
-                summary: true,
-                mainCountry: true,
-                startDate: true,
-                publishedAt: true,
-                updatedAt: true,
-                blocks: {
-                    orderBy: {
-                        position: 'asc',
-                    },
-                    select: {
-                        id: true,
-                        type: true,
-                        title: true,
-                        content: true,
-                        position: true,
-                        sourceName: true,
-                        sourceUrl: true,
-                        authorName: true,
-                        stance: true,
-                    },
-                },
-                _count: {
-                    select: {
-                        articleLinks: true,
-                        blocks: true,
-                    },
-                },
-            },
-        }),
-        prisma.cluster.count({
-            where,
-        }),
-    ]);
-
-    const totalPages = Math.max(1, Math.ceil(total / limit));
-
-    return {
-        items: clusters,
-        pagination: {
-            page,
-            limit,
-            total,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPreviousPage: page > 1,
-        },
-    };
+    return listPublishedClustersQuery({ prisma, ...input });
 }
 
 export async function getPublishedClusterByHumanId(humanId: string) {

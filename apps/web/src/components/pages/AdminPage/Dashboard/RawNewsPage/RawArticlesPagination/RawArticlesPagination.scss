@@ -1,0 +1,42 @@
+@use '../../../../../../styles/tokens' as *;
+@use '../../../../../../styles/breakpoints' as *;
+
+.raw_articles_pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    padding: 18px 20px;
+    margin: 10px 0;
+    border: 1px solid $color-border-soft;
+    border-radius: 12px;
+    background-color: $color-white;
+    box-shadow: 0 8px 24px $shadow-soft;
+
+    &__counter {
+        flex: 1 1 auto;
+        margin: 0;
+        color: $color-primary-hover;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    &__size {
+        width: 150px;
+    }
+
+    .ui-pagination {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: $breakpoint-footer-mobile) {
+    .raw_articles_pagination {
+        padding: 14px;
+
+        .ui-pagination {
+            flex: 1 1 100%;
+        }
+    }
+}
