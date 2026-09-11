@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { CLUSTER_STATUS } from '../../../../../entities/cluster/model/clusterConstants';
 import {
     useClusterByIdQuery,
@@ -30,6 +30,8 @@ import { useToast } from '../../../../ui/Toast/ToastProvider';
 
 import './PublicationPage.scss';
 import { TOAST_TYPE } from '../../../../ui/Toast/ToastConstants';
+import { ClusterBulkPanel } from '../ClusterBulkPanel/ClusterBulkPanel';
+import { useClusterBulk } from '../ClusterBulkPanel/useClusterBulk';
 
 const initialPublicationFilters: PublicationFiltersState = {
     search: '',
@@ -171,12 +173,17 @@ export const PublicationPage = () => {
     );
 
     const [isPublishConfirmOpen, setIsPublishConfirmOpen] = useState(false);
+    const [isLocalActionActive, setIsLocalActionActive] = useState(false);
+    const actionRef = useRef<'bulk' | 'single' | null>(null);
 
     const { showToast } = useToast();
 
     const clustersQuery = useClustersQuery({ page: 1, limit: 500 });
     const selectedClusterQuery = useClusterByIdQuery(selectedClusterId);
     const updateStatusMutation = useUpdateClusterStatusMutation();
+    const bulk = useClusterBulk('PUBLISH');
+    const actionsLocked =
+        bulk.isBusy || isLocalActionActive || updateStatusMutation.isPending;
 
     const clusters = clustersQuery.data?.clusters ?? [];
     const selectedCluster = selectedClusterQuery.data ?? null;
@@ -250,6 +257,7 @@ export const PublicationPage = () => {
         filters.sourceCount !== 'ALL';
 
     const handleSelectCluster = (clusterId: string) => {
+        if (actionsLocked || actionRef.current !== null) return;
         setSelectedClusterId((currentId) =>
             currentId === clusterId ? null : clusterId,
         );
@@ -272,6 +280,7 @@ export const PublicationPage = () => {
     };
 
     const handleUpdateStatus = async (status: PublicationClusterStatus) => {
+        if (actionsLocked || actionRef.current !== null) return;
         if (!selectedClusterId) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -283,6 +292,8 @@ export const PublicationPage = () => {
             return;
         }
 
+        actionRef.current = 'single';
+        setIsLocalActionActive(true);
         try {
             await updateStatusMutation.mutateAsync({
                 clusterId: selectedClusterId,
@@ -306,10 +317,14 @@ export const PublicationPage = () => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            actionRef.current = null;
+            setIsLocalActionActive(false);
         }
     };
 
     const handleOpenPublishConfirm = () => {
+        if (actionsLocked || actionRef.current !== null) return;
         if (!selectedCluster) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -348,6 +363,7 @@ export const PublicationPage = () => {
     };
 
     const handleConfirmPublish = async () => {
+        if (actionsLocked || actionRef.current !== null) return;
         if (!selectedCluster) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -377,12 +393,45 @@ export const PublicationPage = () => {
         setIsPublishConfirmOpen(false);
     };
 
+    const bulkDisabledReason =
+        isLocalActionActive || updateStatusMutation.isPending
+            ? 'Wait for the current publication change to finish.'
+            : isPublishConfirmOpen
+              ? 'Finish the open publication confirmation first.'
+              : undefined;
+    const runBulkAction = async (operation: 'start' | 'retry') => {
+        if (
+            bulkDisabledReason ||
+            actionRef.current !== null ||
+            bulk.isBusy ||
+            bulk.startDisabledReason
+        )
+            return;
+        actionRef.current = 'bulk';
+        try {
+            await bulk[operation]();
+        } finally {
+            actionRef.current = null;
+        }
+    };
+    const bulkPanel = (
+        <ClusterBulkPanel
+            action="PUBLISH"
+            bulk={bulk}
+            disabled={Boolean(bulkDisabledReason)}
+            disabledReason={bulkDisabledReason}
+            onStart={() => runBulkAction('start')}
+            onRetry={() => runBulkAction('retry')}
+        />
+    );
+
     const isLoading = clustersQuery.isLoading || selectedClusterQuery.isLoading;
     const isError = clustersQuery.isError || selectedClusterQuery.isError;
 
     if (isLoading) {
         return (
             <div className="publication">
+                {bulkPanel}
                 <PageState
                     variant="loading"
                     title="Loading publication data"
@@ -395,6 +444,7 @@ export const PublicationPage = () => {
     if (isError) {
         return (
             <div className="publication">
+                {bulkPanel}
                 <PageState
                     variant="error"
                     title="Failed to load publication data"
@@ -423,7 +473,13 @@ export const PublicationPage = () => {
                 onClear={handleClearFilters}
             />
 
-            <div className="publication__workspace">
+            {bulkPanel}
+
+            <fieldset
+                className="publication__workspace"
+                disabled={actionsLocked}
+                aria-label="Publication workspace"
+            >
                 <aside className="publication__clusters">
                     <div className="publication__panel-header">
                         <h2>Articles</h2>
@@ -624,7 +680,7 @@ export const PublicationPage = () => {
                                     !selectedCluster ||
                                     selectedCluster.status ===
                                         CLUSTER_STATUS.PUBLISHED ||
-                                    updateStatusMutation.isPending
+                                    actionsLocked
                                 }
                             >
                                 Publish
@@ -639,7 +695,7 @@ export const PublicationPage = () => {
                                     !selectedCluster ||
                                     selectedCluster.status ===
                                         CLUSTER_STATUS.DRAFT ||
-                                    updateStatusMutation.isPending
+                                    actionsLocked
                                 }
                             >
                                 Move to draft
@@ -654,7 +710,7 @@ export const PublicationPage = () => {
                                     !selectedCluster ||
                                     selectedCluster.status ===
                                         CLUSTER_STATUS.ARCHIVED ||
-                                    updateStatusMutation.isPending
+                                    actionsLocked
                                 }
                             >
                                 Archive
@@ -662,7 +718,7 @@ export const PublicationPage = () => {
                         </div>
                     </div>
                 </main>
-            </div>
+            </fieldset>
 
             <ConfirmModal
                 isOpen={isPublishConfirmOpen}

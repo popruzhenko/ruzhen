@@ -40,3 +40,12 @@ export type {
 } from './api/updateClusterArticles';
 
 export { useUpdateClusterArticlesMutation } from './hooks/useUpdateClusterArticlesMutation';
+
+export { previewClusterBulk, executeClusterBulk } from './api/clusterBulk';
+export type {
+    ClusterBulkAction,
+    ClusterBulkItem,
+    ClusterBulkPreview,
+    ClusterBulkResult,
+    ClusterBulkReportRow,
+} from './model/clusterBulk';
