@@ -80,6 +80,28 @@ enum EnrichmentJobStatus {
   CANCELED
 }
 
+enum ClusterBulkAction {
+  CONTEXTUALIZE
+  PUBLISH
+}
+
+enum ClusterBulkJobStatus {
+  QUEUED
+  RUNNING
+  STOPPING
+  COMPLETED
+  CANCELED
+}
+
+enum ClusterBulkItemStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  SKIPPED
+  FAILED
+  CANCELED
+}
+
 enum EnrichmentItemStatus {
   PENDING
   RUNNING
@@ -151,6 +173,62 @@ model User {
   sessions                         Session[]
   bookmarks                        Bookmark[]
   enrichmentJobs                   EnrichmentJob[]
+  clusterBulkJobs                  ClusterBulkJob[]
+}
+
+model ClusterBulkJob {
+  id              String               @id @default(uuid())
+  activeKey       String?              @unique
+  action          ClusterBulkAction
+  status          ClusterBulkJobStatus @default(QUEUED)
+  total           Int                  @default(0)
+  createdByUserId String
+  retryOfJobId    String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  createdBy User                    @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  items     ClusterBulkJobItem[]
+  requests  ClusterBulkJobRequest[]
+
+  @@index([action, createdAt])
+  @@index([status, createdAt])
+}
+
+model ClusterBulkJobItem {
+  id                String                @id @default(uuid())
+  jobId             String
+  clusterId         String
+  humanId           String
+  title             String
+  revision          String
+  executionRevision String?
+  status            ClusterBulkItemStatus @default(PENDING)
+  reason            String?
+  attempts          Int                   @default(0)
+  leaseToken        String?
+  leaseExpiresAt    DateTime?
+  aiStartedAt       DateTime?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  job ClusterBulkJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, clusterId])
+  @@index([jobId, status, createdAt])
+}
+
+model ClusterBulkJobRequest {
+  requestId       String            @id
+  jobId           String
+  action          ClusterBulkAction
+  createdByUserId String
+  retryOfJobId    String?
+  createdAt       DateTime          @default(now())
+
+  job ClusterBulkJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
 }
 
 model Session {

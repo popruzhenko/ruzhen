@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
     useClusterByIdQuery,
@@ -28,6 +28,8 @@ import { getSourceCountThreshold } from '../lib/SourceCountThresholdHelper';
 import './ContextualizationPage.scss';
 import { TOAST_TYPE } from '../../../../ui/Toast/ToastConstants';
 import { Textarea } from '../../../../ui/Textarea/Textarea';
+import { ClusterBulkPanel } from '../ClusterBulkPanel/ClusterBulkPanel';
+import { useClusterBulk } from '../ClusterBulkPanel/useClusterBulk';
 
 type ContextBlockType = 'FACT' | 'CONTEXT' | 'OPINION';
 type OpinionStance = 'PRO' | 'CONTRA' | 'NEUTRAL';
@@ -54,6 +56,48 @@ interface ContextDraftValidationInput {
     summary: string;
     blocks: ContextBlockDraft[];
 }
+
+interface SavedContextDraft extends ContextDraftValidationInput {
+    clusterId: string;
+    sourceSignature: string;
+    updatedAt?: string;
+}
+
+interface ContextDraftSource {
+    id: string;
+    title: string;
+    summary: string | null;
+    blocks: ContextBlockDraft[];
+    updatedAt?: string;
+}
+
+const draftSignature = ({
+    title,
+    summary,
+    blocks,
+}: ContextDraftValidationInput) =>
+    JSON.stringify([
+        title,
+        summary,
+        blocks.map((block) => [
+            block.id,
+            block.type,
+            block.title ?? '',
+            block.content,
+            block.stance,
+            block.position,
+            block.sourceName ?? '',
+            block.sourceUrl ?? '',
+            block.authorName ?? '',
+        ]),
+    ]);
+
+const sourceSignature = (source: ContextDraftSource) =>
+    draftSignature({
+        title: source.title,
+        summary: source.summary ?? '',
+        blocks: source.blocks.slice().sort((a, b) => a.position - b.position),
+    });
 
 const initialContextualizationFilters: ContextualizationFiltersState = {
     search: '',
@@ -212,6 +256,11 @@ export const ContextualizationPage = () => {
     const [draftTitle, setDraftTitle] = useState('');
     const [draftSummary, setDraftSummary] = useState('');
     const [blocks, setBlocks] = useState<ContextBlockDraft[]>([]);
+    const [savedDraft, setSavedDraft] = useState<SavedContextDraft | null>(
+        null,
+    );
+    const [isLocalActionActive, setIsLocalActionActive] = useState(false);
+    const actionRef = useRef<'bulk' | 'single' | null>(null);
 
     const [blockIdToRemove, setBlockIdToRemove] = useState<string | null>(null);
 
@@ -226,9 +275,43 @@ export const ContextualizationPage = () => {
 
     const generateAnalyzedNewsMutation = useGenerateAnalyzedNewsMutation();
     const saveContextDraftMutation = useSaveContextDraftMutation();
+    const bulk = useClusterBulk('CONTEXTUALIZE');
+    const editorLocked =
+        bulk.isBusy ||
+        isLocalActionActive ||
+        generateAnalyzedNewsMutation.isPending ||
+        saveContextDraftMutation.isPending;
 
     const clusters = clustersQuery.data?.clusters ?? [];
     const selectedCluster = selectedClusterQuery.data ?? null;
+    const hasUnsavedChanges =
+        savedDraft?.clusterId === selectedClusterId &&
+        draftSignature({ title: draftTitle, summary: draftSummary, blocks }) !==
+            draftSignature(savedDraft);
+    const applySavedDraft = useCallback((source: ContextDraftSource) => {
+        const next: SavedContextDraft = {
+            clusterId: source.id,
+            sourceSignature: sourceSignature(source),
+            updatedAt: source.updatedAt,
+            title: source.title,
+            summary: source.summary ?? '',
+            blocks:
+                source.blocks.length > 0
+                    ? source.blocks
+                          .slice()
+                          .sort((a, b) => a.position - b.position)
+                    : [
+                          createEmptyBlock('FACT', 1),
+                          createEmptyBlock('CONTEXT', 2),
+                          createEmptyBlock('OPINION', 3),
+                      ],
+        };
+        setSavedDraft(next);
+        setDraftTitle(next.title);
+        setDraftSummary(next.summary);
+        setBlocks(next.blocks);
+        setBlockIdToRemove(null);
+    }, []);
 
     const blockToRemove = blocks.find((block) => block.id === blockIdToRemove);
 
@@ -305,51 +388,51 @@ export const ContextualizationPage = () => {
     };
 
     useEffect(() => {
+        if (isLocalActionActive) return;
         if (!selectedCluster) {
+            if (selectedClusterId !== null || savedDraft === null) return;
             setDraftTitle('');
             setDraftSummary('');
             setBlocks([]);
+            setSavedDraft(null);
             setBlockIdToRemove(null);
             return;
         }
-
-        setDraftTitle(selectedCluster.title ?? '');
-        setDraftSummary(selectedCluster.summary ?? '');
-        setBlockIdToRemove(null);
-
-        const clusterBlocks = selectedCluster.blocks ?? [];
-
-        if (clusterBlocks.length > 0) {
-            setBlocks(
-                clusterBlocks
-                    .slice()
-                    .sort((a, b) => a.position - b.position)
-                    .map((block) => ({
-                        id: block.id,
-                        type: block.type,
-                        title: block.title,
-                        content: block.content,
-                        stance: block.stance,
-                        position: block.position,
-                        sourceName: block.sourceName,
-                        sourceUrl: block.sourceUrl,
-                        authorName: block.authorName,
-                        createdAt: block.createdAt,
-                        updatedAt: block.updatedAt,
-                    })),
-            );
-
+        if (selectedCluster.id !== selectedClusterId) return;
+        if (
+            savedDraft?.clusterId === selectedCluster.id &&
+            savedDraft.updatedAt &&
+            new Date(selectedCluster.updatedAt).getTime() <
+                new Date(savedDraft.updatedAt).getTime()
+        )
             return;
-        }
-
-        setBlocks([
-            createEmptyBlock('FACT', 1),
-            createEmptyBlock('CONTEXT', 2),
-            createEmptyBlock('OPINION', 3),
-        ]);
-    }, [selectedCluster?.id]);
+        if (
+            savedDraft?.clusterId === selectedCluster.id &&
+            (hasUnsavedChanges ||
+                savedDraft.sourceSignature === sourceSignature(selectedCluster))
+        )
+            return;
+        applySavedDraft(selectedCluster);
+    }, [
+        selectedCluster,
+        selectedClusterId,
+        savedDraft,
+        hasUnsavedChanges,
+        applySavedDraft,
+        isLocalActionActive,
+    ]);
 
     const handleSelectCluster = (clusterId: string) => {
+        if (editorLocked || actionRef.current !== null) return;
+        if (hasUnsavedChanges) {
+            showToast({
+                type: TOAST_TYPE.WARNING,
+                title: 'Unsaved draft',
+                message:
+                    'Save or discard your changes before selecting another event.',
+            });
+            return;
+        }
         const isSameCluster = clusterId === selectedClusterId;
 
         if (isSameCluster) {
@@ -361,6 +444,7 @@ export const ContextualizationPage = () => {
     };
 
     const handleAddBlock = (type: ContextBlockType) => {
+        if (editorLocked || actionRef.current !== null) return;
         setBlocks((currentBlocks) => [
             ...currentBlocks,
             createEmptyBlock(type, currentBlocks.length + 1),
@@ -372,6 +456,7 @@ export const ContextualizationPage = () => {
         field: ContextBlockField,
         value: string,
     ) => {
+        if (editorLocked || actionRef.current !== null) return;
         setBlocks((currentBlocks) =>
             currentBlocks.map((block) => {
                 if (block.id !== blockId) {
@@ -387,11 +472,12 @@ export const ContextualizationPage = () => {
     };
 
     const handleOpenRemoveBlockConfirm = (blockId: string) => {
+        if (editorLocked || actionRef.current !== null) return;
         setBlockIdToRemove(blockId);
     };
 
     const handleConfirmRemoveBlock = () => {
-        if (!blockIdToRemove) {
+        if (!blockIdToRemove || editorLocked || actionRef.current !== null) {
             return;
         }
 
@@ -420,6 +506,8 @@ export const ContextualizationPage = () => {
     };
 
     const handleGenerateDraft = async () => {
+        if (editorLocked || actionRef.current !== null || hasUnsavedChanges)
+            return;
         if (!selectedClusterId) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -430,33 +518,15 @@ export const ContextualizationPage = () => {
             return;
         }
 
+        actionRef.current = 'single';
+        setIsLocalActionActive(true);
         try {
             const response =
                 await generateAnalyzedNewsMutation.mutateAsync(
                     selectedClusterId,
                 );
 
-            setDraftTitle(response.cluster.title);
-            setDraftSummary(response.cluster.summary ?? '');
-
-            setBlocks(
-                response.blocks
-                    .slice()
-                    .sort((a, b) => a.position - b.position)
-                    .map((block) => ({
-                        id: block.id,
-                        type: block.type,
-                        title: block.title,
-                        content: block.content,
-                        stance: block.stance,
-                        position: block.position,
-                        sourceName: block.sourceName,
-                        sourceUrl: block.sourceUrl,
-                        authorName: block.authorName,
-                        createdAt: block.createdAt,
-                        updatedAt: block.updatedAt,
-                    })),
-            );
+            applySavedDraft({ ...response.cluster, blocks: response.blocks });
 
             showToast({
                 type: TOAST_TYPE.SUCCESS,
@@ -475,10 +545,14 @@ export const ContextualizationPage = () => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            actionRef.current = null;
+            setIsLocalActionActive(false);
         }
     };
 
     const handleSaveDraft = async () => {
+        if (editorLocked || actionRef.current !== null) return;
         if (!selectedClusterId) {
             showToast({
                 type: TOAST_TYPE.WARNING,
@@ -519,6 +593,8 @@ export const ContextualizationPage = () => {
             });
         }
 
+        actionRef.current = 'single';
+        setIsLocalActionActive(true);
         try {
             const response = await saveContextDraftMutation.mutateAsync({
                 clusterId: selectedClusterId,
@@ -541,27 +617,7 @@ export const ContextualizationPage = () => {
                 },
             });
 
-            setDraftTitle(response.cluster.title);
-            setDraftSummary(response.cluster.summary ?? '');
-
-            setBlocks(
-                response.blocks
-                    .slice()
-                    .sort((a, b) => a.position - b.position)
-                    .map((block) => ({
-                        id: block.id,
-                        type: block.type,
-                        title: block.title,
-                        content: block.content,
-                        stance: block.stance,
-                        position: block.position,
-                        sourceName: block.sourceName,
-                        sourceUrl: block.sourceUrl,
-                        authorName: block.authorName,
-                        createdAt: block.createdAt,
-                        updatedAt: block.updatedAt,
-                    })),
-            );
+            applySavedDraft({ ...response.cluster, blocks: response.blocks });
 
             showToast({
                 type: TOAST_TYPE.SUCCESS,
@@ -580,8 +636,48 @@ export const ContextualizationPage = () => {
                         ? error.message
                         : 'Unknown error occurred.',
             });
+        } finally {
+            actionRef.current = null;
+            setIsLocalActionActive(false);
         }
     };
+
+    const bulkDisabledReason = hasUnsavedChanges
+        ? 'Save or discard your changes before contextualizing all events.'
+        : isLocalActionActive ||
+            generateAnalyzedNewsMutation.isPending ||
+            saveContextDraftMutation.isPending
+          ? 'Wait for the current draft operation to finish.'
+          : blockIdToRemove !== null
+            ? 'Finish the block removal confirmation first.'
+            : selectedClusterQuery.isFetching
+              ? 'Wait for the selected event to finish loading.'
+              : undefined;
+    const runBulkAction = async (operation: 'start' | 'retry') => {
+        if (
+            bulkDisabledReason ||
+            actionRef.current !== null ||
+            bulk.isBusy ||
+            bulk.startDisabledReason
+        )
+            return;
+        actionRef.current = 'bulk';
+        try {
+            await bulk[operation]();
+        } finally {
+            actionRef.current = null;
+        }
+    };
+    const bulkPanel = (
+        <ClusterBulkPanel
+            action="CONTEXTUALIZE"
+            bulk={bulk}
+            disabled={Boolean(bulkDisabledReason)}
+            disabledReason={bulkDisabledReason}
+            onStart={() => runBulkAction('start')}
+            onRetry={() => runBulkAction('retry')}
+        />
+    );
 
     const isLoading = clustersQuery.isLoading || selectedClusterQuery.isLoading;
     const isError = clustersQuery.isError || selectedClusterQuery.isError;
@@ -589,6 +685,7 @@ export const ContextualizationPage = () => {
     if (isLoading) {
         return (
             <div className="contextualization">
+                {bulkPanel}
                 <PageState
                     variant="loading"
                     title="Loading contextualization data"
@@ -601,6 +698,7 @@ export const ContextualizationPage = () => {
     if (isError) {
         return (
             <div className="contextualization">
+                {bulkPanel}
                 <PageState
                     variant="error"
                     title="Failed to load contextualization data"
@@ -629,7 +727,13 @@ export const ContextualizationPage = () => {
                 onClear={handleClearFilters}
             />
 
-            <div className="contextualization__workspace">
+            {bulkPanel}
+
+            <fieldset
+                className="contextualization__workspace"
+                disabled={editorLocked}
+                aria-label="Contextualization workspace"
+            >
                 <aside className="contextualization__clusters">
                     <div className="contextualization__panel-header">
                         <h2>Clusters</h2>
@@ -755,7 +859,8 @@ export const ContextualizationPage = () => {
                                 onClick={handleGenerateDraft}
                                 disabled={
                                     !selectedClusterId ||
-                                    generateAnalyzedNewsMutation.isPending
+                                    editorLocked ||
+                                    hasUnsavedChanges
                                 }
                             >
                                 {generateAnalyzedNewsMutation.isPending
@@ -765,15 +870,28 @@ export const ContextualizationPage = () => {
 
                             <Button
                                 onClick={handleSaveDraft}
-                                disabled={
-                                    !selectedClusterId ||
-                                    saveContextDraftMutation.isPending
-                                }
+                                disabled={!selectedClusterId || editorLocked}
                             >
                                 {saveContextDraftMutation.isPending
                                     ? 'Saving...'
                                     : 'Save draft'}
                             </Button>
+                            {hasUnsavedChanges && (
+                                <Button
+                                    variants="secondary"
+                                    disabled={editorLocked}
+                                    onClick={() => {
+                                        if (
+                                            !editorLocked &&
+                                            actionRef.current === null &&
+                                            selectedCluster
+                                        )
+                                            applySavedDraft(selectedCluster);
+                                    }}
+                                >
+                                    Discard changes
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -835,7 +953,7 @@ export const ContextualizationPage = () => {
                         </div>
                     </div>
                 </section>
-            </div>
+            </fieldset>
 
             <ConfirmModal
                 isOpen={blockIdToRemove !== null}

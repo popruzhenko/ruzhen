@@ -15,6 +15,7 @@ import { parseEmbedding } from '../../../shared/lib/parseEmbedding';
 import { calculateCentroid } from '../../../shared/lib/calculateCentroid';
 import { buildClusterTitleFromArticles } from '../../../shared/lib/buildClusterTitleFromArticles';
 import { prisma } from '../../../shared/lib/prismaClient';
+import { getClusterPublicationErrors } from '../../../core/publication/clusterReadiness';
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -789,43 +790,7 @@ export async function updateClusterStatus(
     }
 
     if (status === ClusterStatus.PUBLISHED) {
-        const errors: string[] = [];
-
-        const facts = cluster.blocks.filter((block) => block.type === 'FACT');
-        const context = cluster.blocks.filter(
-            (block) => block.type === 'CONTEXT',
-        );
-
-        const hasEmptyBlockContent = cluster.blocks.some(
-            (block) => !block.content.trim(),
-        );
-
-        if (!cluster.title.trim()) {
-            errors.push('Title is required before publishing.');
-        }
-
-        if (!cluster.summary?.trim()) {
-            errors.push('Summary is required before publishing.');
-        }
-
-        if (facts.length === 0) {
-            errors.push(
-                'At least one fact block is required before publishing.',
-            );
-        }
-
-        if (context.length === 0) {
-            errors.push(
-                'At least one context block is required before publishing.',
-            );
-        }
-
-        if (hasEmptyBlockContent) {
-            errors.push(
-                'All semantic blocks must have content before publishing.',
-            );
-        }
-
+        const errors = getClusterPublicationErrors(cluster);
         if (errors.length > 0) {
             throw new Error(errors.join(' '));
         }

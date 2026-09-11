@@ -11,8 +11,63 @@ import {
 } from '../controllers/cluster.controller';
 import { requireAuth } from '../../../shared/middleware/require-auth';
 import { requireAdmin } from '../../../shared/middleware/require-admin';
+import {
+    previewClusterBulkHandler,
+    executeClusterBulkHandler,
+} from '../controllers/cluster-bulk.controller';
+import {
+    startClusterBulkJobHandler,
+    listClusterBulkJobsHandler,
+    getClusterBulkJobHandler,
+    cancelClusterBulkJobHandler,
+    retryClusterBulkJobHandler,
+} from '../controllers/cluster-bulk-job.controller';
 
 const adminClusterRouter = Router();
+
+adminClusterRouter.post(
+    '/bulk/jobs',
+    requireAuth,
+    requireAdmin,
+    startClusterBulkJobHandler,
+);
+adminClusterRouter.get(
+    '/bulk/jobs',
+    requireAuth,
+    requireAdmin,
+    listClusterBulkJobsHandler,
+);
+adminClusterRouter.get(
+    '/bulk/jobs/:jobId',
+    requireAuth,
+    requireAdmin,
+    getClusterBulkJobHandler,
+);
+adminClusterRouter.post(
+    '/bulk/jobs/:jobId/cancel',
+    requireAuth,
+    requireAdmin,
+    cancelClusterBulkJobHandler,
+);
+adminClusterRouter.post(
+    '/bulk/jobs/:jobId/retry',
+    requireAuth,
+    requireAdmin,
+    retryClusterBulkJobHandler,
+);
+
+adminClusterRouter.post(
+    '/bulk/preview',
+    requireAuth,
+    requireAdmin,
+    previewClusterBulkHandler,
+);
+adminClusterRouter.post(
+    '/bulk/execute',
+    requireAuth,
+    requireAdmin,
+    executeClusterBulkHandler,
+);
 
 adminClusterRouter.post(
     '/from-articles',

@@ -1,4 +1,11 @@
 export const queryKeys = {
+    clusterBulkJobs: {
+        all: ['cluster-bulk-jobs'] as const,
+        list: (action: string) =>
+            ['cluster-bulk-jobs', 'list', action] as const,
+        detail: (id: string | null, page: number) =>
+            ['cluster-bulk-jobs', 'detail', id, page] as const,
+    },
     articles: {
         all: ['articles'] as const,
     },

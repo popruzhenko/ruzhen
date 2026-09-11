@@ -17,6 +17,8 @@ import { requireAuth } from './shared/middleware/require-auth';
 import { requireAdmin } from './shared/middleware/require-admin';
 import { prisma } from './shared/lib/prismaClient';
 import { startEnrichmentWorker } from './core/enrichmentJobs';
+import { startClusterBulkWorker } from './core/clusterBulkJobs';
+import { OpenAiAnalyzedNewsProvider } from './core/contextualization/openAiAnalyzedNewsProvider';
 import { retrieveCompleteArticleContent } from './core/ingestionNews/enrich/retrieveCompleteArticleContent';
 
 const app = express();
@@ -72,6 +74,17 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
 app.listen(PORT, () => {
     console.log(`API is running on http://localhost:${PORT}/health`);
+    startClusterBulkWorker({
+        prisma,
+        provider: {
+            generateAnalyzedNews: (prompt, signal) =>
+                new OpenAiAnalyzedNewsProvider(
+                    process.env.OPENAI_API_KEY ?? '',
+                    undefined,
+                    { maxRetries: 0 },
+                ).generateAnalyzedNews(prompt, signal),
+        },
+    });
     startEnrichmentWorker({
         prisma,
         retrieve: (input, signal) =>

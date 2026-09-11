@@ -1,3 +1,3 @@
 export interface AnalyzedNewsProvider {
-    generateAnalyzedNews(prompt: string): Promise<string>;
+    generateAnalyzedNews(prompt: string, signal?: AbortSignal): Promise<string>;
 }
