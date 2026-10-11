@@ -1,4 +1,5 @@
 import { act } from 'react';
+import { waitFor as waitForAssertion } from '@testing-library/react';
 import { createRoot, type Root } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -240,15 +241,7 @@ const render = async () => {
     );
 };
 const waitFor = async (assertion: () => void) => {
-    await vi.waitFor(
-        async () => {
-            await act(async () => {
-                await new Promise((resolve) => setTimeout(resolve, 0));
-            });
-            assertion();
-        },
-        { timeout: 2500 },
-    );
+    await waitForAssertion(assertion, { timeout: 5000 });
 };
 const button = (label: string, parent: ParentNode = document.body) => {
     const target = [...parent.querySelectorAll('button')].find(
@@ -352,7 +345,9 @@ afterEach(async () => {
         .IS_REACT_ACT_ENVIRONMENT;
 });
 
-describe('RawArticles bulk workflow', () => {
+// Rendering and interacting with multiple 100-card pages is slower under V8
+// coverage. Bound these integration scenarios without overlapping act polls.
+describe('RawArticles bulk workflow', { timeout: 15000 }, () => {
     it.each(['QUEUED', 'RUNNING', 'COMPLETED', 'CANCELED'] as const)(
         'shows the automatic enrichment job with its returned %s status after Fetch',
         async (status) => {

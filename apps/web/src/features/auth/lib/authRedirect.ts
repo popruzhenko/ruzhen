@@ -4,6 +4,14 @@ export function getSafeRedirectPath(redirectTo: string | null) {
     if (!redirectTo) return null;
     if (!redirectTo.startsWith('/')) return null;
     if (redirectTo.startsWith('//')) return null;
+    if (redirectTo.includes('\\')) return null;
+    if (
+        Array.from(redirectTo).some((character) => {
+            const code = character.charCodeAt(0);
+            return code <= 0x1f || code === 0x7f;
+        })
+    )
+        return null;
 
     return redirectTo;
 }

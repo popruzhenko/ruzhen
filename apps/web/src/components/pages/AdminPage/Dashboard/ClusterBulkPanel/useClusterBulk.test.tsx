@@ -1,6 +1,7 @@
-import { act } from 'react';
+import { act, useEffect } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useClusterBulk } from './useClusterBulk';
 import type {
@@ -82,12 +83,22 @@ let savedDetails: Map<string, ClusterBulkJobDetails>;
 let post: (url: string, body: unknown) => Promise<unknown>;
 
 function Harness({ action }: { action: ClusterBulkAction }) {
-    bulk = useClusterBulk(action);
-    return <div>{bulk.phase}</div>;
+    const state = useClusterBulk(action);
+    useEffect(() => {
+        bulk = state;
+    });
+    return <div>{state.phase}</div>;
 }
 const flush = async () => {
-    await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 10));
+    await waitFor(() => {
+        expect(bulk.isLoading).toBe(false);
+        expect(bulk.isRefreshing).toBe(false);
+        expect(bulk.isMutating).toBe(false);
+        // Selecting a job starts its detail query after the list has rendered.
+        // Wait for that second response, including the requested result page.
+        if (bulk.selectedJobId && !bulk.error) {
+            expect(bulk.pagination?.page).toBe(bulk.resultPage);
+        }
     });
 };
 async function render(action: ClusterBulkAction = 'CONTEXTUALIZE') {

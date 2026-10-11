@@ -1,66 +1,55 @@
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { act } from 'react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Toast } from './Toast';
+import type { ToastItem } from './TypesToast';
+
+const toast: ToastItem = {
+    id: 'toast-1',
+    type: 'success',
+    title: 'Saved',
+    message: 'Changes were saved',
+    autoCloseMs: 3000,
+};
+
+afterEach(() => vi.useRealTimers());
 
 describe('Toast', () => {
-    it('renders with message', () => {
-        const handleClose = vi.fn();
-        render(
-            <Toast
-                message="This is a toast message"
-                open={true}
-                onClose={handleClose}
-            />,
+    it('announces its title and message and closes by its own id', () => {
+        const onClose = vi.fn();
+        render(<Toast toast={toast} onClose={onClose} />);
+        expect(screen.getByRole('status')).toHaveAttribute(
+            'aria-live',
+            'polite',
         );
-        expect(screen.getByText('This is a toast message')).toBeInTheDocument();
+        expect(screen.getByRole('status')).toHaveTextContent('Saved');
+        expect(screen.getByRole('status')).toHaveTextContent(
+            'Changes were saved',
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'Close toast' }));
+        expect(onClose).toHaveBeenCalledExactlyOnceWith('toast-1');
     });
 
-    it('calls onClose when close button is clicked', async () => {
-        const user = userEvent.setup();
-        const handleClose = vi.fn();
-        render(
-            <Toast
-                message="This is a toast message"
-                open={true}
-                onClose={handleClose}
-            />,
-        );
-        const closeButton = screen.getByRole('button', { name: /close/i });
-        await user.click(closeButton);
-        expect(handleClose).toHaveBeenCalled();
-    });
-
-    it('does not render when open is false', () => {
-        const handleClose = vi.fn();
-        render(
-            <Toast
-                message="This is a toast message"
-                open={false}
-                onClose={handleClose}
-            />,
-        );
-        expect(
-            screen.queryByText('This is a toast message'),
-        ).not.toBeInTheDocument();
-    });
-
-    it('auto closes after a duration', async () => {
+    it('closes once after its configured duration', () => {
         vi.useFakeTimers();
-        const handleClose = vi.fn();
-        render(
-            <Toast
-                message="This is a toast message"
-                open={true}
-                onClose={handleClose}
-                autoCloseMs={3000}
-            />,
+        const onClose = vi.fn();
+        render(<Toast toast={toast} onClose={onClose} />);
+        act(() => vi.advanceTimersByTime(2999));
+        expect(onClose).not.toHaveBeenCalled();
+        act(() => vi.advanceTimersByTime(1));
+        expect(onClose).toHaveBeenCalledExactlyOnceWith('toast-1');
+    });
+
+    it('supports persistent toasts and clears its timer on unmount', () => {
+        vi.useFakeTimers();
+        const onClose = vi.fn();
+        const { rerender, unmount } = render(
+            <Toast toast={{ ...toast, autoCloseMs: 0 }} onClose={onClose} />,
         );
-        await act(async () => {});
-        await act(async () => {
-            vi.advanceTimersByTime(3000);
-        });
-        expect(handleClose).toHaveBeenCalledTimes(1);
-        vi.useRealTimers();
+        act(() => vi.advanceTimersByTime(60000));
+        expect(onClose).not.toHaveBeenCalled();
+        rerender(<Toast toast={toast} onClose={onClose} />);
+        unmount();
+        act(() => vi.advanceTimersByTime(60000));
+        expect(onClose).not.toHaveBeenCalled();
     });
 });

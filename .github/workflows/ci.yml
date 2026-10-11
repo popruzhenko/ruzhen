@@ -38,3 +38,12 @@ jobs:
 
             - name: Build project
               run: npm run build
+
+            - name: Typecheck web tests
+              run: npm run test:typecheck -w apps/web
+
+            - name: Lint web tests
+              run: npm run test:lint -w apps/web
+
+            - name: Test web with coverage
+              run: npm run test:coverage -w apps/web

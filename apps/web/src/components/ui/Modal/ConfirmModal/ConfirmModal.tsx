@@ -20,7 +20,9 @@ export const ConfirmModal = ({
         <Modal
             isOpen={isOpen}
             title={title}
-            onClose={onCancel}
+            onClose={() => {
+                if (!isLoading) onCancel();
+            }}
             closeOnEsc={!isLoading}
             closeOnOverlayClick={!isLoading}
             contentClassName="confirm_modal"

@@ -24,6 +24,7 @@ import {
 } from '../../../../../entities/cluster';
 
 import { useArticlesQuery } from '../../../../../entities/raw-news/hooks/useArticlesQuery';
+import type { ArticleApiItem } from '../../../../../entities/raw-news/model/types';
 
 import { Button } from '../../../../ui/Button/Button';
 import { PageState } from '../../../../ui/PageState/PageState';
@@ -109,6 +110,8 @@ const initialClusterListFilters: ClusterListFiltersState = {
     status: 'ALL',
     sort: 'NEWEST',
 };
+
+const emptyArticles: ArticleApiItem[] = [];
 
 const toNumberArray = (value: unknown): number[] | null => {
     if (!Array.isArray(value)) {
@@ -222,7 +225,7 @@ export const ClusteringPage = () => {
 
     const clusters = clustersQuery.data?.clusters ?? [];
     const selectedCluster = selectedClusterQuery.data ?? null;
-    const articles = articlesQuery.data?.articles ?? [];
+    const articles = articlesQuery.data?.articles ?? emptyArticles;
     const clusterCandidates = clusterCandidatesQuery.data?.candidates ?? [];
 
     const selectedClusterCandidate = useMemo(() => {
@@ -361,9 +364,26 @@ export const ClusteringPage = () => {
                 similarityToCluster: null,
             }));
 
-        setCandidateArticles(mappedCandidates);
+        // Members removed from the current draft remain available for undo,
+        // even when the raw feed still marks them CLUSTERED or omits them.
+        const removedMembers: FilterableCandidateArticle[] =
+            sourceClusterArticles
+                .filter((article) => !clusterArticleIds.has(article.id))
+                .map((article) => ({
+                    ...article,
+                    createdAt: null,
+                    similarityToCluster: null,
+                    status: ARTICLE_STATUS.EMBEDDED,
+                }));
+        const candidatesById = new Map(
+            [...mappedCandidates, ...removedMembers].map((article) => [
+                article.id,
+                article,
+            ]),
+        );
+        setCandidateArticles([...candidatesById.values()]);
         setSelectedCandidateIds([]);
-    }, [articles, clusterArticleIdsKey]);
+    }, [articles, clusterArticleIdsKey, sourceClusterArticles]);
 
     const clusterMetrics = useMemo(() => {
         return recalculateClusterArticles(clusterArticles);
@@ -1154,26 +1174,6 @@ export const ClusteringPage = () => {
                 (article) => !selectedClusterArticleIds.includes(article.id),
             ),
         );
-
-        setCandidateArticles((currentArticles) => [
-            ...currentArticles,
-            ...articlesToRemove.map(
-                ({
-                    similarityToCentroid,
-                    confidence,
-                    isPrimary,
-                    ...article
-                }) => ({
-                    ...article,
-                    createdAt: null,
-                    similarityToCluster: null,
-                    status: ARTICLE_STATUS.EMBEDDED,
-                    embedding: Array.isArray(article.embedding)
-                        ? article.embedding
-                        : null,
-                }),
-            ),
-        ]);
 
         setSelectedClusterArticleIds([]);
 

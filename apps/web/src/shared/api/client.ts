@@ -38,14 +38,18 @@ export async function apiClient<T>(
 ): Promise<T> {
     const { json, headers, skipAuthRedirect, ...restOptions } = options;
     const accessToken = getAccessToken();
+    const requestHeaders = new Headers({
+        'Content-Type': 'application/json',
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    });
+
+    new Headers(headers).forEach((value, name) => {
+        requestHeaders.set(name, value);
+    });
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...restOptions,
-        headers: {
-            'Content-Type': 'application/json',
-            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-            ...headers,
-        },
+        headers: requestHeaders,
         body: json !== undefined ? JSON.stringify(json) : restOptions.body,
     });
 

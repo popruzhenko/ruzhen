@@ -556,11 +556,9 @@ describe('persistent article enrichment', () => {
                     )!
                     .click(),
             );
-            await act(async () =>
-                container
-                    .querySelectorAll<HTMLElement>('[role="option"]')
-                    [option].click(),
-            );
+            const options =
+                container.querySelectorAll<HTMLElement>('[role="option"]');
+            await act(async () => options[option].click());
         };
         await selectJob(1);
         await waitFor(() =>

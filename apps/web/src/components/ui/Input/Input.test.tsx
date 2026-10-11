@@ -42,4 +42,57 @@ describe('Input', () => {
         await user.click(toggleButton);
         expect(input.type).toBe('password');
     });
+
+    it('associates validation messages with the correct field and removes them when corrected', () => {
+        const { rerender } = render(
+            <Input id="email" label="Email" error="Enter a valid email" />,
+        );
+        const input = screen.getByRole('textbox', { name: 'Email' });
+        expect(input).toHaveAttribute('aria-invalid', 'true');
+        expect(input).toHaveAccessibleDescription('Enter a valid email');
+        expect(input).toHaveAttribute('aria-describedby', 'email-error');
+        rerender(<Input id="email" label="Email" />);
+        expect(input).toHaveAttribute('aria-invalid', 'false');
+        expect(input).not.toHaveAttribute('aria-describedby');
+        expect(
+            screen.queryByText('Enter a valid email'),
+        ).not.toBeInTheDocument();
+    });
+
+    it('toggles password visibility without submitting its form or losing its value', async () => {
+        const user = userEvent.setup();
+        const onSubmit = vi.fn();
+        render(
+            <form onSubmit={onSubmit}>
+                <Input label="Password" type="password" defaultValue="secret" />
+            </form>,
+        );
+        await user.click(screen.getByRole('button', { name: 'Show password' }));
+        expect(screen.getByLabelText('Password')).toHaveValue('secret');
+        expect(screen.getByLabelText('Password')).toHaveAttribute(
+            'type',
+            'text',
+        );
+        await user.click(screen.getByRole('button', { name: 'Hide password' }));
+        expect(screen.getByLabelText('Password')).toHaveAttribute(
+            'type',
+            'password',
+        );
+        expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it('generates independent label associations for fields without explicit IDs', async () => {
+        const user = userEvent.setup();
+        render(
+            <>
+                <Input label="First name" />
+                <Input label="Last name" />
+            </>,
+        );
+        const first = screen.getByLabelText('First name');
+        const last = screen.getByLabelText('Last name');
+        expect(first.id).not.toBe(last.id);
+        await user.click(screen.getByText('Last name'));
+        expect(last).toHaveFocus();
+    });
 });

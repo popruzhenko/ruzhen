@@ -95,11 +95,9 @@ const click = async (label: string) => {
     await act(async () => button(label).click());
 };
 const selectStory = async (index = 0) => {
-    await act(async () =>
-        container
-            .querySelectorAll<HTMLButtonElement>('.cluster_card')
-            [index].click(),
-    );
+    const cards =
+        container.querySelectorAll<HTMLButtonElement>('.cluster_card');
+    await act(async () => cards[index].click());
 };
 const title = () =>
     container.querySelector<HTMLInputElement>(

@@ -1,10 +1,11 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Header } from '../../ui/Header/Header';
 import { NavigationDashboard } from './Dashboard/NavigationDashboard/NavigationDashboard';
 import './Dashboard/NavigationDashboard/NavigationDashboard.scss';
 import './AdminPage.scss';
 
 export const AdminPage = () => {
+    const location = useLocation();
     return (
         <>
             <Header

@@ -1,9 +1,10 @@
 import { defineConfig } from 'vitest/config';
+import baseConfig from './vitest.config';
 
 export default defineConfig({
-    esbuild: { jsx: 'automatic' },
+    ...baseConfig,
     test: {
-        environment: 'jsdom',
+        ...baseConfig.test,
         include: [
             'src/components/pages/AdminPage/Dashboard/ClusteringPage/ClusteringPage.test.tsx',
         ],
